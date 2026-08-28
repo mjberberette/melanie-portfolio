@@ -131,6 +131,12 @@
   border-radius: 999px;
 }
 
+@media (min-width: 48rem) and (max-width: 61.999rem) {
+  .hero__canvas {
+    height: 42svh;
+  }
+}
+
 @media (min-width: 62rem) {
   .hero {
     padding-block: 8rem 2.5rem;
@@ -592,7 +598,11 @@
     align-items: flex-end;
     justify-content: space-between;
   }
+}
 
+/* The index list only earns its keep where the preview can follow a pointer;
+   touch devices keep the cards, which show the artwork inline. */
+@media (min-width: 48rem) and (hover: hover) and (pointer: fine) {
   .work__list {
     display: block;
   }
@@ -606,7 +616,10 @@
   .work__row {
     padding-block: 2.5rem;
   }
+}
 
+/* Tags only appear once the subtitle no longer has to be truncated for them. */
+@media (min-width: 80rem) {
   .work__tags {
     display: flex;
   }
