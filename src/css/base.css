@@ -27,6 +27,15 @@ body {
   line-height: 1.6;
   font-weight: 400;
   overflow-x: clip;
+  /* Clears the fixed rail: left on desktop, top bar on small screens. */
+  padding-left: 74px;
+}
+
+@media (max-width: 47.5rem) {
+  body {
+    padding-left: 0;
+    padding-top: 51px;
+  }
 }
 
 /* Lenis owns the scroll position */

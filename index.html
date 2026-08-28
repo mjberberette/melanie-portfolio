@@ -102,8 +102,6 @@
     </div>
 
     <!-- Chrome ------------------------------------------------------------->
-    <div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
-
     <div class="cursor" id="cursor" aria-hidden="true">
       <div class="cursor__ring" id="cursor-ring">
         <span class="cursor__label" id="cursor-label"></span>
@@ -111,77 +109,36 @@
       <div class="cursor__dot" id="cursor-dot"></div>
     </div>
 
-    <header class="nav" id="nav">
-      <div class="shell nav__inner">
-        <a class="nav__brand" href="#top" data-scroll-to="#top" aria-label="Melanie Berberette — home">
-          <span class="nav__mark" data-mark-lottie aria-hidden="true">
-            <svg viewBox="0 0 574 711"><use href="#mb-mark-solid" /></svg>
-          </span>
-          <span class="nav__brand-text">
-            <span class="nav__name">Melanie Berberette</span>
-            <span class="nav__role">Web &amp; UX Designer</span>
-          </span>
-        </a>
+    <aside class="rail" id="rail">
+      <a
+        class="rail__logo"
+        href="#top"
+        data-scroll-to="#top"
+        aria-label="Melanie Berberette — home"
+      >
+        <span class="rail__mark" data-mark-lottie aria-hidden="true">
+          <svg viewBox="0 0 574 711"><use href="#mb-mark-solid" /></svg>
+        </span>
+      </a>
 
-        <nav class="nav__links" aria-label="Primary">
-          <a class="nav__link" href="#studio" data-scroll-to="#studio" data-magnetic>
-            <span class="nav__link-inner"><span>Studio</span><span>Studio</span></span>
-          </a>
-          <a class="nav__link" href="#work" data-scroll-to="#work" data-magnetic>
-            <span class="nav__link-inner"><span>Work</span><span>Work</span></span>
-          </a>
-          <a class="nav__link" href="#capabilities" data-scroll-to="#capabilities" data-magnetic>
-            <span class="nav__link-inner"><span>Capabilities</span><span>Capabilities</span></span>
-          </a>
-          <a class="nav__link" href="#contact" data-scroll-to="#contact" data-magnetic>
-            <span class="nav__link-inner"><span>Contact</span><span>Contact</span></span>
-          </a>
-        </nav>
+      <span class="rail__progress" aria-hidden="true"><i id="rail-progress"></i></span>
 
-        <div class="nav__actions">
-          <a
-            class="pill nav__available"
-            href="mailto:hello@melanieberberette.com"
-            data-cursor="link"
-            data-magnetic
-          >
-            <span class="status-dot" aria-hidden="true"></span>
-            <span>Available</span>
-          </a>
-
-          <button
-            class="nav__burger"
-            id="nav-burger"
-            type="button"
-            aria-expanded="false"
-            aria-controls="menu"
-            aria-label="Open menu"
-          >
-            <span></span><span></span>
-          </button>
-        </div>
-      </div>
-    </header>
-
-    <div class="menu" id="menu" hidden>
-      <nav class="menu__links" aria-label="Mobile">
-        <a href="#studio" data-scroll-to="#studio"><i>01</i>Studio</a>
-        <a href="#work" data-scroll-to="#work"><i>02</i>Work</a>
-        <a href="#capabilities" data-scroll-to="#capabilities"><i>03</i>Capabilities</a>
-        <a href="#contact" data-scroll-to="#contact"><i>04</i>Contact</a>
+      <nav class="rail__nav" aria-label="Sections">
+        <a href="#top" data-nav="top" data-scroll-to="#top"><span class="dot"></span><span class="tip">Home</span></a>
+        <a href="#studio" data-nav="studio" data-scroll-to="#studio"><span class="dot"></span><span class="tip">Studio</span></a>
+        <a href="#work" data-nav="work" data-scroll-to="#work"><span class="dot"></span><span class="tip">Work</span></a>
+        <a href="#capabilities" data-nav="capabilities" data-scroll-to="#capabilities"><span class="dot"></span><span class="tip">Craft</span></a>
+        <a href="#process" data-nav="process" data-scroll-to="#process"><span class="dot"></span><span class="tip">Flow</span></a>
+        <a href="#voices" data-nav="voices" data-scroll-to="#voices"><span class="dot"></span><span class="tip">Voices</span></a>
+        <a href="#contact" data-nav="contact" data-scroll-to="#contact"><span class="dot"></span><span class="tip">Talk</span></a>
       </nav>
-      <div class="menu__foot">
-        <a class="menu__email" href="mailto:hello@melanieberberette.com">
-          hello@melanieberberette.com
-        </a>
-        <div class="menu__socials">
-          <a href="https://www.linkedin.com/" target="_blank" rel="noreferrer">LinkedIn</a>
-          <a href="https://dribbble.com/" target="_blank" rel="noreferrer">Dribbble</a>
-          <a href="https://read.cv/" target="_blank" rel="noreferrer">Read.cv</a>
-          <a href="https://www.instagram.com/" target="_blank" rel="noreferrer">Instagram</a>
-        </div>
-      </div>
-    </div>
+
+      <span class="rail__word">WEB&nbsp;&amp;&nbsp;UX</span>
+
+      <button class="rail__top" type="button" data-scroll-to="#top" aria-label="Back to top">
+        <span class="sq"></span>
+      </button>
+    </aside>
 
     <main id="main">
       <!-- Hero ------------------------------------------------------------->
@@ -925,7 +882,7 @@
       </section>
 
       <!-- Process ---------------------------------------------------------->
-      <section class="section process">
+      <section class="section process" id="process">
         <div class="shell">
           <header class="process__head">
             <div>
@@ -1013,7 +970,7 @@
       </section>
 
       <!-- Testimonials + recognition --------------------------------------->
-      <section class="section voices">
+      <section class="section voices" id="voices">
         <div class="shell">
           <p class="eyebrow section__label" data-reveal><b>05</b> — In their words</p>
 

@@ -35,20 +35,19 @@ async function desktop() {
   await page.goto(url, { waitUntil: "domcontentloaded" });
   await wait(5200);
 
-  await page.evaluate(() =>
-    document.querySelector("#work").scrollIntoView({ behavior: "instant" }),
-  );
-  await wait(1600);
-
-  const rows = await page.$$("#work-list .work__row");
-  for (const [index, name] of [
-    [0, "lottie"],
-    [2, "poster"],
+  // Work gallery: capture the pinned horizontal scrub at two depths.
+  const workTop = await page.evaluate(() => {
+    const el = document.querySelector(".work");
+    return el.getBoundingClientRect().top + window.scrollY;
+  });
+  for (const [name, offset] of [
+    ["start", 0],
+    ["mid", 900],
   ]) {
-    const box = await rows[index].boundingBox();
-    await page.mouse.move(box.x + box.width * 0.3, box.y + box.height / 2);
-    await wait(250);
-    await page.mouse.move(box.x + box.width * 0.34, box.y + box.height / 2);
+    await page.evaluate(
+      (top) => window.scrollTo({ top, behavior: "instant" }),
+      workTop + offset,
+    );
     await wait(1800);
     await page.screenshot({ path: `${out}/i-work-${name}.png` });
   }
@@ -101,9 +100,7 @@ async function mobile() {
 
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
   await wait(900);
-  await page.click("#nav-burger");
-  await wait(1300);
-  await page.screenshot({ path: `${out}/m-menu.png` });
+  await page.screenshot({ path: `${out}/m-rail.png` });
   await page.close();
 }
 

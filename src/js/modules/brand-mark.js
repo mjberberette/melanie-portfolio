@@ -49,7 +49,7 @@ export function initBrandMarks() {
 
           const play = () => animation.playSegments([0, FRAME_FULL], true);
 
-          if (host.closest(".nav")) {
+          if (host.closest(".rail")) {
             // Draw on as the preloader curtain lifts.
             onRevealed(play);
           } else {

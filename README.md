@@ -61,7 +61,7 @@ src/
     tokens.css          colours, type, spacing, easing — change things here
     base.css            reset and document defaults
     layout.css          shell, section rhythm, buttons, tags, reveal primitives
-    chrome.css          preloader, cursor, scroll progress, nav, mobile menu
+    chrome.css          preloader, cursor, rail navigation
     sections.css        hero, marquee, studio, work, capabilities, process,
                         voices, contact, footer
   js/
@@ -72,8 +72,7 @@ src/
       smooth-scroll.js  Lenis + GSAP ticker, scrollTo helper
       preloader.js      counter, Lottie monogram draw-on, curtain wipe
       cursor.js         two-part custom cursor
-      nav.js            sticky nav, hide-on-scroll, mobile menu, anchor links
-      scroll-progress.js
+      rail.js           side-rail navigation: scrollspy, progress, anchor links
       reveal.js         data-reveal / -lines / -words scroll animations
       hero.js           name intro, pinned scroll scene, pointer parallax
       monogram.js       the 3D mark: geometry, studio lighting, follow/drag
@@ -173,7 +172,7 @@ project.
 - The custom cursor only replaces the native one on devices with a fine pointer
   and hover.
 - There is a skip link, visible focus rings, an accessible accordion
-  (`aria-expanded`), and the mobile menu closes on Escape.
+  (`aria-expanded`), and the journey detail panels close on Escape.
 
 ## Deploying
 

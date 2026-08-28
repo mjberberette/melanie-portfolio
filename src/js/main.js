@@ -11,18 +11,16 @@ import { initIcons } from "./modules/icons.js";
 import { initJourney } from "./modules/journey.js";
 import { initMagnetic } from "./modules/magnetic.js";
 import { initMarquee } from "./modules/marquee.js";
-import { initNav } from "./modules/nav.js";
 import { initPreloader } from "./modules/preloader.js";
+import { initRail } from "./modules/rail.js";
 import { initReveals } from "./modules/reveal.js";
-import { initScrollProgress } from "./modules/scroll-progress.js";
 import { initSmoothScroll } from "./modules/smooth-scroll.js";
 import { initWork } from "./modules/work.js";
 
 function boot() {
   initSmoothScroll();
-  initScrollProgress();
   initCursor();
-  initNav();
+  initRail();
   initMagnetic();
   initClock();
   initIcons();
