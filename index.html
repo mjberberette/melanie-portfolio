@@ -177,7 +177,9 @@
     <main id="main">
       <!-- Hero ------------------------------------------------------------->
       <section class="hero grain" id="top">
+        <div class="hero__pattern" aria-hidden="true" data-depth="10"></div>
         <div class="hero__glow" aria-hidden="true"></div>
+
         <div class="shell hero__top">
           <p class="eyebrow" data-hero-fade>Independent designer — est. 2014</p>
           <p class="hero__meta" data-hero-fade>
@@ -186,22 +188,29 @@
           </p>
         </div>
 
-        <div class="hero__canvas" id="hero-canvas" aria-hidden="true"></div>
-
-        <div class="shell hero__body" data-hero-parallax>
-          <h1 class="hero__title display">
-            <span class="hero__line"><span>Web &amp; UX</span></span>
-            <span class="hero__line"><span>designer <em>for</em></span></span>
-            <span class="hero__line"><span>ambitious teams</span></span>
+        <!--
+          Depth sandwich: first name sits behind the 3D mark, surname in
+          front of it. Each layer carries data-depth for pointer parallax.
+        -->
+        <div class="hero__stage">
+          <h1 class="hero__name">
+            <span class="hero__line hero__line--back" data-depth="22">
+              <span>Melanie</span>
+            </span>
+            <span class="hero__line hero__line--front" data-depth="38">
+              <span>Berberette</span>
+            </span>
           </h1>
+          <div class="hero__shade" aria-hidden="true"></div>
+          <div class="hero__canvas" id="hero-canvas" aria-hidden="true"></div>
+          <p class="hero__role" data-hero-fade>
+            <i aria-hidden="true"></i>
+            <span>Web &amp; UX Designer</span>
+            <i aria-hidden="true"></i>
+          </p>
         </div>
 
         <div class="shell hero__foot">
-          <p class="hero__standfirst" data-hero-fade>
-            I design digital products that feel inevitable — clear systems,
-            considered motion, and interfaces people trust on the first click.
-          </p>
-
           <button
             class="scroll-cue"
             type="button"

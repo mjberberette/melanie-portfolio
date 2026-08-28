@@ -1,8 +1,10 @@
 # Melanie Berberette — Portfolio
 
-Portfolio site for an independent Web & UX designer. Dark editorial layout, the
-MB monogram extruded into real 3D in the hero, smooth scrolling with Lenis, and
-scroll-driven animation with GSAP.
+Portfolio site for an independent Web & UX designer. Dark editorial layout, and
+a hero built around the MB monogram in real 3D — chrome-lit from a hand-painted
+studio environment, sandwiched between the two lines of the name, following the
+pointer, draggable, and choreographed by the scroll while the section is
+pinned. Smooth scrolling with Lenis, scroll-driven animation with GSAP.
 
 **No framework.** This is hand-written HTML, CSS and JavaScript. Vite is used
 only as a dev server and bundler — there is no React, no JSX and no templating
@@ -34,7 +36,7 @@ npm run shot      # screenshot the running dev server (visual QA, needs Chrome)
 | Dev server     | Vite                                                        |
 | Smooth scroll  | [Lenis](https://lenis.darkroom.engineering/)                |
 | Scroll + text  | GSAP — ScrollTrigger, SplitText, CustomEase                 |
-| 3D             | Three.js (SVG extrusion + `RoomEnvironment` lighting)       |
+| 3D             | Three.js — extruded from the original vector coordinates    |
 | Logo animation | lottie-web, playing the hand-authored MB monogram rig       |
 | Animated icons | [Lordicon](https://lordicon.com/) via `lord-icon-element`   |
 | Type           | Archivo (display), Geist, Geist Mono, Instrument Serif      |
@@ -73,8 +75,8 @@ src/
       nav.js            sticky nav, hide-on-scroll, mobile menu, anchor links
       scroll-progress.js
       reveal.js         data-reveal / -lines / -words scroll animations
-      hero.js           headline intro + parallax
-      monogram.js       the 3D mark
+      hero.js           name intro, pinned scroll scene, pointer parallax
+      monogram.js       the 3D mark: geometry, studio lighting, follow/drag
       marquee.js        velocity-reactive ticker
       counters.js       stat counters
       work.js           hover previews that track the cursor
@@ -149,15 +151,17 @@ in the footer.
 
 | File                                 | What it is                                          |
 | ------------------------------------ | --------------------------------------------------- |
-| `public/logo/mb-mark.svg`            | Vector monogram — also extruded into 3D in the hero  |
+| `public/logo/mb-mark.svg`            | Vector monogram (favicon + inline sprite)            |
 | `public/logo/mb-monogram.json`       | Original Lottie animation                            |
 | `public/logo/mb-monogram-alpha.json` | Same animation with the background solid removed     |
 | `public/logo/mb-monogram.lottie`     | Original dotLottie bundle                            |
 | `assets/`                            | Untouched originals as supplied                      |
 
-The monogram SVG was traced from the supplied PNG as straight-edged polygons so
-the isometric edges stay crisp when extruded. The Lottie plays in the preloader
-and as the preview for the identity project.
+The 3D hero mark is built from the original vector coordinates supplied for the
+logo (see `LOGO` in `src/js/modules/monogram.js`), so its edges are exact. The
+monogram SVG was traced from the supplied PNG for the favicon and the inline
+sprite. The Lottie plays in the preloader and as the preview for the identity
+project.
 
 ## Accessibility and motion
 
