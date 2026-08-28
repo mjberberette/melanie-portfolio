@@ -30,8 +30,9 @@ export function initWhatYouGet() {
   /* Statement: ghost characters sharpen with scroll --------------------- */
   if (!reduced) {
     const frags = qsa(".wyg__frag", statement);
+    // Words wrap as units (chars alone would break mid-word), chars animate.
     const split = new SplitText(frags, {
-      type: "chars",
+      type: "words,chars",
       charsClass: "wyg-char",
     });
     gsap.fromTo(
@@ -131,6 +132,7 @@ export function initWhatYouGet() {
     card.classList.add("is-open");
     card.setAttribute("aria-expanded", "true");
     card.style.zIndex = 8;
+    card.dataset.openedAt = String(performance.now());
 
     gsap.killTweensOf([card, body]);
     gsap.to(card, {
@@ -172,23 +174,38 @@ export function initWhatYouGet() {
   const closeAll = () => cards.forEach(closeCard);
 
   const hoverable = window.matchMedia("(hover: hover)").matches;
-  cards.forEach((card) => {
-    if (hoverable) {
-      card.addEventListener("pointerenter", () => openCard(card));
-      card.addEventListener("pointerleave", () => closeCard(card));
+  const toggle = (card) => {
+    if (card.classList.contains("is-open")) {
+      closeCard(card);
     } else {
-      card.addEventListener("click", () => {
-        if (card.classList.contains("is-open")) {
-          closeCard(card);
-        } else {
-          closeAll();
-          openCard(card);
-        }
-      });
+      closeAll();
+      openCard(card);
     }
+  };
+
+  cards.forEach((card) => {
+    card.addEventListener("pointerenter", (event) => {
+      if (event.pointerType === "mouse") openCard(card);
+    });
+    card.addEventListener("pointerleave", (event) => {
+      if (event.pointerType === "mouse") closeCard(card);
+    });
+    card.addEventListener("click", (event) => {
+      // Mouse users already opened the card via hover.
+      if (hoverable && event.pointerType === "mouse") return;
+      // Tapping also focuses, and focus just opened the card — don't undo it.
+      const justOpened =
+        performance.now() - Number(card.dataset.openedAt || 0) < 400;
+      if (card.classList.contains("is-open") && justOpened) return;
+      toggle(card);
+    });
     card.addEventListener("focus", () => openCard(card));
     card.addEventListener("blur", () => closeCard(card));
     card.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        toggle(card);
+      }
       if (event.key === "Escape") {
         closeCard(card);
         card.blur();
@@ -196,11 +213,9 @@ export function initWhatYouGet() {
     });
   });
 
-  if (!hoverable) {
-    document.addEventListener("click", (event) => {
-      if (!event.target.closest(".wyg-card")) closeAll();
-    });
-  }
+  document.addEventListener("click", (event) => {
+    if (!event.target.closest(".wyg-card")) closeAll();
+  });
 
   /* Keep chips glued to their slots through reflows ---------------------- */
   let resizeTimer;

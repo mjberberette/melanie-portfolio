@@ -62,8 +62,8 @@ src/
     base.css            reset and document defaults
     layout.css          shell, section rhythm, buttons, tags, reveal primitives
     chrome.css          preloader, cursor, rail navigation
-    sections.css        hero, marquee, studio, work, capabilities, process,
-                        voices, contact, footer
+    sections.css        hero, marquee, studio, work, capabilities,
+                        what-you-get, voices, contact, footer
   js/
     main.js             boots every module
     gsap.js             plugin registration + custom eases
@@ -80,6 +80,8 @@ src/
       counters.js       stat counters
       work.js           pinned horizontal gallery + auto-scrolling iPads
       accordion.js      capabilities
+      wyg.js            "what you get": scrubbed statement reveal + hoverable
+                        capability chips parked inside the sentence
       contact.js        copy-to-clipboard
       clock.js          local time + copyright year
       icons.js          defines <lord-icon> and parks icons on their last frame
