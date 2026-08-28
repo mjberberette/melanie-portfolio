@@ -1,8 +1,13 @@
 # Melanie Berberette — Portfolio
 
-A portfolio site for an independent Web & UX designer. Dark editorial layout, a
-3D extruded version of the MB monogram in the hero, smooth scrolling with Lenis,
-and scroll-driven animation with GSAP and Motion.
+Portfolio site for an independent Web & UX designer. Dark editorial layout, the
+MB monogram extruded into real 3D in the hero, smooth scrolling with Lenis, and
+scroll-driven animation with GSAP.
+
+**No framework.** This is hand-written HTML, CSS and JavaScript. Vite is used
+only as a dev server and bundler — there is no React, no JSX and no templating
+layer. `index.html` contains every word on the site and you can edit it
+directly.
 
 ## Running it locally
 
@@ -14,113 +19,162 @@ npm run dev
 The dev server listens on **http://localhost:43417**.
 
 ```bash
-npm run build   # production build
-npm start       # serve the production build
-npm run lint    # eslint
-npm run typecheck
-npm run shot    # screenshot the running dev server (visual QA, needs Chrome)
+npm run build     # production build into dist/
+npm run preview   # serve the production build
+npm run shot      # screenshot the running dev server (visual QA, needs Chrome)
 ```
 
 ## Stack
 
-| Concern         | Choice                                                |
-| --------------- | ----------------------------------------------------- |
-| Framework       | Next.js 16 (App Router, React 19, TypeScript)          |
-| Styling         | Tailwind CSS v4 with a custom theme in `globals.css`   |
-| Smooth scroll   | [Lenis](https://lenis.darkroom.engineering/)           |
-| Scroll + text   | GSAP (ScrollTrigger, SplitText, CustomEase)            |
-| UI motion       | [Motion](https://motion.dev/) (`motion/react`)         |
-| 3D              | Three.js via react-three-fiber and drei                |
-| Logo animation  | lottie-web, playing the hand-authored MB monogram rig  |
-| Type            | Archivo (display), Geist (body), Geist Mono, Instrument Serif |
+| Concern        | Choice                                                     |
+| -------------- | ---------------------------------------------------------- |
+| Markup         | One hand-written `index.html`                               |
+| Styling        | Plain CSS with custom properties, split by concern          |
+| Scripting      | ES modules, no framework                                    |
+| Dev server     | Vite                                                        |
+| Smooth scroll  | [Lenis](https://lenis.darkroom.engineering/)                |
+| Scroll + text  | GSAP — ScrollTrigger, SplitText, CustomEase                 |
+| 3D             | Three.js (SVG extrusion + `RoomEnvironment` lighting)       |
+| Logo animation | lottie-web, playing the hand-authored MB monogram rig       |
+| Animated icons | [Lordicon](https://lordicon.com/) via `lord-icon-element`   |
+| Type           | Archivo (display), Geist, Geist Mono, Instrument Serif      |
 
-Lenis is driven by the GSAP ticker in `SmoothScroll.tsx` so smooth scrolling and
-ScrollTrigger never fight over the same frame.
-
-## Editing content
-
-**All copy lives in one file: `src/lib/content.ts`.** Nothing is hardcoded in
-components. Update the name, role, email, socials, projects, capabilities,
-process, stats, testimonials and recognition there and the whole site follows.
-
-A few notes on the placeholder content:
-
-- The five case studies, testimonials, stats and awards are **sample entries**
-  written to show the layout at realistic length. Replace them with your real
-  work before publishing.
-- `site.email`, `site.url` and the social links point at placeholders.
-
-## Brand assets
-
-| File                                | What it is                                       |
-| ----------------------------------- | ------------------------------------------------ |
-| `public/logo/mb-mark.svg`           | Vector monogram — also extruded into 3D in the hero |
-| `public/logo/mb-monogram.json`      | Original Lottie animation                         |
-| `public/logo/mb-monogram-alpha.json`| Same animation with the background solid removed  |
-| `public/logo/mb-monogram.lottie`    | Original dotLottie bundle                         |
-| `public/images/melanie.jpg`         | Portrait used in the Studio section               |
-| `assets/`                           | Untouched originals as supplied                   |
-
-The Lottie plays in the preloader and as the preview for the identity project.
-
-### Adding video previews to case studies
-
-The work list supports looping video previews that play on hover, the way
-heynesh.com does it. To use one:
-
-1. Drop the file into `public/media/`, e.g. `public/media/mb-identity.mp4`.
-2. Add the path to that project in `src/lib/content.ts`:
-
-```ts
-{
-  id: "mb-identity",
-  // ...
-  video: "/media/mb-identity.mp4",
-}
-```
-
-Video takes priority over everything else. Without it, a project falls back to
-the animated monogram (`lottie: true`) or to a generative poster built from the
-project's accent colour in `ProjectPoster.tsx`. Short, muted, 8–12 second loops
-around 1600px wide work best.
+Lenis is stepped by the GSAP ticker in `smooth-scroll.js`, so smooth scrolling
+and ScrollTrigger always resolve on the same frame. Three.js is loaded as a
+separate chunk after first paint, so the initial JavaScript payload stays small.
 
 ## Structure
 
 ```
+index.html              all markup and copy, plus the monogram <symbol> sprite
+vite.config.js
+public/
+  logo/                 monogram SVG + Lottie files
+  images/melanie.jpg    portrait
+  icons/*.json          recoloured Lordicon animations
+  media/                drop project preview videos here
 src/
-  app/
-    layout.tsx        fonts, metadata, shell
-    page.tsx          section order + Person JSON-LD
-    globals.css       theme tokens, base styles, utilities
-  components/
-    brand/            Monogram SVG
-    motion/           Magnetic, Reveal (lines / words / blocks)
-    providers/        AppShell, SmoothScroll (Lenis), intro context
-    sections/         Hero, Marquee, Studio, Work, Capabilities,
-                      Process, Testimonials, Contact
-    site/             Nav, Footer, Cursor, Preloader, ScrollProgress, LocalTime
-    three/            MonogramScene — SVG extrusion, lighting, scroll response
-    work/             ProjectMedia, ProjectPoster
-  lib/
-    content.ts        every word on the site
-    gsap.ts           plugin registration + custom eases
-    utils.ts
+  css/
+    main.css            imports the four files below
+    tokens.css          colours, type, spacing, easing — change things here
+    base.css            reset and document defaults
+    layout.css          shell, section rhythm, buttons, tags, reveal primitives
+    chrome.css          preloader, cursor, scroll progress, nav, mobile menu
+    sections.css        hero, marquee, studio, work, capabilities, process,
+                        voices, contact, footer
+  js/
+    main.js             boots every module
+    gsap.js             plugin registration + custom eases
+    utils.js            small helpers and the "page revealed" event
+    modules/
+      smooth-scroll.js  Lenis + GSAP ticker, scrollTo helper
+      preloader.js      counter, Lottie monogram draw-on, curtain wipe
+      cursor.js         two-part custom cursor
+      nav.js            sticky nav, hide-on-scroll, mobile menu, anchor links
+      scroll-progress.js
+      reveal.js         data-reveal / -lines / -words scroll animations
+      hero.js           headline intro + parallax
+      monogram.js       the 3D mark
+      marquee.js        velocity-reactive ticker
+      counters.js       stat counters
+      work.js           hover previews that track the cursor
+      accordion.js      capabilities
+      contact.js        copy-to-clipboard
+      clock.js          local time + copyright year
+      icons.js          defines <lord-icon> and parks icons on their last frame
+scripts/
+  recolor-icons.mjs     maps Lordicon's palette onto the site's colours
+  shot.mjs              full-page screenshots
+  interact.mjs          hover/menu/accordion screenshots
+  icon-sheet.mjs        renders a contact sheet of Lordicon IDs
+assets/                 untouched source files as supplied
 ```
+
+## Editing content
+
+Open `index.html`. Every heading, paragraph, project, capability, testimonial
+and award is written out as normal HTML — there is no data file to keep in sync.
+
+A note on the placeholder content: the five case studies, the testimonials, the
+stats and the awards are **sample entries** written at realistic length to show
+the layout. Replace them with real work before publishing, along with
+`hello@melanieberberette.com`, the canonical URL and the social links.
+
+### Changing the look
+
+`src/css/tokens.css` holds the whole visual system — surfaces, type colours, the
+vermilion accent, font stacks, section rhythm and easing curves. Changing
+`--accent` there recolours the site. Per-project accents are set inline on the
+work rows and cards with `style="--accent: #7c9cff"`.
+
+### Adding video previews to case studies
+
+The work list supports looping videos that play on hover, the way heynesh.com
+does it. To use one:
+
+1. Drop the file into `public/media/`, e.g. `public/media/mb-identity.mp4`.
+2. Add `data-video` to that project's poster element in `index.html` — both in
+   the `.work__previews` panel (desktop hover) and the matching `.card__media`
+   (small screens):
+
+```html
+<div class="poster" data-video="/media/mb-identity.mp4" data-poster="/media/mb-identity.jpg">
+```
+
+Video takes priority over everything else. Without it, a project falls back to
+the animated monogram (`.poster--mark`) or to a generative CSS poster driven by
+`data-pattern` (`bars`, `columns`, `rings`, `grid`). Short, muted 8–12 second
+loops around 1600px wide work best. If the file is missing the `<video>` removes
+itself and the poster shows instead, so nothing breaks.
+
+### Icons
+
+Icons are animated Lottie files from [Lordicon](https://lordicon.com/), stored
+locally in `public/icons` so there is no runtime CDN dependency. Lordicon ships
+them in its own navy/teal palette, so `scripts/recolor-icons.mjs` rewrites those
+two brand colours to the site's bone and vermilion — including the "Fill" effect
+layers, which is what actually tints the artwork.
+
+To swap an icon:
+
+1. Download the JSON from Lordicon into `assets/lordicon-src/`.
+2. Run `node scripts/recolor-icons.mjs`.
+3. Point the `src` of the relevant `<lord-icon>` in `index.html` at the new file.
+
+Each icon rests on its last frame, replays on hover, and plays once the first
+time it scrolls into view. Lordicon's free tier requires attribution, which is
+in the footer.
+
+## Brand assets
+
+| File                                 | What it is                                          |
+| ------------------------------------ | --------------------------------------------------- |
+| `public/logo/mb-mark.svg`            | Vector monogram — also extruded into 3D in the hero  |
+| `public/logo/mb-monogram.json`       | Original Lottie animation                            |
+| `public/logo/mb-monogram-alpha.json` | Same animation with the background solid removed     |
+| `public/logo/mb-monogram.lottie`     | Original dotLottie bundle                            |
+| `assets/`                            | Untouched originals as supplied                      |
+
+The monogram SVG was traced from the supplied PNG as straight-edged polygons so
+the isometric edges stay crisp when extruded. The Lottie plays in the preloader
+and as the preview for the identity project.
 
 ## Accessibility and motion
 
-- `prefers-reduced-motion` is honoured throughout: the preloader is skipped, the
-  custom cursor is disabled, text reveals resolve instantly and the 3D mark stops
-  drifting.
-- The custom cursor only replaces the native one on fine pointers with hover.
-- Keyboard focus is visible everywhere, there is a skip link, and the mobile menu
-  closes on Escape.
+- `prefers-reduced-motion` is honoured everywhere: the preloader is skipped,
+  Lenis is not started, the custom cursor stays off, reveals resolve instantly,
+  the marquee holds still and the 3D mark stops drifting.
+- The custom cursor only replaces the native one on devices with a fine pointer
+  and hover.
+- There is a skip link, visible focus rings, an accessible accordion
+  (`aria-expanded`), and the mobile menu closes on Escape.
 
 ## Deploying
 
-Any Node host works. On Vercel, push the repo and accept the defaults — there is
-no server-side state, no database and no environment variables.
+`npm run build` produces a fully static `dist/` — no server, no database, no
+environment variables. Drop it on Netlify, Vercel, Cloudflare Pages, GitHub
+Pages or any static host.
 
-Before going live, set `site.url` in `src/lib/content.ts` to the real domain so
-that Open Graph tags and the JSON-LD resolve correctly, and add an
-`app/opengraph-image.tsx` (or `public/og.png`) for link previews.
+Before going live, set the canonical URL and Open Graph URL in `index.html` to
+the real domain, and add an Open Graph image (`public/og.png` plus
+`<meta property="og:image">`) for link previews.

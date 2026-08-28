@@ -8,7 +8,6 @@ import { initHero } from "./modules/hero.js";
 import { initIcons } from "./modules/icons.js";
 import { initMagnetic } from "./modules/magnetic.js";
 import { initMarquee } from "./modules/marquee.js";
-import { initMonogram } from "./modules/monogram.js";
 import { initNav } from "./modules/nav.js";
 import { initPreloader } from "./modules/preloader.js";
 import { initReveals } from "./modules/reveal.js";
@@ -33,7 +32,12 @@ function boot() {
   initAccordion();
   initContact();
 
-  initMonogram().catch(() => {});
+  // Three.js is the heaviest dependency, so it loads as its own chunk while
+  // the preloader is still on screen.
+  import("./modules/monogram.js")
+    .then(({ initMonogram }) => initMonogram())
+    .catch(() => {});
+
   initPreloader();
 
   // Late-loading fonts change line breaks, so measure once they are ready.
