@@ -1,133 +1,98 @@
-import { lerp, prefersReducedMotion, qs, qsa } from "../utils.js";
+import { gsap } from "../gsap.js";
+import { prefersReducedMotion, qs, qsa } from "../utils.js";
 
 /**
- * Desktop case-study list: hovering a row dims the others and floats a preview
- * panel next to the pointer. A row shows, in order of preference, its video,
- * the animated monogram, or a generative poster.
+ * Work gallery:
+ *   - On larger screens the section pins and vertical scroll drives the card
+ *     track sideways. Small screens get a vertical stack.
+ *   - Inside each card, the site capture scrolls up and down within the iPad
+ *     screen while the card is on screen.
  */
 export function initWork() {
-  const list = qs("#work-list");
-  const previews = qs("#work-previews");
-  if (!list || !previews) return;
+  const section = qs(".work");
+  const gallery = qs("#work-gallery");
+  const track = qs("#work-track");
+  if (!section || !gallery || !track) return;
 
-  const rows = qsa(".work__row", list);
-  const panels = qsa(".preview", previews);
+  const reduced = prefersReducedMotion();
 
-  mountVideos();
-  mountMarks();
+  /* Horizontal scrub */
+  if (!reduced) {
+    const mm = gsap.matchMedia();
+    mm.add("(min-width: 62rem)", () => {
+      const distance = () =>
+        Math.max(0, track.scrollWidth - gallery.clientWidth);
 
-  if (prefersReducedMotion()) return;
-  if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
-
-  const pointer = { x: 0, y: 0 };
-  const current = { x: 0, y: 0 };
-  let active = -1;
-  let raf = 0;
-
-  // Keep the panel inside the viewport instead of letting it hang off an edge.
-  const clampX = (value) => {
-    const half = (panels[0]?.offsetWidth || 384) / 2 + 24;
-    return Math.min(Math.max(value, half), window.innerWidth - half);
-  };
-
-  const render = () => {
-    current.x = lerp(current.x, clampX(pointer.x), 0.16);
-    current.y = lerp(current.y, pointer.y, 0.16);
-    previews.style.transform = `translate(${current.x}px, ${current.y}px)`;
-    raf = requestAnimationFrame(render);
-  };
-
-  const setActive = (index) => {
-    if (active === index) return;
-    active = index;
-
-    list.classList.toggle("is-hovering", index >= 0);
-    previews.classList.toggle("is-active", index >= 0);
-
-    panels.forEach((panel, i) => {
-      const on = i === index;
-      panel.classList.toggle("is-active", on);
-
-      const video = panel.querySelector("video");
-      if (video) {
-        if (on) video.play().catch(() => {});
-        else video.pause();
-      }
-    });
-
-    if (index >= 0 && !raf) raf = requestAnimationFrame(render);
-    if (index < 0 && raf) {
-      cancelAnimationFrame(raf);
-      raf = 0;
-    }
-  };
-
-  list.addEventListener(
-    "pointermove",
-    (event) => {
-      pointer.x = event.clientX;
-      pointer.y = event.clientY;
-    },
-    { passive: true },
-  );
-
-  rows.forEach((row, index) => {
-    const activate = () => {
-      // Jump the panel to the pointer the first time so it does not fly in.
-      if (active < 0) {
-        current.x = clampX(pointer.x);
-        current.y = pointer.y;
-      }
-      setActive(index);
-    };
-    row.addEventListener("pointerenter", activate);
-    row.addEventListener("focus", () => {
-      const rect = row.getBoundingClientRect();
-      pointer.x = rect.left + rect.width * 0.7;
-      pointer.y = rect.top + rect.height / 2;
-      activate();
-    });
-    row.addEventListener("blur", () => setActive(-1));
-  });
-
-  list.addEventListener("pointerleave", () => setActive(-1));
-}
-
-/** Turns `data-video` into a real <video> element inside its poster slot. */
-function mountVideos() {
-  qsa("[data-video]").forEach((holder) => {
-    const source = holder.dataset.video;
-    if (!source) return;
-
-    const video = document.createElement("video");
-    video.src = source;
-    video.muted = true;
-    video.loop = true;
-    video.playsInline = true;
-    video.preload = "metadata";
-    if (holder.dataset.poster) video.poster = holder.dataset.poster;
-
-    video.addEventListener("error", () => video.remove(), { once: true });
-    holder.prepend(video);
-  });
-}
-
-/** The identity project previews with the real animated monogram. */
-function mountMarks() {
-  const hosts = qsa("[data-lottie-mark]");
-  if (!hosts.length) return;
-
-  import("lottie-web")
-    .then(({ default: lottie }) => {
-      hosts.forEach((host) => {
-        lottie.loadAnimation({
-          container: host,
-          renderer: "svg",
-          loop: true,
-          autoplay: true,
-          path: "/logo/mb-monogram-alpha.json",
-        });
+      gsap.to(track, {
+        x: () => -distance(),
+        ease: "none",
+        scrollTrigger: {
+          trigger: section,
+          start: "top top",
+          end: () => `+=${distance()}`,
+          scrub: 0.8,
+          pin: true,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+        },
       });
-    })
-    .catch(() => {});
+    });
+  }
+
+  /* Auto-scrolling captures inside the device screens */
+  qsa("[data-screen]", track).forEach((img, index) => {
+    const screen = img.closest(".wcard__screen");
+    if (!screen) return;
+
+    if (reduced) return; // captures stay at the top of the page
+
+    let tween = null;
+
+    const build = () => {
+      tween?.kill();
+      const overflow = img.offsetHeight - screen.clientHeight + 24;
+      if (overflow <= 0) return;
+
+      tween = gsap.fromTo(
+        img,
+        { y: 0 },
+        {
+          y: -overflow,
+          // Constant reading speed regardless of capture length.
+          duration: Math.max(8, overflow / 55),
+          ease: "sine.inOut",
+          repeat: -1,
+          yoyo: true,
+          repeatDelay: 1.1,
+          delay: 0.4 + index * 0.35,
+          paused: true,
+        },
+      );
+      if (inView) tween.play();
+    };
+
+    let inView = false;
+    new IntersectionObserver(
+      ([entry]) => {
+        inView = entry.isIntersecting;
+        if (!tween) return;
+        if (inView) tween.play();
+        else tween.pause();
+      },
+      { threshold: 0.25 },
+    ).observe(screen);
+
+    if (img.complete && img.offsetHeight > 0) build();
+    else img.addEventListener("load", build, { once: true });
+
+    // Card widths track the viewport, so rebuild on real size changes.
+    let lastHeight = 0;
+    new ResizeObserver(() => {
+      const next = screen.clientHeight;
+      if (Math.abs(next - lastHeight) > 2) {
+        lastHeight = next;
+        if (img.complete && img.offsetHeight > 0) build();
+      }
+    }).observe(screen);
+  });
 }

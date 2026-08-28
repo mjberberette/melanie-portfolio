@@ -339,289 +339,210 @@
               </h2>
             </div>
             <p class="work__note" data-reveal>
-              Case studies available on request — including the research, the
-              rejected directions and the numbers after launch.
+              <span class="work__hint">Keep scrolling — the gallery moves
+              sideways.</span> Case studies available on request, including
+              the research and the numbers after launch.
             </p>
           </header>
+        </div>
 
-          <div class="work__list" id="work-list">
-            <a
-              class="work__row"
-              href="mailto:hello@melanieberberette.com?subject=Case%20study%20—%20Identity%20in%20Motion"
-              data-project="0"
-              data-cursor="media"
-              data-cursor-label="Request"
-              style="--accent: #ff4a1c"
-            >
-              <span class="work__index">01</span>
-              <span class="work__name display">Identity in Motion</span>
-              <span class="work__subtitle">Studio brand identity</span>
-              <span class="work__tags">
-                <i>Brand Identity</i><i>Motion Design</i><i>Art Direction</i>
-              </span>
-              <span class="work__year">2026</span>
-            </a>
-
-            <a
-              class="work__row"
-              href="mailto:hello@melanieberberette.com?subject=Case%20study%20—%20Halden%20Capital"
-              data-project="1"
-              data-cursor="media"
-              data-cursor-label="Request"
-              style="--accent: #7c9cff"
-            >
-              <span class="work__index">02</span>
-              <span class="work__name display">Halden Capital</span>
-              <span class="work__subtitle">Institutional trading, made legible</span>
-              <span class="work__tags">
-                <i>Product Design</i><i>Design System</i><i>Front-end</i>
-              </span>
-              <span class="work__year">2025</span>
-            </a>
-
-            <a
-              class="work__row"
-              href="mailto:hello@melanieberberette.com?subject=Case%20study%20—%20Verso"
-              data-project="2"
-              data-cursor="media"
-              data-cursor-label="Request"
-              style="--accent: #d7ff5c"
-            >
-              <span class="work__index">03</span>
-              <span class="work__name display">Verso</span>
-              <span class="work__subtitle">An editorial CMS with a point of view</span>
-              <span class="work__tags">
-                <i>UX Architecture</i><i>Prototyping</i><i>Design System</i>
-              </span>
-              <span class="work__year">2025</span>
-            </a>
-
-            <a
-              class="work__row"
-              href="mailto:hello@melanieberberette.com?subject=Case%20study%20—%20Field%20%26%20Foundry"
-              data-project="3"
-              data-cursor="media"
-              data-cursor-label="Request"
-              style="--accent: #ffb35c"
-            >
-              <span class="work__index">04</span>
-              <span class="work__name display">Field &amp; Foundry</span>
-              <span class="work__subtitle">Commerce for a slow-made brand</span>
-              <span class="work__tags">
-                <i>Art Direction</i><i>Web Design</i><i>Commerce</i>
-              </span>
-              <span class="work__year">2024</span>
-            </a>
-
-            <a
-              class="work__row"
-              href="mailto:hello@melanieberberette.com?subject=Case%20study%20—%20Kinnect%20Health"
-              data-project="4"
-              data-cursor="media"
-              data-cursor-label="Request"
-              style="--accent: #8fe3c4"
-            >
-              <span class="work__index">05</span>
-              <span class="work__name display">Kinnect Health</span>
-              <span class="work__subtitle">Care coordination without the clipboard</span>
-              <span class="work__tags">
-                <i>UX Research</i><i>Service Design</i><i>Accessibility</i>
-              </span>
-              <span class="work__year">2024</span>
-            </a>
-          </div>
-
-          <!--
-            Hover previews. Add a looping clip by putting the file in
-            /public/media and setting data-video on the matching panel, e.g.
-            data-video="/media/mb-identity.mp4"
-          -->
-          <div class="work__previews" id="work-previews" aria-hidden="true">
-            <article class="preview" data-preview="0" style="--accent: #ff4a1c">
-              <div class="preview__media">
-                <div class="poster poster--mark">
-                  <div class="poster__lottie" data-lottie-mark></div>
+        <!--
+          Horizontal gallery. Each card: animated gradient backdrop, an iPad
+          running a scroll capture of the project site, title + result.
+          To use a real capture, replace the image in /public/media/screens
+          (or regenerate with: node scripts/make-screens.mjs).
+        -->
+        <div class="work__gallery" id="work-gallery">
+          <div class="work__track" id="work-track">
+            <article class="wcard" style="--accent: #ff4a1c">
+              <div class="wcard__bg" aria-hidden="true"><i></i><i></i></div>
+              <header class="wcard__top">
+                <span class="wcard__chip">01</span>
+                <span class="wcard__tags"><i>Brand Identity</i><i>Motion</i><i>Art Direction</i></span>
+              </header>
+              <div class="wcard__device">
+                <div class="wcard__screen">
+                  <img
+                    src="/media/screens/mb-identity.jpg"
+                    alt="Scroll capture of the Melanie Berberette studio site"
+                    loading="lazy"
+                    decoding="async"
+                    data-screen
+                  />
                 </div>
               </div>
-              <div class="preview__meta">
-                <span class="preview__metric">1 mark</span>
-                <span>12 states</span>
-              </div>
-              <p class="preview__summary">
-                An isometric monogram built as a single continuous ribbon, then
-                rigged so every stroke draws itself in sequence.
-              </p>
+              <footer class="wcard__foot">
+                <div class="wcard__text">
+                  <h3 class="display">Identity in Motion</h3>
+                  <p class="wcard__sub">Studio brand identity</p>
+                  <p class="wcard__meta">1 mark · 12 states · 2026</p>
+                </div>
+                <a
+                  class="wcard__cta"
+                  href="mailto:hello@melanieberberette.com?subject=Case%20study%20—%20Identity%20in%20Motion"
+                  aria-label="Request the Identity in Motion case study"
+                  data-cursor="link"
+                >
+                  <lord-icon
+                    src="/icons/zmkotitn.json"
+                    trigger="hover"
+                    target=".wcard"
+                    style="width: 26px; height: 26px"
+                  ></lord-icon>
+                </a>
+              </footer>
             </article>
-
-            <article class="preview" data-preview="1" style="--accent: #7c9cff">
-              <div class="preview__media">
-                <div class="poster" data-pattern="bars">
-                  <span class="poster__index">02</span>
-                  <span class="poster__label">Halden Capital</span>
+            <article class="wcard" style="--accent: #7c9cff">
+              <div class="wcard__bg" aria-hidden="true"><i></i><i></i></div>
+              <header class="wcard__top">
+                <span class="wcard__chip">02</span>
+                <span class="wcard__tags"><i>Product Design</i><i>Design System</i><i>Front-end</i></span>
+              </header>
+              <div class="wcard__device">
+                <div class="wcard__screen">
+                  <img
+                    src="/media/screens/halden.jpg"
+                    alt="Scroll capture of the Halden Capital platform site"
+                    loading="lazy"
+                    decoding="async"
+                    data-screen
+                  />
                 </div>
               </div>
-              <div class="preview__meta">
-                <span class="preview__metric">−68%</span>
-                <span>time to reconcile</span>
-              </div>
-              <p class="preview__summary">
-                A dense treasury platform rebuilt around a single density
-                system — eleven table patterns replaced with one.
-              </p>
+              <footer class="wcard__foot">
+                <div class="wcard__text">
+                  <h3 class="display">Halden Capital</h3>
+                  <p class="wcard__sub">Institutional trading, made legible</p>
+                  <p class="wcard__meta">−68% time to reconcile · 2025</p>
+                </div>
+                <a
+                  class="wcard__cta"
+                  href="mailto:hello@melanieberberette.com?subject=Case%20study%20—%20Halden%20Capital"
+                  aria-label="Request the Halden Capital case study"
+                  data-cursor="link"
+                >
+                  <lord-icon
+                    src="/icons/zmkotitn.json"
+                    trigger="hover"
+                    target=".wcard"
+                    style="width: 26px; height: 26px"
+                  ></lord-icon>
+                </a>
+              </footer>
             </article>
-
-            <article class="preview" data-preview="2" style="--accent: #d7ff5c">
-              <div class="preview__media">
-                <div class="poster" data-pattern="columns">
-                  <span class="poster__index">03</span>
-                  <span class="poster__label">Verso</span>
+            <article class="wcard" style="--accent: #d7ff5c">
+              <div class="wcard__bg" aria-hidden="true"><i></i><i></i></div>
+              <header class="wcard__top">
+                <span class="wcard__chip">03</span>
+                <span class="wcard__tags"><i>UX Architecture</i><i>Prototyping</i><i>Design System</i></span>
+              </header>
+              <div class="wcard__device">
+                <div class="wcard__screen">
+                  <img
+                    src="/media/screens/verso.jpg"
+                    alt="Scroll capture of the Verso editorial site"
+                    loading="lazy"
+                    decoding="async"
+                    data-screen
+                  />
                 </div>
               </div>
-              <div class="preview__meta">
-                <span class="preview__metric">4.8/5</span>
-                <span>editor satisfaction</span>
-              </div>
-              <p class="preview__summary">
-                Writing tools for newsrooms that hold opinions — a block editor
-                that never fights the writer.
-              </p>
+              <footer class="wcard__foot">
+                <div class="wcard__text">
+                  <h3 class="display">Verso</h3>
+                  <p class="wcard__sub">An editorial CMS with a point of view</p>
+                  <p class="wcard__meta">4.8/5 editor satisfaction · 2025</p>
+                </div>
+                <a
+                  class="wcard__cta"
+                  href="mailto:hello@melanieberberette.com?subject=Case%20study%20—%20Verso"
+                  aria-label="Request the Verso case study"
+                  data-cursor="link"
+                >
+                  <lord-icon
+                    src="/icons/zmkotitn.json"
+                    trigger="hover"
+                    target=".wcard"
+                    style="width: 26px; height: 26px"
+                  ></lord-icon>
+                </a>
+              </footer>
             </article>
-
-            <article class="preview" data-preview="3" style="--accent: #ffb35c">
-              <div class="preview__media">
-                <div class="poster" data-pattern="rings">
-                  <span class="poster__index">04</span>
-                  <span class="poster__label">Field &amp; Foundry</span>
+            <article class="wcard" style="--accent: #ffb35c">
+              <div class="wcard__bg" aria-hidden="true"><i></i><i></i></div>
+              <header class="wcard__top">
+                <span class="wcard__chip">04</span>
+                <span class="wcard__tags"><i>Art Direction</i><i>Web Design</i><i>Commerce</i></span>
+              </header>
+              <div class="wcard__device">
+                <div class="wcard__screen">
+                  <img
+                    src="/media/screens/field-foundry.jpg"
+                    alt="Scroll capture of the Field and Foundry storefront"
+                    loading="lazy"
+                    decoding="async"
+                    data-screen
+                  />
                 </div>
               </div>
-              <div class="preview__meta">
-                <span class="preview__metric">+41%</span>
-                <span>conversion lift</span>
-              </div>
-              <p class="preview__summary">
-                A storefront that sells craft by showing the making, with a
-                checkout stripped to three decisions.
-              </p>
+              <footer class="wcard__foot">
+                <div class="wcard__text">
+                  <h3 class="display">Field &amp; Foundry</h3>
+                  <p class="wcard__sub">Commerce for a slow-made brand</p>
+                  <p class="wcard__meta">+41% conversion lift · 2024</p>
+                </div>
+                <a
+                  class="wcard__cta"
+                  href="mailto:hello@melanieberberette.com?subject=Case%20study%20—%20Field%20%26amp;%20Foundry"
+                  aria-label="Request the Field &amp; Foundry case study"
+                  data-cursor="link"
+                >
+                  <lord-icon
+                    src="/icons/zmkotitn.json"
+                    trigger="hover"
+                    target=".wcard"
+                    style="width: 26px; height: 26px"
+                  ></lord-icon>
+                </a>
+              </footer>
             </article>
-
-            <article class="preview" data-preview="4" style="--accent: #8fe3c4">
-              <div class="preview__media">
-                <div class="poster" data-pattern="grid">
-                  <span class="poster__index">05</span>
-                  <span class="poster__label">Kinnect Health</span>
+            <article class="wcard" style="--accent: #8fe3c4">
+              <div class="wcard__bg" aria-hidden="true"><i></i><i></i></div>
+              <header class="wcard__top">
+                <span class="wcard__chip">05</span>
+                <span class="wcard__tags"><i>UX Research</i><i>Service Design</i><i>Accessibility</i></span>
+              </header>
+              <div class="wcard__device">
+                <div class="wcard__screen">
+                  <img
+                    src="/media/screens/kinnect.jpg"
+                    alt="Scroll capture of the Kinnect Health product site"
+                    loading="lazy"
+                    decoding="async"
+                    data-screen
+                  />
                 </div>
               </div>
-              <div class="preview__meta">
-                <span class="preview__metric">AA+</span>
-                <span>WCAG compliance</span>
-              </div>
-              <p class="preview__summary">
-                Eighteen shadowing sessions produced one insight: nurses were
-                designing around the software. So we designed around them.
-              </p>
-            </article>
-          </div>
-
-          <!-- Small screens get the same content as stacked cards -->
-          <div class="work__cards">
-            <article class="card" data-reveal style="--accent: #ff4a1c">
-              <div class="card__media">
-                <div class="poster poster--mark">
-                  <div class="poster__lottie" data-lottie-mark></div>
+              <footer class="wcard__foot">
+                <div class="wcard__text">
+                  <h3 class="display">Kinnect Health</h3>
+                  <p class="wcard__sub">Care coordination without the clipboard</p>
+                  <p class="wcard__meta">WCAG AA+ · 2024</p>
                 </div>
-              </div>
-              <div class="card__head">
-                <h3 class="display">Identity in Motion</h3>
-                <span>2026</span>
-              </div>
-              <p class="card__subtitle">Studio brand identity</p>
-              <p class="card__summary">
-                An isometric monogram built as a single continuous ribbon, then
-                rigged so every stroke draws itself in sequence. One mark that
-                works as a favicon, a loader and a six-second title card.
-              </p>
-              <p class="card__tags"><i>Brand Identity</i><i>Motion Design</i><i>Art Direction</i></p>
-            </article>
-
-            <article class="card" data-reveal style="--accent: #7c9cff">
-              <div class="card__media">
-                <div class="poster" data-pattern="bars">
-                  <span class="poster__index">02</span>
-                  <span class="poster__label">Halden Capital</span>
-                </div>
-              </div>
-              <div class="card__head">
-                <h3 class="display">Halden Capital</h3>
-                <span>2025</span>
-              </div>
-              <p class="card__subtitle">Institutional trading, made legible</p>
-              <p class="card__summary">
-                A dense treasury platform rebuilt around a single density
-                system. We replaced eleven bespoke table patterns with one, and
-                cut the time analysts spend reconciling positions from hours to
-                minutes.
-              </p>
-              <p class="card__tags"><i>Product Design</i><i>Design System</i><i>Front-end</i></p>
-            </article>
-
-            <article class="card" data-reveal style="--accent: #d7ff5c">
-              <div class="card__media">
-                <div class="poster" data-pattern="columns">
-                  <span class="poster__index">03</span>
-                  <span class="poster__label">Verso</span>
-                </div>
-              </div>
-              <div class="card__head">
-                <h3 class="display">Verso</h3>
-                <span>2025</span>
-              </div>
-              <p class="card__subtitle">An editorial CMS with a point of view</p>
-              <p class="card__summary">
-                Writing tools for newsrooms that hold opinions. Structured
-                content modelling, a block editor that never fights the writer,
-                and a publishing flow designed around deadline pressure.
-              </p>
-              <p class="card__tags"><i>UX Architecture</i><i>Prototyping</i><i>Design System</i></p>
-            </article>
-
-            <article class="card" data-reveal style="--accent: #ffb35c">
-              <div class="card__media">
-                <div class="poster" data-pattern="rings">
-                  <span class="poster__index">04</span>
-                  <span class="poster__label">Field &amp; Foundry</span>
-                </div>
-              </div>
-              <div class="card__head">
-                <h3 class="display">Field &amp; Foundry</h3>
-                <span>2024</span>
-              </div>
-              <p class="card__subtitle">Commerce for a slow-made brand</p>
-              <p class="card__summary">
-                A storefront that sells craft by showing the making. Full art
-                direction, a photography system the team can reshoot forever,
-                and a checkout stripped to three decisions.
-              </p>
-              <p class="card__tags"><i>Art Direction</i><i>Web Design</i><i>Commerce</i></p>
-            </article>
-
-            <article class="card" data-reveal style="--accent: #8fe3c4">
-              <div class="card__media">
-                <div class="poster" data-pattern="grid">
-                  <span class="poster__index">05</span>
-                  <span class="poster__label">Kinnect Health</span>
-                </div>
-              </div>
-              <div class="card__head">
-                <h3 class="display">Kinnect Health</h3>
-                <span>2024</span>
-              </div>
-              <p class="card__subtitle">Care coordination without the clipboard</p>
-              <p class="card__summary">
-                Eighteen shadowing sessions in clinics produced one insight:
-                nurses were designing around the software. So we designed around
-                the nurses instead — one queue, one truth, zero double entry.
-              </p>
-              <p class="card__tags"><i>UX Research</i><i>Service Design</i><i>Accessibility</i></p>
+                <a
+                  class="wcard__cta"
+                  href="mailto:hello@melanieberberette.com?subject=Case%20study%20—%20Kinnect%20Health"
+                  aria-label="Request the Kinnect Health case study"
+                  data-cursor="link"
+                >
+                  <lord-icon
+                    src="/icons/zmkotitn.json"
+                    trigger="hover"
+                    target=".wcard"
+                    style="width: 26px; height: 26px"
+                  ></lord-icon>
+                </a>
+              </footer>
             </article>
           </div>
         </div>

@@ -79,15 +79,17 @@ src/
       monogram.js       the 3D mark: geometry, studio lighting, follow/drag
       marquee.js        velocity-reactive ticker
       counters.js       stat counters
-      work.js           hover previews that track the cursor
+      work.js           pinned horizontal gallery + auto-scrolling iPads
       accordion.js      capabilities
       contact.js        copy-to-clipboard
       clock.js          local time + copyright year
       icons.js          defines <lord-icon> and parks icons on their last frame
 scripts/
   recolor-icons.mjs     maps Lordicon's palette onto the site's colours
+  make-screens.mjs      generates the site captures inside the iPad mockups
   shot.mjs              full-page screenshots
   interact.mjs          hover/menu/accordion screenshots
+  qa.mjs                responsive + reduced-motion sweep
   icon-sheet.mjs        renders a contact sheet of Lordicon IDs
 assets/                 untouched source files as supplied
 ```
@@ -109,25 +111,25 @@ vermilion accent, font stacks, section rhythm and easing curves. Changing
 `--accent` there recolours the site. Per-project accents are set inline on the
 work rows and cards with `style="--accent: #7c9cff"`.
 
-### Adding video previews to case studies
+### The work gallery
 
-The work list supports looping videos that play on hover, the way heynesh.com
-does it. To use one:
+On larger screens the Selected Work section pins and scrolls sideways. Each
+card is an iPad mockup running a tall capture of the project's website, which
+scrolls up and down inside the screen, over an animated gradient backdrop in
+that project's accent colour.
 
-1. Drop the file into `public/media/`, e.g. `public/media/mb-identity.mp4`.
-2. Add `data-video` to that project's poster element in `index.html` — both in
-   the `.work__previews` panel (desktop hover) and the matching `.card__media`
-   (small screens):
+The captures live in `public/media/screens/`. Card 01 uses a real scroll
+capture of this site; the other four are small original landing pages designed
+in `scripts/make-screens.mjs` as stand-ins. To use real project sites:
 
-```html
-<div class="poster" data-video="/media/mb-identity.mp4" data-poster="/media/mb-identity.jpg">
-```
+- replace any image in `public/media/screens/` with your own tall capture
+  (roughly 900px wide, 1500-3600px tall works well), or
+- edit `scripts/make-screens.mjs` and re-run `node scripts/make-screens.mjs`
+  while the dev server is running.
 
-Video takes priority over everything else. Without it, a project falls back to
-the animated monogram (`.poster--mark`) or to a generative CSS poster driven by
-`data-pattern` (`bars`, `columns`, `rings`, `grid`). Short, muted 8–12 second
-loops around 1600px wide work best. If the file is missing the `<video>` removes
-itself and the poster shows instead, so nothing breaks.
+The scroll animation measures the image at load, so any height works. A video
+can be used instead by swapping a card's `<img>` for a muted, looping,
+autoplaying `<video>` in `index.html`.
 
 ### Icons
 

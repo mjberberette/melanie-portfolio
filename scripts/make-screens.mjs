@@ -206,8 +206,8 @@ await self.emulateMediaFeatures([
   { name: "prefers-reduced-motion", value: "reduce" },
 ]);
 await self.setViewport({ width: 1024, height: 1366, deviceScaleFactor: 1 });
-await self.goto(SITE_URL, { waitUntil: "networkidle2", timeout: 60000 });
-await new Promise((r) => setTimeout(r, 4500));
+await self.goto(SITE_URL, { waitUntil: "domcontentloaded", timeout: 60000 });
+await new Promise((r) => setTimeout(r, 7000));
 await self.screenshot({
   path: `${OUT}/mb-identity.jpg`,
   type: "jpeg",

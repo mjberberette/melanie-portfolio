@@ -416,18 +416,22 @@
   }
 }
 
-/* Work ------------------------------------------------------------------- */
+/* Work: pinned horizontal gallery ---------------------------------------- */
+
+.work {
+  overflow: clip;
+  padding-block: clamp(4rem, 8vh, 6rem) clamp(3rem, 6vh, 5rem);
+}
 
 .work__head {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  padding-bottom: 2rem;
-  border-bottom: 1px solid var(--hairline);
+  margin-bottom: clamp(2rem, 4vh, 3.5rem);
 }
 
 .work__title {
-  font-size: clamp(2.2rem, 6vw, 4.6rem);
+  font-size: clamp(2.2rem, 6vw, 4.2rem);
   max-width: 16ch;
 }
 
@@ -438,393 +442,286 @@
   color: var(--bone-dim);
 }
 
-.work__list {
+/* The sideways hint only applies where the gallery actually pins. */
+.work__hint {
   display: none;
 }
 
-.work__row {
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-  padding-block: 2rem;
-  border-bottom: 1px solid var(--hairline);
-  transition: opacity var(--dur) ease;
+@media (min-width: 62rem) {
+  .work__hint {
+    display: inline;
+  }
 }
 
-.work__list.is-hovering .work__row {
-  opacity: 0.35;
-}
-
-.work__list.is-hovering .work__row:hover,
-.work__list .work__row:focus-visible {
-  opacity: 1;
-}
-
-.work__index {
-  flex: none;
-  width: 3rem;
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  letter-spacing: 0.2em;
-  color: var(--bone-faint);
-}
-
-.work__name {
-  font-size: clamp(1.8rem, 4.2vw, 3.6rem);
-  white-space: nowrap;
-  transition:
-    transform var(--dur-slow) var(--ease-out),
-    color var(--dur) ease;
-}
-
-.work__row:hover .work__name,
-.work__row:focus-visible .work__name {
-  transform: translateX(22px);
-  color: var(--accent);
-}
-
-.work__subtitle {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-size: 1.125rem;
-  color: var(--bone-dim);
-  transition: transform var(--dur-slow) var(--ease-out);
-}
-
-.work__row:hover .work__subtitle {
-  transform: translateX(22px);
-}
-
-.work__tags {
-  display: none;
-  flex: none;
-}
-
-.work__year {
-  flex: none;
-  width: 3rem;
-  text-align: right;
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  color: var(--bone-faint);
-}
-
-/* Cursor-tracked preview */
-
-.work__previews {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: var(--z-preview);
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity var(--dur-fast) ease;
-}
-
-.work__previews.is-active {
-  opacity: 1;
-}
-
-.preview {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 24rem;
-  /* Lifted so the cursor badge lands over the lower edge of the artwork
-     rather than covering its centre. */
-  translate: -50% -64%;
-  opacity: 0;
-  scale: 0.92;
-  transition:
-    opacity var(--dur-fast) ease,
-    scale var(--dur) var(--ease-out);
-}
-
-.preview.is-active {
-  opacity: 1;
-  scale: 1;
-}
-
-.preview__media {
-  height: 16rem;
-  overflow: hidden;
-  border: 1px solid var(--hairline-strong);
-  border-radius: 0.5rem;
-  box-shadow: 0 40px 120px -20px rgb(0 0 0 / 0.9);
-}
-
-.preview__media video {
+.work__gallery {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
 }
 
-.preview__meta {
+.work__track {
   display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding-inline: var(--gutter);
+  will-change: transform;
+}
+
+/* Card --------------------------------------------------------------------*/
+
+.wcard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  isolation: isolate;
+  flex: none;
+  width: 100%;
+  height: clamp(30rem, 78svh, 38rem);
+  border: 1px solid var(--hairline);
+  border-radius: 1.5rem;
+  background: var(--ink-raised);
+}
+
+/* Animated backdrop: two drifting accent blobs over an isometric grid. */
+
+.wcard__bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.wcard__bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background-image:
+    repeating-linear-gradient(90deg, rgb(241 237 229 / 0.05) 0 1px, transparent 1px 56px),
+    repeating-linear-gradient(60deg, rgb(241 237 229 / 0.045) 0 1px, transparent 1px 56px),
+    repeating-linear-gradient(120deg, rgb(241 237 229 / 0.045) 0 1px, transparent 1px 56px);
+  -webkit-mask-image: radial-gradient(110% 90% at 50% 45%, #000 30%, transparent 85%);
+  mask-image: radial-gradient(110% 90% at 50% 45%, #000 30%, transparent 85%);
+}
+
+.wcard__bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.wcard__bg i {
+  position: absolute;
+  width: 72%;
+  aspect-ratio: 1;
+  border-radius: 999px;
+  filter: blur(70px);
+  background: radial-gradient(
+    circle,
+    color-mix(in oklab, var(--accent) 52%, transparent) 0%,
+    transparent 68%
+  );
+}
+
+.wcard__bg i:first-child {
+  top: -22%;
+  right: -18%;
+  animation: wcard-blob-a 17s ease-in-out infinite alternate;
+}
+
+.wcard__bg i:last-child {
+  bottom: -26%;
+  left: -20%;
+  width: 62%;
+  opacity: 0.65;
+  animation: wcard-blob-b 23s ease-in-out infinite alternate;
+}
+
+@keyframes wcard-blob-a {
+  from { transform: translate(0, 0) rotate(0deg) scale(1); }
+  to { transform: translate(-16%, 14%) rotate(40deg) scale(1.15); }
+}
+
+@keyframes wcard-blob-b {
+  from { transform: translate(0, 0) scale(1); }
+  to { transform: translate(18%, -12%) scale(1.2); }
+}
+
+/* Chips row */
+
+.wcard__top {
+  display: flex;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
-  margin-top: 0.75rem;
+  padding: 1.25rem;
+}
+
+.wcard__chip {
+  display: inline-grid;
+  place-items: center;
+  min-width: 2.6rem;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid rgb(241 237 229 / 0.2);
+  border-radius: 999px;
+  background: rgb(8 8 10 / 0.35);
+  backdrop-filter: blur(6px);
   font-family: var(--font-mono);
   font-size: 0.625rem;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.2em;
+}
+
+.wcard__tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.4rem;
+}
+
+.wcard__tags i {
+  padding: 0.45rem 0.8rem;
+  border: 1px solid rgb(241 237 229 / 0.16);
+  border-radius: 999px;
+  background: rgb(8 8 10 / 0.35);
+  backdrop-filter: blur(6px);
+  font-family: var(--font-mono);
+  font-style: normal;
+  font-size: 0.5625rem;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--bone-dim);
+  white-space: nowrap;
 }
 
-.preview__metric {
-  color: var(--accent);
-}
+/* iPad mockup */
 
-.preview__summary {
-  margin-top: 0.5rem;
-  font-size: 0.75rem;
-  line-height: 1.6;
-  color: rgb(163 160 153 / 0.8);
-}
-
-/* Mobile cards */
-
-.work__cards {
+.wcard__device {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
   display: grid;
+  place-items: center;
 }
 
-.card {
-  padding-block: 2rem;
-  border-bottom: 1px solid var(--hairline);
-}
-
-.card__media {
-  aspect-ratio: 4 / 3;
+.wcard__screen {
+  width: min(66%, 21rem);
+  aspect-ratio: 3 / 4;
   overflow: hidden;
-  border: 1px solid var(--hairline);
-  border-radius: 0.5rem;
-  margin-bottom: 1.25rem;
+  border-radius: 1.4rem;
+  border: 2px solid rgb(255 255 255 / 0.16);
+  outline: 10px solid #101014;
+  outline-offset: -2px;
+  box-shadow:
+    inset 0 0 0 12px #101014,
+    0 1px 0 rgb(255 255 255 / 0.08),
+    0 34px 70px -18px rgb(0 0 0 / 0.75);
+  background: #101014;
+  padding: 12px;
+  animation: wcard-float 7s ease-in-out infinite alternate;
 }
 
-.card__media video {
+@keyframes wcard-float {
+  from { transform: translateY(-6px); }
+  to { transform: translateY(8px); }
+}
+
+.wcard__screen img {
+  display: block;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;
+  border-radius: 0.55rem;
+  will-change: transform;
 }
 
-.card__head {
+/* Footer */
+
+.wcard__foot {
+  position: relative;
   display: flex;
-  align-items: baseline;
+  align-items: flex-end;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 1.25rem;
+  padding: 3.5rem 1.5rem 1.5rem;
+  background: linear-gradient(to top, rgb(8 8 10 / 0.86) 30%, transparent);
 }
 
-.card__head h3 {
-  font-size: 1.875rem;
+.wcard__text h3 {
+  font-size: clamp(1.5rem, 2.2vw, 1.9rem);
 }
 
-.card__head span {
-  font-family: var(--font-mono);
-  font-size: 0.625rem;
-  color: var(--bone-faint);
-}
-
-.card__subtitle {
-  margin-top: 0.5rem;
+.wcard__sub {
+  margin-top: 0.35rem;
   font-family: var(--font-serif);
   font-style: italic;
-  font-size: 1.125rem;
+  font-size: 1.05rem;
   color: var(--bone-dim);
 }
 
-.card__summary {
-  margin-top: 1rem;
-  font-size: 0.875rem;
-  line-height: 1.7;
-  color: var(--bone-dim);
+.wcard__meta {
+  margin-top: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--accent) 80%, white);
 }
 
-.card__tags {
-  margin-top: 1.25rem;
+.wcard__cta {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 999px;
+  border: 1px solid rgb(241 237 229 / 0.25);
+  background: rgb(8 8 10 / 0.4);
+  backdrop-filter: blur(6px);
+  transition:
+    background-color var(--dur) ease,
+    border-color var(--dur) ease,
+    transform var(--dur) var(--ease-out);
 }
 
-@media (min-width: 48rem) {
+.wcard:hover .wcard__cta {
+  background: var(--accent);
+  border-color: var(--accent);
+  transform: rotate(-45deg);
+}
+
+/* Desktop: cards in a row, section pinned, track scrubbed horizontally. */
+
+@media (min-width: 62rem) {
   .work__head {
     flex-direction: row;
     align-items: flex-end;
     justify-content: space-between;
   }
-}
 
-/* The index list only earns its keep where the preview can follow a pointer;
-   touch devices keep the cards, which show the artwork inline. */
-@media (min-width: 48rem) and (hover: hover) and (pointer: fine) {
-  .work__list {
-    display: block;
+  .work__track {
+    flex-direction: row;
+    gap: clamp(1.25rem, 2vw, 2rem);
+    width: max-content;
   }
 
-  .work__cards {
-    display: none;
+  .wcard {
+    width: clamp(21rem, 34vw, 29rem);
+    height: clamp(27rem, calc(100svh - 21rem), 38rem);
   }
-}
 
-@media (min-width: 64rem) {
-  .work__row {
-    padding-block: 2.5rem;
+  .wcard__screen {
+    width: min(70%, 20rem);
   }
 }
 
-/* Tags only appear once the subtitle no longer has to be truncated for them. */
-@media (min-width: 80rem) {
-  .work__tags {
-    display: flex;
+@media (prefers-reduced-motion: reduce) {
+  .wcard__bg i,
+  .wcard__screen {
+    animation: none;
   }
-}
-
-/* Generative posters ----------------------------------------------------- */
-
-.poster {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  background:
-    radial-gradient(
-      120% 90% at 78% 12%,
-      color-mix(in oklab, var(--accent) 22%, transparent) 0%,
-      transparent 62%
-    ),
-    radial-gradient(
-      80% 70% at 12% 96%,
-      color-mix(in oklab, var(--accent) 12%, transparent) 0%,
-      transparent 60%
-    ),
-    var(--ink-raised);
-}
-
-.poster::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(to right, rgb(241 237 229 / 0.06) 1px, transparent 1px),
-    linear-gradient(to bottom, rgb(241 237 229 / 0.06) 1px, transparent 1px);
-  background-size: 2rem 2rem;
-}
-
-.poster::after {
-  content: "";
-  position: absolute;
-  inset: 12% 10%;
-  opacity: 0.9;
-}
-
-.poster[data-pattern="bars"]::after {
-  background:
-    linear-gradient(
-        to top,
-        var(--accent) 0 32%,
-        rgb(241 237 229 / 0.18) 32% 100%
-      )
-      0 100% / 8% 62% no-repeat,
-    linear-gradient(to top, rgb(241 237 229 / 0.18) 0 100%) 16% 100% / 8% 44%
-      no-repeat,
-    linear-gradient(to top, rgb(241 237 229 / 0.18) 0 100%) 32% 100% / 8% 78%
-      no-repeat,
-    linear-gradient(to top, var(--accent) 0 100%) 48% 100% / 8% 96% no-repeat,
-    linear-gradient(to top, rgb(241 237 229 / 0.18) 0 100%) 64% 100% / 8% 56%
-      no-repeat,
-    linear-gradient(to top, rgb(241 237 229 / 0.18) 0 100%) 80% 100% / 8% 72%
-      no-repeat,
-    linear-gradient(to top, rgb(241 237 229 / 0.18) 0 100%) 96% 100% / 8% 38%
-      no-repeat;
-}
-
-.poster[data-pattern="columns"]::after {
-  inset: 14% 10% 22%;
-  background:
-    linear-gradient(rgb(241 237 229 / 0.16) 0 100%) 0 0 / 42% 6% no-repeat,
-    linear-gradient(var(--accent) 0 100%) 0 22% / 30% 6% no-repeat,
-    linear-gradient(rgb(241 237 229 / 0.16) 0 100%) 0 44% / 38% 6% no-repeat,
-    linear-gradient(rgb(241 237 229 / 0.16) 0 100%) 0 66% / 24% 6% no-repeat,
-    linear-gradient(rgb(241 237 229 / 0.16) 0 100%) 0 88% / 34% 6% no-repeat,
-    linear-gradient(rgb(241 237 229 / 0.1) 0 100%) 100% 0 / 46% 6% no-repeat,
-    linear-gradient(rgb(241 237 229 / 0.1) 0 100%) 100% 22% / 40% 6% no-repeat,
-    linear-gradient(rgb(241 237 229 / 0.1) 0 100%) 100% 44% / 44% 6% no-repeat,
-    linear-gradient(rgb(241 237 229 / 0.1) 0 100%) 100% 66% / 36% 6% no-repeat,
-    linear-gradient(rgb(241 237 229 / 0.1) 0 100%) 100% 88% / 42% 6% no-repeat;
-}
-
-.poster[data-pattern="rings"]::after {
-  inset: 0;
-  background:
-    radial-gradient(
-        circle at 30% 46%,
-        transparent 0 16%,
-        rgb(241 237 229 / 0.14) 16% 16.6%,
-        transparent 16.6%
-      ),
-    radial-gradient(
-        circle at 55% 52%,
-        transparent 0 22%,
-        var(--accent) 22% 22.5%,
-        transparent 22.5%
-      ),
-    radial-gradient(
-        circle at 76% 44%,
-        transparent 0 13%,
-        rgb(241 237 229 / 0.14) 13% 13.6%,
-        transparent 13.6%
-      );
-}
-
-.poster[data-pattern="grid"]::after {
-  inset: 16% 12%;
-  background:
-    linear-gradient(rgb(241 237 229 / 0.14) 0 100%) 0 0 / 28% 26% no-repeat,
-    linear-gradient(rgb(241 237 229 / 0.1) 0 100%) 36% 0 / 28% 26% no-repeat,
-    linear-gradient(var(--accent) 0 100%) 72% 0 / 28% 26% no-repeat,
-    linear-gradient(rgb(241 237 229 / 0.1) 0 100%) 0 50% / 28% 26% no-repeat,
-    linear-gradient(rgb(241 237 229 / 0.14) 0 100%) 36% 50% / 64% 26% no-repeat,
-    linear-gradient(rgb(241 237 229 / 0.1) 0 100%) 0 100% / 64% 26% no-repeat,
-    linear-gradient(rgb(241 237 229 / 0.14) 0 100%) 72% 100% / 28% 26% no-repeat;
-}
-
-.poster__index,
-.poster__label {
-  position: absolute;
-  bottom: 1.25rem;
-  font-family: var(--font-mono);
-  font-size: 0.625rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: rgb(241 237 229 / 0.7);
-}
-
-.poster__label {
-  left: 1.25rem;
-}
-
-.poster__index {
-  right: 1.25rem;
-  color: rgb(241 237 229 / 0.4);
-}
-
-.poster--mark {
-  display: grid;
-  place-items: center;
-  background:
-    radial-gradient(
-      90% 80% at 50% 40%,
-      color-mix(in oklab, var(--accent) 15%, transparent) 0%,
-      transparent 65%
-    ),
-    var(--ink-raised);
-}
-
-.poster__lottie {
-  position: absolute;
-  inset: 8%;
 }
 
 /* Capabilities ----------------------------------------------------------- */
