@@ -1166,6 +1166,163 @@
   }
 }
 
+/* Tech stack ----------------------------------------------------------------
+   The toolbox: brand glyphs rendered through CSS masks so they take the
+   site's ink until hover floods them with the accent. GSAP staggers the
+   tiles in; Motion gives each one spring physics on hover; an idle sweep
+   pings a random tile every few seconds. */
+
+.stack__head {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: clamp(3rem, 6vw, 4.5rem);
+}
+
+.stack__title {
+  font-size: clamp(2rem, 5vw, 3.8rem);
+  max-width: 14ch;
+}
+
+.stack__note {
+  max-width: 22rem;
+  font-size: 0.875rem;
+  line-height: 1.7;
+  color: var(--bone-dim);
+}
+
+.stack__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  /* Hairline grid: gaps show the section background through the tiles. */
+  background: var(--hairline);
+  border: 1px solid var(--hairline);
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.tool {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 0.8rem;
+  min-height: clamp(9.5rem, 16vw, 12.5rem);
+  padding: 1.1rem 1.2rem 1.2rem;
+  background: var(--ink);
+  cursor: default;
+  outline-offset: -2px;
+}
+
+.tool:focus-visible {
+  outline: 2px solid var(--accent);
+}
+
+.tool__index {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.18em;
+  color: var(--bone-faint);
+  transition: color var(--dur-fast) ease;
+}
+
+.tool__glyph {
+  place-self: center;
+  width: clamp(34px, 4vw, 46px);
+  height: clamp(34px, 4vw, 46px);
+  background: var(--bone);
+  opacity: 0.82;
+  mask: var(--icon) center / contain no-repeat;
+  -webkit-mask: var(--icon) center / contain no-repeat;
+  transition:
+    background var(--dur-fast) ease,
+    opacity var(--dur-fast) ease;
+}
+
+.tool__name {
+  font-size: 1rem;
+  letter-spacing: -0.01em;
+}
+
+.tool__role {
+  position: absolute;
+  right: 1.2rem;
+  bottom: 1.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--bone-faint);
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity var(--dur-fast) ease,
+    transform var(--dur-fast) var(--ease-out, ease),
+    color var(--dur-fast) ease;
+}
+
+.tool:hover,
+.tool:focus-visible,
+.tool.is-lit {
+  background: var(--ink-veil);
+}
+
+.tool:hover .tool__glyph,
+.tool:focus-visible .tool__glyph,
+.tool.is-lit .tool__glyph {
+  background: var(--accent);
+  opacity: 1;
+}
+
+.tool:hover .tool__index,
+.tool:focus-visible .tool__index,
+.tool.is-lit .tool__index {
+  color: var(--accent);
+}
+
+.tool:hover .tool__role,
+.tool:focus-visible .tool__role {
+  opacity: 1;
+  transform: translateY(0);
+  color: var(--bone-dim);
+}
+
+/* The twelfth cell: an open seat instead of a hole in the grid. */
+.tool--next .tool__more {
+  place-self: center;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 1.9;
+  color: var(--bone-faint);
+  transition: color var(--dur-fast) ease;
+}
+
+.tool--next:hover .tool__more,
+.tool--next.is-lit .tool__more {
+  color: var(--accent);
+}
+
+@media (min-width: 48rem) {
+  .stack__head {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+
+  .stack__grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 62rem) {
+  .stack__grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
 /* What you get ------------------------------------------------------------
    Cloned from heynesh.com's "What You Get?" section: a huge centred title,
    a pill label that wipes open, a statement whose characters sharpen from a

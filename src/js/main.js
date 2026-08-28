@@ -17,6 +17,7 @@ import { initPreloader } from "./modules/preloader.js";
 import { initRail } from "./modules/rail.js";
 import { initReveals } from "./modules/reveal.js";
 import { initSmoothScroll } from "./modules/smooth-scroll.js";
+import { initStack } from "./modules/stack.js";
 import { initWhatYouGet } from "./modules/wyg.js";
 import { initWork } from "./modules/work.js";
 
@@ -39,6 +40,7 @@ function boot() {
   initWork();
   initWhatYouGet();
   initPlans();
+  initStack();
   initAccordion();
   initContact();
 

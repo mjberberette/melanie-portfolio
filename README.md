@@ -62,7 +62,7 @@ src/
     base.css            reset and document defaults
     layout.css          shell, section rhythm, buttons, tags, reveal primitives
     chrome.css          preloader, cursor, rail navigation
-    sections.css        hero, marquee, studio, work, capabilities,
+    sections.css        hero, marquee, studio, work, capabilities, stack,
                         what-you-get, pricing, voices, contact, footer
   js/
     main.js             boots every module
@@ -86,6 +86,8 @@ src/
                         capability chips parked inside the sentence
       plans.js          pricing tiers: GSAP entrance + price count-up, Motion
                         (motion.dev) spring hover and feature-row cascade
+      stack.js          toolbox grid: GSAP grid-wave entrance, Motion spring
+                        pops, idle accent sweep over the brand glyphs
       contact.js        copy-to-clipboard
       clock.js          local time + copyright year
       icons.js          defines <lord-icon> and parks icons on their last frame
