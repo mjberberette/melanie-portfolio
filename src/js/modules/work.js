@@ -23,6 +23,24 @@ export function initWork() {
       const distance = () =>
         Math.max(0, track.scrollWidth - gallery.clientWidth);
 
+      // Approach: the gallery starts recessed — smaller and dimmer — and
+      // comes forward to full size as the section reaches the top.
+      gsap.fromTo(
+        track,
+        { scale: 0.88, autoAlpha: 0.55, transformOrigin: "center center" },
+        {
+          scale: 1,
+          autoAlpha: 1,
+          ease: "none",
+          scrollTrigger: {
+            trigger: section,
+            start: "top 92%",
+            end: "top top",
+            scrub: 0.7,
+          },
+        },
+      );
+
       gsap.to(track, {
         x: () => -distance(),
         ease: "none",
