@@ -39,7 +39,7 @@ npm run shot      # screenshot the running dev server (visual QA, needs Chrome)
 | 3D             | Three.js — extruded from the original vector coordinates    |
 | Logo animation | lottie-web, playing the hand-authored MB monogram rig       |
 | Animated icons | [Lordicon](https://lordicon.com/) via `lord-icon-element`   |
-| Type           | Archivo (display), Geist, Geist Mono, Instrument Serif      |
+| Type           | Grift (display, self-hosted in `public/fonts`), Geist, Geist Mono, Instrument Serif |
 
 Lenis is stepped by the GSAP ticker in `smooth-scroll.js`, so smooth scrolling
 and ScrollTrigger always resolve on the same frame. Three.js is loaded as a

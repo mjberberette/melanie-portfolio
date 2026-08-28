@@ -1,3 +1,22 @@
+/* Display face: Grift, self-hosted -----------------------------------------
+   Only the two weights the display system actually uses ship to the page. */
+
+@font-face {
+  font-family: "Grift";
+  src: url("/fonts/Grift-SemiBold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Grift";
+  src: url("/fonts/Grift-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* Reset + base ----------------------------------------------------------- */
 
 *,
