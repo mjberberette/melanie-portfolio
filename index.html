@@ -265,50 +265,12 @@
             and beautiful enough that the team defends it.
           </p>
 
-          <div class="journey">
-            <aside class="journey__aside">
-              <div class="journey__sticky">
-                <figure class="portrait" data-reveal data-parallax-media>
-                  <div class="portrait__frame">
-                    <img
-                      src="/images/melanie.jpg"
-                      alt="Melanie Berberette, web and UX designer"
-                      width="1080"
-                      height="1920"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </div>
-                  <figcaption>
-                    <span>Melanie Berberette</span>
-                    <span>Denver, Colorado</span>
-                  </figcaption>
-                </figure>
-                <p class="journey__intro" data-reveal>
-                  Twelve years ago I shipped my first interface. What happened
-                  after that is easier to show than explain — scroll through.
-                </p>
-              </div>
-            </aside>
-
-            <div class="journey__feed" id="journey-feed">
-              <div class="journey__rail" aria-hidden="true">
-                <i data-journey-line></i>
-                <b data-journey-dot></b>
-              </div>
-              <ol class="journey__list">
+          <div class="journey" id="journey-feed">
+            <svg class="journey__path" aria-hidden="true"></svg>
+            <ol class="journey__list">
               <li class="jpost" data-reveal>
-                <span class="jpost__year" aria-hidden="true">’14</span>
                 <article class="jpost__card">
-                  <header class="jpost__head">
-                    <svg class="jpost__avatar" viewBox="0 0 574 711" aria-hidden="true">
-                      <use href="#mb-mark-solid" />
-                    </svg>
-                    <div>
-                      <strong>Melanie Berberette</strong>
-                      <span>Denver — 2014</span>
-                    </div>
-                  </header>
+                  <span class="jpost__year display" aria-hidden="true">’14</span>
                   <h3 class="display">The only designer in the room</h3>
                   <p class="jpost__teaser">First job: a six-person agency where I was the entire design department. Terrifying, and the best education available.</p>
                   <div class="jpost__more">
@@ -316,24 +278,28 @@
                       <p>Nobody told me which problems were mine, so all of them were. Logos in the morning, checkout flows after lunch, arguing with printers by five. I learned to ship, to ask developers dumb questions early, and to never fall in love with a first draft. Most of what I charge for today was learned in that room.</p>
                     </div>
                   </div>
-                  <button class="jpost__toggle" type="button" aria-expanded="false">
-                    <span data-toggle-label>Read more</span>
-                    <i aria-hidden="true"></i>
-                  </button>
+                  <footer class="jpost__foot">
+                    <img
+                      class="jpost__avatar"
+                      src="/images/melanie.jpg"
+                      alt=""
+                      width="88"
+                      height="88"
+                      loading="lazy"
+                    />
+                    <span class="jpost__who">
+                      <strong>@agencydays</strong>
+                      <em>12 years ago</em>
+                    </span>
+                    <button class="jpost__toggle" type="button" aria-expanded="false">
+                      <span data-toggle-label>Read more</span>
+                    </button>
+                  </footer>
                 </article>
               </li>
               <li class="jpost" data-reveal>
-                <span class="jpost__year" aria-hidden="true">’16</span>
                 <article class="jpost__card">
-                  <header class="jpost__head">
-                    <svg class="jpost__avatar" viewBox="0 0 574 711" aria-hidden="true">
-                      <use href="#mb-mark-solid" />
-                    </svg>
-                    <div>
-                      <strong>Melanie Berberette</strong>
-                      <span>Pattern libraries — 2016</span>
-                    </div>
-                  </header>
+                  <span class="jpost__year display" aria-hidden="true">’16</span>
                   <h3 class="display">Falling for systems</h3>
                   <p class="jpost__teaser">I rebuilt the same button for the fortieth time and something snapped. My first pattern library followed within a month.</p>
                   <div class="jpost__more">
@@ -341,24 +307,28 @@
                       <p>It was rough — a sticker sheet with delusions of grandeur — but the team stopped debating paddings and started debating problems. That trade, decoration for decisions, is still the reason I love design systems. The library outlived my time there by years, which taught me what shipping something durable feels like.</p>
                     </div>
                   </div>
-                  <button class="jpost__toggle" type="button" aria-expanded="false">
-                    <span data-toggle-label>Read more</span>
-                    <i aria-hidden="true"></i>
-                  </button>
+                  <footer class="jpost__foot">
+                    <img
+                      class="jpost__avatar"
+                      src="/images/melanie.jpg"
+                      alt=""
+                      width="88"
+                      height="88"
+                      loading="lazy"
+                    />
+                    <span class="jpost__who">
+                      <strong>@patternlibrary</strong>
+                      <em>10 years ago</em>
+                    </span>
+                    <button class="jpost__toggle" type="button" aria-expanded="false">
+                      <span data-toggle-label>Read more</span>
+                    </button>
+                  </footer>
                 </article>
               </li>
               <li class="jpost" data-reveal>
-                <span class="jpost__year" aria-hidden="true">’18</span>
                 <article class="jpost__card">
-                  <header class="jpost__head">
-                    <svg class="jpost__avatar" viewBox="0 0 574 711" aria-hidden="true">
-                      <use href="#mb-mark-solid" />
-                    </svg>
-                    <div>
-                      <strong>Melanie Berberette</strong>
-                      <span>Fintech years — 2018</span>
-                    </div>
-                  </header>
+                  <span class="jpost__year display" aria-hidden="true">’18</span>
                   <h3 class="display">Learning to love density</h3>
                   <p class="jpost__teaser">Two years inside a trading platform taught me that white space is a luxury and hierarchy is oxygen.</p>
                   <div class="jpost__more">
@@ -366,24 +336,28 @@
                       <p>Traders do not want friendly. They want forty numbers on screen with zero ambiguity about which one is moving. I learned tabular design the hard way — density systems, states nobody demos, tables that survive a bad day in the markets. It permanently recalibrated what I consider a hard interface problem.</p>
                     </div>
                   </div>
-                  <button class="jpost__toggle" type="button" aria-expanded="false">
-                    <span data-toggle-label>Read more</span>
-                    <i aria-hidden="true"></i>
-                  </button>
+                  <footer class="jpost__foot">
+                    <img
+                      class="jpost__avatar"
+                      src="/images/melanie.jpg"
+                      alt=""
+                      width="88"
+                      height="88"
+                      loading="lazy"
+                    />
+                    <span class="jpost__who">
+                      <strong>@tradingdesk</strong>
+                      <em>8 years ago</em>
+                    </span>
+                    <button class="jpost__toggle" type="button" aria-expanded="false">
+                      <span data-toggle-label>Read more</span>
+                    </button>
+                  </footer>
                 </article>
               </li>
               <li class="jpost" data-reveal>
-                <span class="jpost__year" aria-hidden="true">’20</span>
                 <article class="jpost__card">
-                  <header class="jpost__head">
-                    <svg class="jpost__avatar" viewBox="0 0 574 711" aria-hidden="true">
-                      <use href="#mb-mark-solid" />
-                    </svg>
-                    <div>
-                      <strong>Melanie Berberette</strong>
-                      <span>Healthcare — 2020</span>
-                    </div>
-                  </header>
+                  <span class="jpost__year display" aria-hidden="true">’20</span>
                   <h3 class="display">Research changes everything</h3>
                   <p class="jpost__teaser">Eighteen shadowing sessions in clinics. The software wasn't broken — it was designed around the wrong people.</p>
                   <div class="jpost__more">
@@ -391,24 +365,28 @@
                       <p>Watching a nurse re-enter the same vitals into three systems ended any romance I had about designing from a desk. Since then every engagement starts in the field if I can get there. The insight rate per hour of shadowing embarrasses every workshop I have ever run.</p>
                     </div>
                   </div>
-                  <button class="jpost__toggle" type="button" aria-expanded="false">
-                    <span data-toggle-label>Read more</span>
-                    <i aria-hidden="true"></i>
-                  </button>
+                  <footer class="jpost__foot">
+                    <img
+                      class="jpost__avatar"
+                      src="/images/melanie.jpg"
+                      alt=""
+                      width="88"
+                      height="88"
+                      loading="lazy"
+                    />
+                    <span class="jpost__who">
+                      <strong>@clinicteam</strong>
+                      <em>6 years ago</em>
+                    </span>
+                    <button class="jpost__toggle" type="button" aria-expanded="false">
+                      <span data-toggle-label>Read more</span>
+                    </button>
+                  </footer>
                 </article>
               </li>
               <li class="jpost" data-reveal>
-                <span class="jpost__year" aria-hidden="true">’22</span>
                 <article class="jpost__card">
-                  <header class="jpost__head">
-                    <svg class="jpost__avatar" viewBox="0 0 574 711" aria-hidden="true">
-                      <use href="#mb-mark-solid" />
-                    </svg>
-                    <div>
-                      <strong>Melanie Berberette</strong>
-                      <span>Independent — 2022</span>
-                    </div>
-                  </header>
+                  <span class="jpost__year display" aria-hidden="true">’22</span>
                   <h3 class="display">Going out on my own</h3>
                   <p class="jpost__teaser">First retainer signed. Suddenly every decision — pricing, process, positioning — was mine, which is the point.</p>
                   <div class="jpost__more">
@@ -416,24 +394,28 @@
                       <p>Independence forced me to treat my own practice like a product: a niche, a process people can buy, and standards nobody else enforces. Half of my clients since have come through engineers I once handed specs to. That referral chain means more to me than any award on the shelf.</p>
                     </div>
                   </div>
-                  <button class="jpost__toggle" type="button" aria-expanded="false">
-                    <span data-toggle-label>Read more</span>
-                    <i aria-hidden="true"></i>
-                  </button>
+                  <footer class="jpost__foot">
+                    <img
+                      class="jpost__avatar"
+                      src="/images/melanie.jpg"
+                      alt=""
+                      width="88"
+                      height="88"
+                      loading="lazy"
+                    />
+                    <span class="jpost__who">
+                      <strong>@studioofone</strong>
+                      <em>4 years ago</em>
+                    </span>
+                    <button class="jpost__toggle" type="button" aria-expanded="false">
+                      <span data-toggle-label>Read more</span>
+                    </button>
+                  </footer>
                 </article>
               </li>
               <li class="jpost" data-reveal>
-                <span class="jpost__year" aria-hidden="true">’24</span>
                 <article class="jpost__card">
-                  <header class="jpost__head">
-                    <svg class="jpost__avatar" viewBox="0 0 574 711" aria-hidden="true">
-                      <use href="#mb-mark-solid" />
-                    </svg>
-                    <div>
-                      <strong>Melanie Berberette</strong>
-                      <span>Systems as products — 2024</span>
-                    </div>
-                  </header>
+                  <span class="jpost__year display" aria-hidden="true">’24</span>
                   <h3 class="display">The ninth design system</h3>
                   <p class="jpost__teaser">By now I have built nine. The lesson: a system is a product with users, politics and a roadmap — not a Figma file.</p>
                   <div class="jpost__more">
@@ -441,24 +423,28 @@
                       <p>The artifacts are the easy part. Governance is the design problem: who owns a token, who reviews a component, what happens when marketing wants a special. The systems that survived are the ones where we designed the org around the library, not just the library.</p>
                     </div>
                   </div>
-                  <button class="jpost__toggle" type="button" aria-expanded="false">
-                    <span data-toggle-label>Read more</span>
-                    <i aria-hidden="true"></i>
-                  </button>
+                  <footer class="jpost__foot">
+                    <img
+                      class="jpost__avatar"
+                      src="/images/melanie.jpg"
+                      alt=""
+                      width="88"
+                      height="88"
+                      loading="lazy"
+                    />
+                    <span class="jpost__who">
+                      <strong>@designsystems</strong>
+                      <em>2 years ago</em>
+                    </span>
+                    <button class="jpost__toggle" type="button" aria-expanded="false">
+                      <span data-toggle-label>Read more</span>
+                    </button>
+                  </footer>
                 </article>
               </li>
               <li class="jpost" data-reveal>
-                <span class="jpost__year" aria-hidden="true">’26</span>
                 <article class="jpost__card">
-                  <header class="jpost__head">
-                    <svg class="jpost__avatar" viewBox="0 0 574 711" aria-hidden="true">
-                      <use href="#mb-mark-solid" />
-                    </svg>
-                    <div>
-                      <strong>Melanie Berberette</strong>
-                      <span>Studio brand — 2026</span>
-                    </div>
-                  </header>
+                  <span class="jpost__year display" aria-hidden="true">’26</span>
                   <h3 class="display">The journey continues</h3>
                   <p class="jpost__teaser">A new monogram, a new site, and the same obsession. Currently exploring where AI genuinely helps a design practice.</p>
                   <div class="jpost__more">
@@ -466,14 +452,26 @@
                       <p>The mark you see on this site is the first identity I have ever designed for myself — the hardest client I have had. Next: deeper motion work, more research-led engagements, and finding the places where new tools sharpen craft instead of flattening it. The best work is still ahead.</p>
                     </div>
                   </div>
-                  <button class="jpost__toggle" type="button" aria-expanded="false">
-                    <span data-toggle-label>Read more</span>
-                    <i aria-hidden="true"></i>
-                  </button>
+                  <footer class="jpost__foot">
+                    <img
+                      class="jpost__avatar"
+                      src="/images/melanie.jpg"
+                      alt=""
+                      width="88"
+                      height="88"
+                      loading="lazy"
+                    />
+                    <span class="jpost__who">
+                      <strong>@mbstudio</strong>
+                      <em>this year</em>
+                    </span>
+                    <button class="jpost__toggle" type="button" aria-expanded="false">
+                      <span data-toggle-label>Read more</span>
+                    </button>
+                  </footer>
                 </article>
               </li>
-              </ol>
-            </div>
+            </ol>
           </div>
 
           <dl class="stats">
