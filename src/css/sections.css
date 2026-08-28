@@ -304,6 +304,41 @@
 
 /* Studio ----------------------------------------------------------------- */
 
+/* Wayfinding chart behind the journey: a drifting plus-mark grid with
+   vermilion pings, painted on a canvas that sticks to the viewport while
+   the section scrolls past. Fades out at the section's edges. */
+.studio {
+  overflow: clip;
+}
+
+.studio__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.studio__bg canvas {
+  position: sticky;
+  top: 0;
+  display: block;
+  width: 100%;
+  height: 100vh;
+  opacity: 0.9;
+  mask-image: linear-gradient(
+    180deg,
+    transparent,
+    #000 14%,
+    #000 86%,
+    transparent
+  );
+}
+
+.studio__shell {
+  position: relative;
+  z-index: 1;
+}
+
 .statement {
   font-size: clamp(1.9rem, 5.2vw, 4.2rem);
   line-height: 1.02;

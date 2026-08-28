@@ -9,6 +9,7 @@ import { initHero } from "./modules/hero.js";
 import { initHeroEcho } from "./modules/hero-echo.js";
 import { initIcons } from "./modules/icons.js";
 import { initJourney } from "./modules/journey.js";
+import { initJourneyBg } from "./modules/journey-bg.js";
 import { initMagnetic } from "./modules/magnetic.js";
 import { initMarquee } from "./modules/marquee.js";
 import { initPlans } from "./modules/plans.js";
@@ -32,6 +33,7 @@ function boot() {
   initHeroEcho();
   initReveals();
   initJourney();
+  initJourneyBg();
   initMarquee();
   initCounters();
   initWork();
