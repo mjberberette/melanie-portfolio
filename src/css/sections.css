@@ -1404,10 +1404,17 @@
 }
 
 .footer__mark {
-  width: auto;
+  display: block;
   height: 3.5rem;
+  aspect-ratio: 488 / 592;
   flex: none;
   color: rgb(241 237 229 / 0.8);
+}
+
+.footer__mark svg {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .footer__name {

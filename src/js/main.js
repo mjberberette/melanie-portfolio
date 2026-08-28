@@ -1,5 +1,6 @@
 import { ScrollTrigger } from "./gsap.js";
 import { initAccordion } from "./modules/accordion.js";
+import { initBrandMarks } from "./modules/brand-mark.js";
 import { initClock } from "./modules/clock.js";
 import { initContact } from "./modules/contact.js";
 import { initCounters } from "./modules/counters.js";
@@ -25,6 +26,7 @@ function boot() {
   initMagnetic();
   initClock();
   initIcons();
+  initBrandMarks();
 
   initHero();
   initHeroEcho();
