@@ -431,13 +431,92 @@
   color: var(--bone-dim);
 }
 
-.jpost__more {
-  height: 0;
-  overflow: hidden;
+/* Inverted detail panel that pops in beside the card ---------------------- */
+
+.jpost__detail {
+  position: absolute;
+  top: -1.25rem;
+  left: 0;
+  right: 0;
+  z-index: 6;
+  padding: 1.75rem;
+  border-radius: 1.1rem;
+  background: var(--bone);
+  color: var(--ink);
+  box-shadow: 0 40px 90px -18px rgb(0 0 0 / 0.75);
+  visibility: hidden;
+  opacity: 0;
+  will-change: transform, opacity;
 }
 
-.jpost__more-inner {
-  padding-top: 0.75rem;
+.jpost__detail[hidden] {
+  display: block;
+}
+
+.jpost__detail-year {
+  display: block;
+  margin-bottom: 1.1rem;
+  font-size: clamp(2.6rem, 4.5vw, 3.4rem);
+  line-height: 1;
+  color: var(--accent);
+}
+
+.jpost__detail-head {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-bottom: 1.1rem;
+}
+
+.jpost__detail-head img {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  object-fit: cover;
+  object-position: top center;
+}
+
+.jpost__detail-head span {
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgb(8 8 10 / 0.55);
+}
+
+.jpost__detail h4 {
+  font-size: clamp(1.4rem, 2.4vw, 1.8rem);
+  margin-bottom: 0.8rem;
+}
+
+.jpost__detail p {
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  color: rgb(8 8 10 / 0.72);
+}
+
+.jpost__close {
+  position: absolute;
+  top: 1.1rem;
+  right: 1.1rem;
+  display: grid;
+  place-items: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 999px;
+  background: rgb(8 8 10 / 0.1);
+  color: var(--ink);
+  transition: background-color var(--dur-fast) ease, color var(--dur-fast) ease;
+}
+
+.jpost__close:hover {
+  background: var(--ink);
+  color: var(--bone);
+}
+
+.jpost__close svg {
+  width: 0.7rem;
+  height: 0.7rem;
 }
 
 .jpost__foot {
@@ -520,6 +599,21 @@
   /* Generous diagonal gaps so the thread gets long, sweeping curves. */
   .jpost:not(:first-child) {
     margin-top: clamp(3rem, 12vh, 8rem);
+  }
+
+  /* The detail panel pops inward, beside its card. */
+  .jpost__detail {
+    width: min(27rem, 46vw);
+    right: auto;
+  }
+
+  .jpost:nth-child(odd) .jpost__detail {
+    left: calc(100% + 1.25rem);
+  }
+
+  .jpost:nth-child(even) .jpost__detail {
+    left: auto;
+    right: calc(100% + 1.25rem);
   }
 
   .jpost__card {

@@ -60,7 +60,7 @@ const CONFIG = {
   motion: "follow", // follow | spin | still
   exposure: 1.05,
   /* Margin around the mark when fitting the camera; higher = smaller mark. */
-  fit: 1.5,
+  fit: 1.72,
 };
 
 export function initMonogram() {

@@ -230,37 +230,95 @@ export function initJourney() {
   document.fonts?.ready.then(build);
   build();
 
-  /* Read more / read less */
-  cards.forEach((card) => {
-    const toggle = qs(".jpost__toggle", card);
-    const label = qs("[data-toggle-label]", card);
-    const panel = qs(".jpost__more", card);
-    const inner = qs(".jpost__more-inner", card);
-    if (!toggle || !panel || !inner) return;
+  /* "Read more": an inverted detail panel pops in beside the card. */
+  let openPost = null;
 
-    toggle.addEventListener("click", () => {
-      const open = !card.classList.contains("is-open");
-      card.classList.toggle("is-open", open);
-      toggle.setAttribute("aria-expanded", String(open));
-      label.textContent = open ? "Read less" : "Read more";
+  const closeDetail = (post, instant = false) => {
+    if (!post) return;
+    const detail = qs(".jpost__detail", post);
+    const toggle = qs(".jpost__toggle", post);
+    toggle?.setAttribute("aria-expanded", "false");
+    if (openPost === post) openPost = null;
 
-      if (reduced) {
-        panel.style.height = open ? "auto" : "0px";
-        build();
-        return;
-      }
+    if (reduced || instant) {
+      detail.hidden = true;
+      return;
+    }
 
-      gsap.killTweensOf(panel);
-      gsap.to(panel, {
-        height: open ? inner.offsetHeight : 0,
-        duration: 0.55,
-        ease: "mb-in-out",
-        onComplete: () => {
-          if (open) panel.style.height = "auto";
-          build();
-          ScrollTrigger.refresh();
-        },
-      });
+    gsap.killTweensOf(detail);
+    gsap.to(detail, {
+      autoAlpha: 0,
+      scale: 0.9,
+      duration: 0.3,
+      ease: "power2.in",
+      onComplete: () => {
+        detail.hidden = true;
+      },
     });
+  };
+
+  const openDetail = (post) => {
+    if (openPost && openPost !== post) closeDetail(openPost, true);
+    openPost = post;
+
+    const detail = qs(".jpost__detail", post);
+    const toggle = qs(".jpost__toggle", post);
+    toggle?.setAttribute("aria-expanded", "true");
+    detail.hidden = false;
+
+    // The panel grows out of the edge that touches its card.
+    const index = cards.indexOf(post);
+    const origin = !wide.matches
+      ? "center 80%"
+      : index % 2 === 0
+        ? "left center"
+        : "right center";
+
+    if (reduced) {
+      gsap.set(detail, { autoAlpha: 1, scale: 1, x: 0, y: 0 });
+    } else {
+      gsap.killTweensOf(detail);
+      gsap.fromTo(
+        detail,
+        {
+          autoAlpha: 0,
+          scale: 0.82,
+          x: !wide.matches ? 0 : index % 2 === 0 ? -26 : 26,
+          y: 14,
+          transformOrigin: origin,
+        },
+        {
+          autoAlpha: 1,
+          scale: 1,
+          x: 0,
+          y: 0,
+          duration: 0.65,
+          ease: "back.out(1.5)",
+        },
+      );
+    }
+
+    qs(".jpost__close", post)?.focus({ preventScroll: true });
+  };
+
+  cards.forEach((post) => {
+    qs(".jpost__toggle", post)?.addEventListener("click", () => {
+      if (openPost === post) closeDetail(post);
+      else openDetail(post);
+    });
+    qs(".jpost__close", post)?.addEventListener("click", () => {
+      closeDetail(post);
+      qs(".jpost__toggle", post)?.focus({ preventScroll: true });
+    });
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeDetail(openPost);
+  });
+
+  document.addEventListener("click", (event) => {
+    if (!openPost) return;
+    if (event.target.closest(".jpost__detail, .jpost__toggle")) return;
+    closeDetail(openPost);
   });
 }
