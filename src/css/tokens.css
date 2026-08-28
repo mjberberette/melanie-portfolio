@@ -1,0 +1,49 @@
+/* Design tokens -----------------------------------------------------------
+   Everything else in the stylesheet reads from here. Change a value once and
+   the whole site follows. */
+
+:root {
+  /* Surfaces */
+  --ink: #08080a;
+  --ink-raised: #101013;
+  --ink-veil: #17171c;
+
+  /* Type colours */
+  --bone: #f1ede5;
+  --bone-dim: #a3a099;
+  --bone-faint: #6a6862;
+
+  /* Accent */
+  --accent: #ff4a1c;
+  --accent-soft: #ff7a52;
+
+  /* Lines */
+  --hairline: rgb(241 237 229 / 0.12);
+  --hairline-strong: rgb(241 237 229 / 0.24);
+
+  /* Type families */
+  --font-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --font-sans: "Geist", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, "SFMono-Regular", monospace;
+  --font-serif: "Instrument Serif", Georgia, serif;
+
+  /* Rhythm */
+  --gutter: clamp(1.25rem, 4vw, 4rem);
+  --shell-max: 108rem;
+  --section-y: clamp(6rem, 12vw, 11rem);
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.76, 0, 0.24, 1);
+  --dur-fast: 0.3s;
+  --dur: 0.5s;
+  --dur-slow: 0.9s;
+
+  /* Layers */
+  --z-cursor: 999;
+  --z-preloader: 1000;
+  --z-progress: 900;
+  --z-nav: 800;
+  --z-menu: 790;
+  --z-preview: 500;
+}

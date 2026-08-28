@@ -16,6 +16,7 @@ const browser = await puppeteer.launch({
     "--no-sandbox",
     "--disable-dev-shm-usage",
     "--enable-unsafe-swiftshader",
+    "--blink-settings=primaryPointerType=4,availablePointerTypes=4,primaryHoverType=2,availableHoverTypes=2",
     "--hide-scrollbars",
     "--force-device-scale-factor=1",
     "--disable-background-timer-throttling",
@@ -34,7 +35,7 @@ page.on("console", (msg) => {
 });
 page.on("pageerror", (err) => errors.push(`PAGEERROR ${err.message}`));
 
-await page.goto(url, { waitUntil: "networkidle2", timeout: 60000 });
+await page.goto(url, { waitUntil: "domcontentloaded", timeout: 60000 });
 await new Promise((r) => setTimeout(r, wait));
 
 let index = 0;
