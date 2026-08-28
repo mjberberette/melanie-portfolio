@@ -16,10 +16,9 @@ export function initHero() {
 
   const lineInners = qsa(".hero__line > span", hero);
   const fades = qsa("[data-hero-fade]", hero);
-  const back = qs(".hero__line--back", hero);
-  const front = qs(".hero__line--front", hero);
-  const role = qs(".hero__role", hero);
+  const identity = qs(".hero__id", hero);
   const pattern = qs(".hero__pattern", hero);
+  const echo = qs(".hero__echo", hero);
   const shade = qs(".hero__shade", hero);
   const cue = qs(".scroll-cue", hero);
 
@@ -68,11 +67,10 @@ export function initHero() {
       },
     });
 
-    tl.to(back, { xPercent: -17, autoAlpha: 0.1 }, 0)
-      .to(front, { xPercent: 15 }, 0)
-      .to(role, { autoAlpha: 0, y: -40 }, 0)
+    tl.to(identity, { x: -70, autoAlpha: 0 }, 0)
       .to(cue, { autoAlpha: 0, y: 20 }, 0)
       .to(pattern, { yPercent: -7, autoAlpha: 0.5 }, 0)
+      .to(echo, { autoAlpha: 0.25, scale: 1.12 }, 0)
       .to(shade, { autoAlpha: 0.4 }, 0.2);
   });
 

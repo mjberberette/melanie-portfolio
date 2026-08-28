@@ -5,6 +5,7 @@ import { initContact } from "./modules/contact.js";
 import { initCounters } from "./modules/counters.js";
 import { initCursor } from "./modules/cursor.js";
 import { initHero } from "./modules/hero.js";
+import { initHeroEcho } from "./modules/hero-echo.js";
 import { initIcons } from "./modules/icons.js";
 import { initMagnetic } from "./modules/magnetic.js";
 import { initMarquee } from "./modules/marquee.js";
@@ -25,6 +26,7 @@ function boot() {
   initIcons();
 
   initHero();
+  initHeroEcho();
   initReveals();
   initMarquee();
   initCounters();
