@@ -12,6 +12,71 @@ import { prefersReducedMotion, qs, qsa } from "../utils.js";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 
+/**
+ * Rebuilds each ".jpost__year" ("’14") into per-digit reels and rolls them
+ * into place, odometer-style, when the card scrolls into view. Non-digit
+ * characters (the apostrophe) stay static.
+ */
+function buildYearReels(cards, reduced) {
+  cards.forEach((card, cardIndex) => {
+    const year = card.querySelector(".jpost__year");
+    if (!year || reduced) return;
+
+    const text = year.textContent.trim();
+    year.textContent = "";
+    year.setAttribute("aria-label", text);
+
+    const reels = [];
+    for (const char of text) {
+      if (!/\d/.test(char)) {
+        const still = document.createElement("span");
+        still.textContent = char;
+        year.appendChild(still);
+        continue;
+      }
+
+      const target = Number(char);
+      const viewport = document.createElement("span");
+      viewport.className = "year-digit";
+      const reel = document.createElement("span");
+      reel.className = "year-reel";
+
+      // Seven rows ending on the target digit, so every reel travels the
+      // same distance and lands together.
+      const rows = 7;
+      for (let i = rows - 1; i >= 0; i -= 1) {
+        const row = document.createElement("span");
+        row.textContent = String((target - i + 20) % 10);
+        reel.appendChild(row);
+      }
+
+      viewport.appendChild(reel);
+      year.appendChild(viewport);
+      reels.push(reel);
+    }
+
+    if (!reels.length) return;
+
+    gsap.fromTo(
+      reels,
+      { yPercent: 0 },
+      {
+        // Land on the last row: travel (rows-1)/rows of the reel height.
+        yPercent: -100 * (6 / 7),
+        duration: 1.5,
+        stagger: 0.12,
+        ease: "mb-out",
+        delay: 0.15 + (cardIndex % 2) * 0.05,
+        scrollTrigger: {
+          trigger: card,
+          start: "top 86%",
+          once: true,
+        },
+      },
+    );
+  });
+}
+
 export function initJourney() {
   const feed = qs("#journey-feed");
   if (!feed) return;
@@ -27,7 +92,7 @@ export function initJourney() {
   let trigger = null;
 
   /* Directional entrances: each card fades in from its own side of the
-     zigzag as it scrolls into view. */
+     zigzag as it scrolls into view, and its year rolls up like an odometer. */
   if (!reduced) {
     cards.forEach((card) => {
       const fromLeft =
@@ -42,6 +107,8 @@ export function initJourney() {
       });
     });
   }
+
+  buildYearReels(cards, reduced);
 
   const anchors = () =>
     cards.map((card) => {

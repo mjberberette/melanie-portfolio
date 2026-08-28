@@ -393,11 +393,30 @@
 }
 
 .jpost__year {
-  display: block;
+  display: flex;
+  align-items: flex-start;
   margin-bottom: 0.75rem;
   font-size: clamp(2.6rem, 4.5vw, 3.6rem);
   line-height: 1;
   color: var(--accent);
+}
+
+/* Odometer digits: each numeral is a reel that rolls up into place. */
+.jpost__year .year-digit {
+  display: block;
+  height: 1em;
+  overflow: hidden;
+}
+
+.jpost__year .year-reel {
+  display: block;
+  will-change: transform;
+}
+
+.jpost__year .year-reel span {
+  display: block;
+  height: 1em;
+  line-height: 1;
 }
 
 .jpost__card h3 {
@@ -491,16 +510,16 @@
   }
 
   .jpost {
-    width: min(48%, 32rem);
+    width: min(44%, 30rem);
   }
 
   .jpost:nth-child(even) {
     align-self: flex-end;
   }
 
-  /* Cards overlap vertically so the feed reads as one weaving thread. */
+  /* Generous diagonal gaps so the thread gets long, sweeping curves. */
   .jpost:not(:first-child) {
-    margin-top: clamp(-4rem, -6vh, -2rem);
+    margin-top: clamp(3rem, 12vh, 8rem);
   }
 
   .jpost__card {
