@@ -310,71 +310,242 @@
   max-width: 24ch;
 }
 
-.studio__grid {
+.journey {
   display: grid;
   gap: 3.5rem;
   margin-top: clamp(5rem, 9vw, 7rem);
 }
 
-.portrait__frame {
+.journey__sticky {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.journey__intro {
+  max-width: 24rem;
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  color: var(--bone-dim);
+}
+
+/* Feed with a progress rail that draws as you read ------------------------ */
+
+.journey__feed {
   position: relative;
-  aspect-ratio: 3 / 4;
-  overflow: hidden;
-  border-radius: 2px;
-  background: var(--ink-raised);
+  padding-left: 2.25rem;
 }
 
-.portrait__frame img {
+.journey__rail {
   position: absolute;
-  inset: -6% 0 auto 0;
-  width: 100%;
-  height: 112%;
-  object-fit: cover;
-  object-position: top center;
-  filter: grayscale(0.35) contrast(1.05);
+  top: 0.5rem;
+  bottom: 0.5rem;
+  left: 0;
+  width: 1px;
+  background: var(--hairline);
 }
 
-.portrait__frame::after {
-  content: "";
+.journey__rail i {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgb(8 8 10 / 0.7), transparent 45%);
+  display: block;
+  transform-origin: top;
+  transform: scaleY(0);
+  background: var(--accent);
 }
 
-.portrait figcaption {
+.journey__rail b {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 0.65rem;
+  height: 0.65rem;
+  translate: -50% -50%;
+  border-radius: 999px;
+  background: var(--accent);
+  box-shadow: 0 0 0 5px rgb(255 74 28 / 0.16);
+}
+
+.journey__list {
+  display: grid;
+  gap: clamp(2.5rem, 5vh, 4rem);
+}
+
+.jpost {
+  position: relative;
+}
+
+.jpost__year {
+  display: block;
+  margin-bottom: 0.75rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  font-size: clamp(2.6rem, 5vw, 4rem);
+  line-height: 1;
+  color: rgb(241 237 229 / 0.14);
+}
+
+.jpost__card {
+  position: relative;
+  border: 1px solid var(--hairline);
+  border-radius: 1rem;
+  background: rgb(16 16 19 / 0.65);
+  padding: 1.5rem;
+  transition: border-color var(--dur) ease, background-color var(--dur) ease;
+}
+
+.jpost__card:hover {
+  border-color: var(--hairline-strong);
+  background: rgb(16 16 19 / 0.9);
+}
+
+/* Tick connecting the card to the rail */
+.jpost__card::before {
+  content: "";
+  position: absolute;
+  top: 2rem;
+  left: -2.25rem;
+  width: 1.5rem;
+  height: 1px;
+  background: var(--hairline-strong);
+}
+
+.jpost__head {
   display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-top: 1rem;
+  align-items: center;
+  gap: 0.9rem;
+  margin-bottom: 1.25rem;
+}
+
+.jpost__avatar {
+  width: auto;
+  height: 2rem;
+  flex: none;
+  color: var(--bone);
+}
+
+.jpost__head strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+.jpost__head span {
+  display: block;
+  margin-top: 0.2rem;
   font-family: var(--font-mono);
-  font-size: 0.625rem;
-  letter-spacing: 0.18em;
+  font-size: 0.5625rem;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--bone-faint);
 }
 
-.studio__heading {
-  font-size: clamp(1.6rem, 3.4vw, 2.6rem);
-  margin-bottom: 2rem;
+.jpost__card h3 {
+  font-size: clamp(1.3rem, 2.4vw, 1.8rem);
+  margin-bottom: 0.75rem;
 }
 
-.studio__copy p {
-  max-width: 62ch;
-  color: var(--bone-dim);
+.jpost__teaser,
+.jpost__more p {
   font-size: 0.9375rem;
   line-height: 1.75;
+  color: var(--bone-dim);
+  max-width: 56ch;
 }
 
-.studio__copy p + p {
-  margin-top: 1.5rem;
+.jpost__more {
+  height: 0;
+  overflow: hidden;
 }
 
-.studio__signature {
-  margin-top: 2rem !important;
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-size: 1.5rem;
-  color: var(--bone) !important;
+.jpost__more-inner {
+  padding-top: 0.75rem;
+}
+
+.jpost__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--bone-dim);
+  transition: color var(--dur-fast) ease;
+}
+
+.jpost__toggle:hover {
+  color: var(--accent);
+}
+
+.jpost__toggle i {
+  position: relative;
+  width: 0.7rem;
+  height: 0.7rem;
+}
+
+.jpost__toggle i::before,
+.jpost__toggle i::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transition: rotate var(--dur) var(--ease-out), opacity var(--dur) ease;
+}
+
+.jpost__toggle i::after {
+  rotate: 90deg;
+}
+
+.jpost__card.is-open .jpost__toggle i::after {
+  rotate: 0deg;
+  opacity: 0;
+}
+
+@media (min-width: 48rem) {
+  .journey {
+    grid-template-columns: repeat(12, 1fr);
+    gap: 3rem;
+  }
+
+  .journey__aside {
+    grid-column: 1 / span 4;
+  }
+
+  .journey__sticky {
+    position: sticky;
+    top: 7rem;
+  }
+
+  .journey__feed {
+    grid-column: 6 / span 7;
+    padding-left: 3rem;
+  }
+
+  .jpost__card {
+    padding: 1.75rem;
+  }
+
+  .jpost__card::before {
+    left: -3rem;
+    width: 2rem;
+  }
+}
+
+@media (min-width: 64rem) {
+  .journey__aside {
+    grid-column: 1 / span 4;
+  }
+
+  .journey__feed {
+    grid-column: 6 / span 6;
+  }
 }
 
 .stats {

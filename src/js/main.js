@@ -7,6 +7,7 @@ import { initCursor } from "./modules/cursor.js";
 import { initHero } from "./modules/hero.js";
 import { initHeroEcho } from "./modules/hero-echo.js";
 import { initIcons } from "./modules/icons.js";
+import { initJourney } from "./modules/journey.js";
 import { initMagnetic } from "./modules/magnetic.js";
 import { initMarquee } from "./modules/marquee.js";
 import { initNav } from "./modules/nav.js";
@@ -28,6 +29,7 @@ function boot() {
   initHero();
   initHeroEcho();
   initReveals();
+  initJourney();
   initMarquee();
   initCounters();
   initWork();
