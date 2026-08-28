@@ -1316,7 +1316,209 @@
   }
 }
 
-/* Voices + recognition --------------------------------------------------- */
+/* Pricing ------------------------------------------------------------------
+   Three ways to hire: retainer, sprint (featured) and full product. GSAP
+   staggers the cards in and counts the prices up; Motion (motion.dev) runs
+   the springy hover lift and the feature-row cascade. */
+
+.plans__head {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: clamp(3.5rem, 7vw, 5.5rem);
+}
+
+.plans__title {
+  font-size: clamp(2rem, 5vw, 3.8rem);
+  max-width: 14ch;
+}
+
+.plans__note {
+  max-width: 24rem;
+  font-size: 0.875rem;
+  line-height: 1.7;
+  color: var(--bone-dim);
+}
+
+.plans__grid {
+  display: grid;
+  gap: 1.25rem;
+  align-items: stretch;
+}
+
+.plan {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+  padding: clamp(1.75rem, 3vw, 2.4rem);
+  border: 1px solid var(--hairline);
+  border-radius: 22px;
+  background: var(--ink-raised);
+  transition:
+    border-color var(--dur-fast) ease,
+    box-shadow var(--dur-fast) ease,
+    background var(--dur-fast) ease;
+  will-change: transform;
+}
+
+.plan:hover {
+  border-color: var(--hairline-strong);
+  background: var(--ink-veil);
+  box-shadow: 0 30px 70px rgb(0 0 0 / 0.45);
+}
+
+.plan--featured {
+  border-color: rgb(255 74 28 / 0.55);
+  background:
+    linear-gradient(160deg, rgb(255 74 28 / 0.08), transparent 45%),
+    var(--ink-raised);
+}
+
+.plan--featured:hover {
+  border-color: var(--accent);
+  background:
+    linear-gradient(160deg, rgb(255 74 28 / 0.12), transparent 50%),
+    var(--ink-veil);
+  box-shadow: 0 30px 70px rgb(255 74 28 / 0.12);
+}
+
+.plan__tag {
+  position: absolute;
+  top: -0.75rem;
+  right: 1.5rem;
+  padding: 0.4em 0.95em;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.plan__top {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.plan__icon {
+  display: inline-grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: var(--ink);
+  border: 1px solid var(--hairline);
+}
+
+.plan__top h3 {
+  font-size: 1.45rem;
+}
+
+.plan__price {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+
+.plan__price b {
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 2.6vw, 2.3rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.plan__price span {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bone-dim);
+}
+
+.plan__blurb {
+  font-size: 0.875rem;
+  line-height: 1.65;
+  color: var(--bone-dim);
+}
+
+.plan__list {
+  display: grid;
+  gap: 0.7rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid var(--hairline);
+}
+
+.plan__list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  font-size: 0.8438rem;
+  line-height: 1.5;
+}
+
+.plan__check {
+  flex: 0 0 auto;
+  width: 15px;
+  height: 15px;
+  margin-top: 0.1em;
+  border-radius: 50%;
+  border: 1px solid rgb(255 74 28 / 0.6);
+  position: relative;
+}
+
+.plan__check::after {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 3.5px;
+  width: 5px;
+  height: 3.5px;
+  border-left: 1.5px solid var(--accent);
+  border-bottom: 1.5px solid var(--accent);
+  transform: rotate(-45deg);
+}
+
+.plan__foot {
+  margin-top: auto;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  color: var(--bone-faint);
+}
+
+.plan__cta {
+  justify-content: center;
+  padding: 0.95rem 1.5rem;
+  font-size: 1rem;
+  text-align: center;
+}
+
+.plan--featured .plan__cta {
+  border-color: var(--accent);
+}
+
+@media (min-width: 62rem) {
+  .plans__head {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+
+  .plans__grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+
+  /* The featured tier sits a little proud of its neighbours. */
+  .plan--featured {
+    margin-block: -0.9rem;
+  }
+}
+
+/* Voices ------------------------------------------------------------------ */
 
 .quotes {
   display: grid;
@@ -1365,61 +1567,6 @@
   font-size: 0.6875rem;
   letter-spacing: 0.16em;
   color: var(--bone-dim);
-}
-
-.awards__title {
-  margin-top: clamp(5rem, 10vw, 8rem);
-  margin-bottom: 2.5rem;
-  font-size: clamp(1.6rem, 3.2vw, 2.4rem);
-}
-
-.awards li {
-  display: flex;
-  align-items: baseline;
-  gap: 1rem;
-  padding-block: 1.25rem;
-  border-top: 1px solid var(--hairline);
-}
-
-.awards li:last-child {
-  border-bottom: 1px solid var(--hairline);
-}
-
-.awards__name {
-  font-family: var(--font-display);
-  font-size: 1rem;
-  transition: color var(--dur) ease;
-}
-
-.awards li:hover .awards__name {
-  color: var(--accent);
-}
-
-.awards__dots {
-  display: none;
-  flex: 1;
-  border-bottom: 1px dotted var(--hairline);
-}
-
-.awards__org,
-.awards__year {
-  font-family: var(--font-mono);
-  font-size: 0.625rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--bone-dim);
-}
-
-.awards__year {
-  width: 3rem;
-  text-align: right;
-  color: var(--bone-faint);
-}
-
-@media (min-width: 40rem) {
-  .awards__dots {
-    display: block;
-  }
 }
 
 @media (min-width: 48rem) {

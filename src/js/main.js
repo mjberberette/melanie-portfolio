@@ -11,6 +11,7 @@ import { initIcons } from "./modules/icons.js";
 import { initJourney } from "./modules/journey.js";
 import { initMagnetic } from "./modules/magnetic.js";
 import { initMarquee } from "./modules/marquee.js";
+import { initPlans } from "./modules/plans.js";
 import { initPreloader } from "./modules/preloader.js";
 import { initRail } from "./modules/rail.js";
 import { initReveals } from "./modules/reveal.js";
@@ -35,6 +36,7 @@ function boot() {
   initCounters();
   initWork();
   initWhatYouGet();
+  initPlans();
   initAccordion();
   initContact();
 

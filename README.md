@@ -63,7 +63,7 @@ src/
     layout.css          shell, section rhythm, buttons, tags, reveal primitives
     chrome.css          preloader, cursor, rail navigation
     sections.css        hero, marquee, studio, work, capabilities,
-                        what-you-get, voices, contact, footer
+                        what-you-get, pricing, voices, contact, footer
   js/
     main.js             boots every module
     gsap.js             plugin registration + custom eases
@@ -82,6 +82,8 @@ src/
       accordion.js      capabilities
       wyg.js            "what you get": scrubbed statement reveal + hoverable
                         capability chips parked inside the sentence
+      plans.js          pricing tiers: GSAP entrance + price count-up, Motion
+                        (motion.dev) spring hover and feature-row cascade
       contact.js        copy-to-clipboard
       clock.js          local time + copyright year
       icons.js          defines <lord-icon> and parks icons on their last frame
