@@ -1287,24 +1287,6 @@
   color: var(--bone-dim);
 }
 
-/* The twelfth cell: an open seat instead of a hole in the grid. */
-.tool--next .tool__more {
-  place-self: center;
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  text-align: center;
-  line-height: 1.9;
-  color: var(--bone-faint);
-  transition: color var(--dur-fast) ease;
-}
-
-.tool--next:hover .tool__more,
-.tool--next.is-lit .tool__more {
-  color: var(--accent);
-}
-
 @media (min-width: 48rem) {
   .stack__head {
     flex-direction: row;
