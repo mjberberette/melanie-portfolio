@@ -80,6 +80,8 @@ src/
       counters.js       stat counters
       work.js           pinned horizontal gallery + auto-scrolling iPads
       accordion.js      capabilities
+      journey-bg.js     wayfinding chart behind the journey: drifting plus
+                        grid, scroll parallax, vermilion pings
       wyg.js            "what you get": scrubbed statement reveal + hoverable
                         capability chips parked inside the sentence
       plans.js          pricing tiers: GSAP entrance + price count-up, Motion
