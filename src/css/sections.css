@@ -1188,6 +1188,11 @@
   vertical-align: middle;
 }
 
+/* Keeps the closing chip on the same line as the last word. */
+.wyg__nobr {
+  white-space: nowrap;
+}
+
 /* Chip / card layer ------------------------------------------------------- */
 
 .wyg__cards {
