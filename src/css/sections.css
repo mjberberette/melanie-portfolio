@@ -59,6 +59,13 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 1.5rem;
+  /* Fully transparent strip: the 3D scene shows and stays draggable through
+     the empty space. Text still reads on top. */
+  pointer-events: none;
+}
+
+.hero__top--end {
+  justify-content: flex-end;
 }
 
 .hero__meta {
@@ -74,17 +81,12 @@
   text-align: right;
 }
 
-/* Stage: pattern < first name < shade < 3D mark < surname < role ---------- */
+/* Stage: fills the whole hero so the mark and pattern run behind the
+   top bar and the identity strip. */
 
 .hero__stage {
-  position: relative;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 0;
+  position: absolute;
+  inset: 0;
 }
 
 .hero__echo {
@@ -101,9 +103,10 @@
   text-transform: uppercase;
   font-family: var(--font-display);
   font-weight: 700;
-  line-height: 0.88;
-  letter-spacing: -0.025em;
-  font-size: clamp(2rem, 4.6vw, 3.9rem);
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  font-size: clamp(1.55rem, 3.1vw, 2.8rem);
+  white-space: nowrap;
 }
 
 .hero__line {
@@ -184,6 +187,13 @@
   align-items: flex-end;
   justify-content: space-between;
   gap: 2rem;
+  /* Transparent strip — the mark and sonar rings pass behind the name, and
+     pointer interaction falls through everywhere except the button itself. */
+  pointer-events: none;
+}
+
+.hero__foot .scroll-cue {
+  pointer-events: auto;
 }
 
 @media (min-width: 48rem) {
@@ -217,6 +227,13 @@
   height: 2.75rem;
   border: 1px solid var(--hairline-strong);
   border-radius: 999px;
+}
+
+/* Icon-only on small screens, where the identity block needs the width. */
+@media (max-width: 47.99rem) {
+  .scroll-cue__label {
+    display: none;
+  }
 }
 
 @media (min-width: 62rem) {

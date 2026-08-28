@@ -190,8 +190,9 @@
 }
 
 .nav.is-scrolled {
-  background: rgb(8 8 10 / 0.7);
-  backdrop-filter: blur(18px);
+  /* Kept airy on purpose — the hero should read through the bar. */
+  background: rgb(8 8 10 / 0.38);
+  backdrop-filter: blur(10px);
   border-bottom-color: var(--hairline);
 }
 
