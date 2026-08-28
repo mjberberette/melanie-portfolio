@@ -63,11 +63,31 @@ async function desktop() {
   await wait(1000);
   await page.screenshot({ path: `${out}/i-accordion.png` });
 
-  await page.evaluate(() =>
-    document.querySelector(".process").scrollIntoView({ behavior: "instant" }),
-  );
+  // What-you-get: scroll through the statement so the chips pop in, then
+  // hover one so it expands into its card.
+  await page.evaluate(() => {
+    const stmt = document.querySelector("[data-wyg-statement]");
+    const top = stmt.getBoundingClientRect().top + window.scrollY;
+    window.scrollTo(0, top - window.innerHeight * 0.9);
+  });
+  await wait(600);
+  await page.evaluate(() => {
+    const stmt = document.querySelector("[data-wyg-statement]");
+    const top = stmt.getBoundingClientRect().top + window.scrollY;
+    window.scrollTo(0, top - window.innerHeight * 0.32);
+  });
   await wait(2200);
-  await page.screenshot({ path: `${out}/i-process.png` });
+  await page.screenshot({ path: `${out}/i-wyg.png` });
+
+  const chip = await page.$('.wyg-card[data-for="systems"]');
+  const chipBox = await chip.boundingBox();
+  await page.mouse.move(
+    chipBox.x + chipBox.width / 2,
+    chipBox.y + chipBox.height / 2,
+    { steps: 10 },
+  );
+  await wait(1200);
+  await page.screenshot({ path: `${out}/i-wyg-hover.png` });
 
   await page.evaluate(() =>
     document.querySelector("#contact").scrollIntoView({ behavior: "instant" }),

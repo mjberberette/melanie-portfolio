@@ -1131,91 +1131,183 @@
   }
 }
 
-/* Process ---------------------------------------------------------------- */
+/* What you get ------------------------------------------------------------
+   Cloned from heynesh.com's "What You Get?" section: a huge centred title,
+   a pill label that wipes open, a statement whose characters sharpen from a
+   ghost state as you scroll, and capability chips parked inside the sentence
+   that pop in one by one and expand into cards on hover. */
 
-.process__head {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  margin-bottom: clamp(4rem, 8vw, 6rem);
+.wyg {
+  text-align: center;
 }
 
-.process__title {
-  font-size: clamp(2rem, 5vw, 3.8rem);
-  max-width: 14ch;
+.wyg__title {
+  font-size: clamp(3.2rem, 11vw, 9.5rem);
+  line-height: 0.9;
 }
 
-.process__note {
-  max-width: 22rem;
-  font-size: 0.875rem;
-  line-height: 1.7;
-  color: var(--bone-dim);
-}
-
-.steps {
-  display: grid;
-  gap: 2.5rem;
-}
-
-.step {
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--hairline);
-}
-
-.step__rule {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.step__rule b {
+.wyg__label {
+  display: inline-block;
+  margin-top: clamp(1.75rem, 3.5vw, 2.75rem);
+  padding: 0.6em 1.2em;
+  border: 1px solid var(--hairline-strong);
+  border-radius: 999px;
   font-family: var(--font-mono);
   font-size: 0.6875rem;
-  font-weight: 400;
-  letter-spacing: 0.2em;
-  color: var(--accent);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--bone-dim);
+  white-space: nowrap;
+  overflow: hidden;
 }
 
-.step__rule i {
-  flex: 1;
-  height: 1px;
-  background: var(--hairline);
+.wyg__stage {
+  position: relative;
+  margin-top: clamp(2.25rem, 5vw, 4rem);
 }
 
-.step__icon {
+.wyg__statement {
+  font-size: clamp(1.45rem, 4.5vw, 3.4rem);
+  line-height: 1.34;
+  letter-spacing: -0.02em;
+  max-width: 22ch;
+  margin-inline: auto;
+  text-wrap: initial;
+}
+
+/* Ghost state before the scroll reveal runs (JS animates each char up). */
+.wyg-char {
+  will-change: opacity, filter;
+}
+
+/* Empty inline holes the chips park in. */
+.wyg__slot {
+  display: inline-block;
+  width: 2.2em;
+  height: 0.95em;
+  vertical-align: middle;
+}
+
+/* Chip / card layer ------------------------------------------------------- */
+
+.wyg__cards {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  text-align: left;
+}
+
+.wyg-card {
+  --chip-h: 52px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  pointer-events: auto;
+  overflow: hidden;
+  border-radius: 14px;
+  background: var(--ink-veil);
+  border: 1px solid var(--hairline);
+  cursor: pointer;
+  visibility: hidden;
+  transition:
+    background var(--dur-fast) ease,
+    border-color var(--dur-fast) ease,
+    box-shadow var(--dur-fast) ease;
+}
+
+.wyg-card:hover,
+.wyg-card.is-open {
+  background: #1b1b21;
+  border-color: var(--hairline-strong);
+}
+
+.wyg-card.is-open {
+  box-shadow: 0 28px 60px rgb(0 0 0 / 0.55);
+}
+
+.wyg-card:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.wyg-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--chip-h);
+  padding-inline: 0.7em;
+}
+
+.wyg-card__icon {
+  display: grid;
+  place-items: center;
+}
+
+.wyg-card__icon lord-icon {
   display: block;
-  margin-block: 1.5rem 1rem;
+  width: 30px;
+  height: 30px;
 }
 
-.step h3 {
-  font-size: 1.5rem;
-  margin-bottom: 0.75rem;
+/* Little plus that turns into a close mark when the card opens. */
+.wyg-card__plus {
+  position: relative;
+  flex: 0 0 auto;
+  width: 11px;
+  height: 11px;
+  margin-left: 0.7em;
+  transition: transform 0.45s var(--ease-out, ease);
 }
 
-.step p {
-  font-size: 0.875rem;
-  line-height: 1.7;
+.wyg-card__plus i {
+  position: absolute;
+  inset: 5px 0;
+  background: var(--accent);
+  border-radius: 1px;
+}
+
+.wyg-card__plus i:last-child {
+  transform: rotate(90deg);
+}
+
+.wyg-card.is-open .wyg-card__plus {
+  transform: rotate(45deg);
+}
+
+.wyg-card__body {
+  padding: 0.15rem 0.9rem 0.95rem;
+  opacity: 0;
+}
+
+.wyg-card__body h3 {
+  font-size: 1.02rem;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.45rem;
+}
+
+.wyg-card__body p {
+  font-size: 0.8125rem;
+  line-height: 1.6;
   color: var(--bone-dim);
 }
 
-@media (min-width: 48rem) {
-  .process__head {
-    flex-direction: row;
-    align-items: flex-end;
-    justify-content: space-between;
+@media (max-width: 47.9375rem) {
+  .wyg__statement {
+    max-width: 17ch;
   }
 
-  .steps {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 2rem;
+  .wyg__slot {
+    width: 2.5em;
   }
 
-  .step {
-    padding-right: 2rem;
+  .wyg-card {
+    border-radius: 10px;
   }
 
-  .step h3 {
-    font-size: 1.7rem;
+  .wyg-card__icon lord-icon {
+    width: 20px;
+    height: 20px;
   }
 }
 
