@@ -327,16 +327,42 @@
   display: none;
 }
 
+/* The drawn portion of the thread glows in the accent colour. */
 .journey__path path {
   fill: none;
-  stroke: rgb(241 237 229 / 0.45);
+  stroke: var(--accent);
   stroke-width: 1.5;
+  filter: drop-shadow(0 0 5px rgb(255 74 28 / 0.75))
+    drop-shadow(0 0 14px rgb(255 74 28 / 0.35));
 }
 
 .journey__path circle {
   fill: var(--ink);
-  stroke: var(--accent);
+  stroke: rgb(241 237 229 / 0.35);
   stroke-width: 1.5;
+  transition:
+    fill var(--dur-fast) ease,
+    stroke var(--dur-fast) ease;
+}
+
+/* Node dots ignite once the thread reaches them. */
+.journey__path circle.is-lit {
+  fill: var(--accent);
+  stroke: var(--accent);
+  filter: drop-shadow(0 0 6px rgb(255 74 28 / 0.9));
+}
+
+/* The luminous head riding the tip of the thread. */
+.journey__path .journey__head-halo {
+  fill: rgb(255 74 28 / 0.22);
+  stroke: none;
+  filter: blur(6px);
+}
+
+.journey__path .journey__head {
+  fill: #ffb9a0;
+  stroke: none;
+  filter: drop-shadow(0 0 8px rgb(255 74 28 / 1));
 }
 
 .journey__list {

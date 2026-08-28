@@ -26,6 +26,23 @@ export function initJourney() {
   let path = null;
   let trigger = null;
 
+  /* Directional entrances: each card fades in from its own side of the
+     zigzag as it scrolls into view. */
+  if (!reduced) {
+    cards.forEach((card) => {
+      const fromLeft =
+        card.offsetLeft + card.offsetWidth / 2 < feed.clientWidth / 2;
+      gsap.from(card, {
+        autoAlpha: 0,
+        y: 72,
+        x: wide.matches ? (fromLeft ? -56 : 56) : 0,
+        duration: 1.2,
+        ease: "mb-out",
+        scrollTrigger: { trigger: card, start: "top 88%", once: true },
+      });
+    });
+  }
+
   const anchors = () =>
     cards.map((card) => {
       const centerX = card.offsetLeft + card.offsetWidth / 2;
@@ -61,23 +78,64 @@ export function initJourney() {
     path.setAttribute("d", d);
     svg.appendChild(path);
 
-    for (const point of points) {
+    const dots = points.map((point) => {
       const dot = document.createElementNS(SVG_NS, "circle");
       dot.setAttribute("cx", point.x);
       dot.setAttribute("cy", point.y);
       dot.setAttribute("r", 4.5);
       svg.appendChild(dot);
-    }
+      return dot;
+    });
 
     const length = path.getTotalLength();
 
     if (reduced) {
       path.style.strokeDasharray = "none";
+      dots.forEach((dot) => dot.classList.add("is-lit"));
       return;
     }
 
+    // Where along the thread each node sits, so it can ignite on arrival.
+    const fractions = points.map((point) => {
+      let best = 0;
+      let bestDist = Infinity;
+      for (let i = 0; i <= 220; i += 1) {
+        const t = i / 220;
+        const sample = path.getPointAtLength(length * t);
+        const dist = Math.hypot(sample.x - point.x, sample.y - point.y);
+        if (dist < bestDist) {
+          bestDist = dist;
+          best = t;
+        }
+      }
+      return best;
+    });
+
+    // The luminous head that rides the tip of the thread.
+    const halo = document.createElementNS(SVG_NS, "circle");
+    halo.setAttribute("r", 14);
+    halo.setAttribute("class", "journey__head-halo");
+    const head = document.createElementNS(SVG_NS, "circle");
+    head.setAttribute("r", 3.4);
+    head.setAttribute("class", "journey__head");
+    svg.append(halo, head);
+
+    const setHead = (progress) => {
+      const point = path.getPointAtLength(length * progress);
+      const visible = progress > 0.001 && progress < 0.999;
+      for (const node of [halo, head]) {
+        node.setAttribute("cx", point.x);
+        node.setAttribute("cy", point.y);
+        node.style.opacity = visible ? "1" : "0";
+      }
+      dots.forEach((dot, i) => {
+        dot.classList.toggle("is-lit", progress >= fractions[i] - 0.005);
+      });
+    };
+
     path.style.strokeDasharray = String(length);
     path.style.strokeDashoffset = String(length);
+    setHead(0);
 
     trigger = ScrollTrigger.create({
       trigger: feed,
@@ -86,6 +144,7 @@ export function initJourney() {
       scrub: 0.6,
       onUpdate: (self) => {
         path.style.strokeDashoffset = String(length * (1 - self.progress));
+        setHead(self.progress);
       },
     });
   };
