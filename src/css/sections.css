@@ -439,6 +439,8 @@
 /* Odometer digits: each numeral is a reel that rolls up into place. */
 .jpost__year .year-digit {
   display: block;
+  /* Tighter than the font's natural digit box, so pairs read as one number. */
+  width: 0.56em;
   height: 1em;
   overflow: hidden;
 }
@@ -452,6 +454,7 @@
   display: block;
   height: 1em;
   line-height: 1;
+  text-align: center;
 }
 
 .jpost__card h3 {
