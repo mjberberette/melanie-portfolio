@@ -1,4 +1,4 @@
-import { gsap, ScrollTrigger } from "../gsap.js";
+import { gsap, ScrollTrigger, SplitText } from "../gsap.js";
 import { prefersReducedMotion, qs, qsa } from "../utils.js";
 
 /**
@@ -91,19 +91,38 @@ export function initJourney() {
   let path = null;
   let trigger = null;
 
-  /* Entrances: the same pop the "what you get" chips use — each card scales
-     up from half size with a back-eased overshoot as it scrolls into view,
-     and its year rolls up like an odometer. */
+  /* Entrances: borrowed from the "what you get" statement — the card rises
+     in softly while its title and teaser words sharpen out of a blur, one
+     word after another. The year still rolls up like an odometer. */
   if (!reduced) {
     cards.forEach((card) => {
-      gsap.from(card, {
-        autoAlpha: 0,
-        scale: 0.5,
-        transformOrigin: "center center",
-        duration: 0.7,
-        ease: "back.out(1.7)",
+      const copy = qsa("h3, .jpost__teaser", qs(".jpost__card", card) ?? card);
+      const split = new SplitText(copy, {
+        type: "words",
+        wordsClass: "jword",
+      });
+
+      const tl = gsap.timeline({
         scrollTrigger: { trigger: card, start: "top 88%", once: true },
       });
+
+      tl.from(card, {
+        autoAlpha: 0,
+        y: 32,
+        duration: 0.9,
+        ease: "mb-out",
+      }).fromTo(
+        split.words,
+        { opacity: 0.1, filter: "blur(7px)" },
+        {
+          opacity: 1,
+          filter: "blur(0px)",
+          duration: 0.55,
+          ease: "power2.out",
+          stagger: 0.035,
+        },
+        0.12,
+      );
     });
   }
 
