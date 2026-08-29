@@ -91,18 +91,17 @@ export function initJourney() {
   let path = null;
   let trigger = null;
 
-  /* Directional entrances: each card fades in from its own side of the
-     zigzag as it scrolls into view, and its year rolls up like an odometer. */
+  /* Entrances: the same pop the "what you get" chips use — each card scales
+     up from half size with a back-eased overshoot as it scrolls into view,
+     and its year rolls up like an odometer. */
   if (!reduced) {
     cards.forEach((card) => {
-      const fromLeft =
-        card.offsetLeft + card.offsetWidth / 2 < feed.clientWidth / 2;
       gsap.from(card, {
         autoAlpha: 0,
-        y: 72,
-        x: wide.matches ? (fromLeft ? -56 : 56) : 0,
-        duration: 1.2,
-        ease: "mb-out",
+        scale: 0.5,
+        transformOrigin: "center center",
+        duration: 0.7,
+        ease: "back.out(1.7)",
         scrollTrigger: { trigger: card, start: "top 88%", once: true },
       });
     });
