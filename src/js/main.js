@@ -18,6 +18,7 @@ import { initRail } from "./modules/rail.js";
 import { initReveals } from "./modules/reveal.js";
 import { initSmoothScroll } from "./modules/smooth-scroll.js";
 import { initStack } from "./modules/stack.js";
+import { initVoices } from "./modules/voices.js";
 import { initWhatYouGet } from "./modules/wyg.js";
 import { initWork } from "./modules/work.js";
 
@@ -42,6 +43,7 @@ function boot() {
   initPlans();
   initStack();
   initAccordion();
+  initVoices();
   initContact();
 
   // Three.js is the heaviest dependency, so it loads as its own chunk while
