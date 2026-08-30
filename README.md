@@ -63,7 +63,7 @@ src/
     layout.css          shell, section rhythm, buttons, tags, reveal primitives
     chrome.css          preloader, cursor, rail navigation
     sections.css        hero, marquee, studio, work, capabilities, stack,
-                        what-you-get, pricing, voices, contact, footer
+                        what-you-get, pricing, contact, footer
   js/
     main.js             boots every module
     gsap.js             plugin registration + custom eases
@@ -88,8 +88,6 @@ src/
                         (motion.dev) spring hover and feature-row cascade
       stack.js          toolbox grid: GSAP grid-wave entrance, Motion spring
                         pops, idle accent sweep over the brand glyphs
-      voices.js         testimonials: drawn hairlines, blur-in copy, cursor
-                        spotlights, spring hover, parallax ghost quote mark
       contact.js        copy-to-clipboard
       clock.js          local time + copyright year
       icons.js          defines <lord-icon> and parks icons on their last frame
