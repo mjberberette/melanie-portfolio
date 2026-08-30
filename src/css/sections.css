@@ -1042,7 +1042,33 @@
   color: var(--bone-dim);
 }
 
+/* Giant ghost index in the sticky aside — rolls as rows are hovered/opened. */
+.craft-stage {
+  display: none;
+  margin-top: clamp(2rem, 4vw, 3.5rem);
+}
+
+.craft-stage__no {
+  display: block;
+  font-size: clamp(5.5rem, 10vw, 9.5rem);
+  line-height: 0.85;
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgb(255 74 28 / 0.55);
+  will-change: transform, filter;
+}
+
+.craft-stage__caption {
+  display: block;
+  margin-top: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--bone-faint);
+}
+
 .accordion__item {
+  position: relative;
   border-top: 1px solid var(--hairline);
 }
 
@@ -1050,7 +1076,50 @@
   border-bottom: 1px solid var(--hairline);
 }
 
+/* When JS choreographs the section it draws its own hairlines. */
+.accordion.is-cine .accordion__item {
+  border-top-color: transparent;
+}
+
+.accordion.is-cine .accordion__item:last-child {
+  border-bottom-color: transparent;
+}
+
+.accordion__line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--hairline);
+  transform-origin: left center;
+}
+
+.accordion__line--end {
+  top: auto;
+  bottom: 0;
+}
+
+/* Accent rail that draws down the open item. */
+.accordion__item::after {
+  content: "";
+  position: absolute;
+  top: 1.25rem;
+  bottom: 1.25rem;
+  left: -1.25rem;
+  width: 2px;
+  background: linear-gradient(180deg, var(--accent), rgb(255 74 28 / 0.1));
+  transform: scaleY(0);
+  transform-origin: top center;
+  transition: transform 0.65s var(--ease-out, ease);
+}
+
+.accordion__item.is-open::after {
+  transform: scaleY(1);
+}
+
 .accordion__trigger {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 1.25rem;
@@ -1059,11 +1128,41 @@
   text-align: left;
 }
 
+/* Cursor spotlight: a soft pool of light tracking the pointer inside a row. */
+.accordion__trigger::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      200px circle at var(--mx, 50%) var(--my, 50%),
+      rgb(241 237 229 / 0.05),
+      transparent 70%
+    ),
+    radial-gradient(
+      70px circle at var(--mx, 50%) var(--my, 50%),
+      rgb(255 74 28 / 0.06),
+      transparent 70%
+    );
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.accordion__trigger:hover::after {
+  opacity: 1;
+}
+
 .accordion__number {
   font-family: var(--font-mono);
   font-size: 0.6875rem;
   letter-spacing: 0.2em;
   color: var(--bone-faint);
+  transition: color var(--dur-fast) ease;
+}
+
+.accordion__item.is-open .accordion__number {
+  color: var(--accent);
 }
 
 .accordion__icon {
@@ -1081,11 +1180,14 @@
 .accordion__label {
   flex: 1;
   font-size: clamp(1.4rem, 2.8vw, 2.2rem);
-  transition: color var(--dur) ease;
+  transition:
+    color var(--dur) ease,
+    transform 0.5s var(--ease-out, ease);
 }
 
 .accordion__trigger:hover .accordion__label {
   color: var(--accent);
+  transform: translateX(8px);
 }
 
 .accordion__toggle {
@@ -1166,6 +1268,10 @@
 
   .accordion__inner {
     padding-left: 4rem;
+  }
+
+  .craft-stage {
+    display: block;
   }
 }
 
