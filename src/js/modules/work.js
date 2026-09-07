@@ -57,6 +57,37 @@ export function initWork() {
     });
   }
 
+  /* Recorded scroll-throughs of live sites: play only while the card is on
+     screen, so five videos never decode at once. preload="none" in the markup
+     means nothing downloads until the first play(). */
+  qsa("[data-screen-video]", track).forEach((video) => {
+    video.muted = true; // the attribute alone doesn't always satisfy autoplay
+    if (reduced) return; // poster frame only
+
+    let wanted = false;
+    const attempt = () => {
+      if (!wanted) return;
+      video.play().catch(() => {
+        // Autoplay refused (rare with muted). Try again on the next scroll
+        // or the first pointer interaction, both of which count as gestures.
+        const retry = () => {
+          if (wanted) video.play().catch(() => {});
+        };
+        window.addEventListener("scroll", retry, { once: true, passive: true });
+        window.addEventListener("pointerdown", retry, { once: true });
+      });
+    };
+
+    new IntersectionObserver(
+      ([entry]) => {
+        wanted = entry.isIntersecting;
+        if (wanted) attempt();
+        else video.pause();
+      },
+      { threshold: 0.25 },
+    ).observe(video);
+  });
+
   /* Auto-scrolling captures inside the device screens */
   qsa("[data-screen]", track).forEach((img, index) => {
     const screen = img.closest(".wcard__screen");

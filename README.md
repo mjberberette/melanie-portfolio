@@ -93,7 +93,8 @@ src/
       icons.js          defines <lord-icon> and parks icons on their last frame
 scripts/
   recolor-icons.mjs     maps Lordicon's palette onto the site's colours
-  make-screens.mjs      generates the site captures inside the iPad mockups
+  make-screens.mjs      generates the still site captures inside the iPad mockups
+  record-screen.mjs     records a live site scrolling, for video previews
   shot.mjs              full-page screenshots
   interact.mjs          hover/menu/accordion screenshots
   qa.mjs                responsive + reduced-motion sweep
@@ -121,19 +122,20 @@ work rows and cards with `style="--accent: #7c9cff"`.
 ### The work gallery
 
 On larger screens the Selected Work section pins and scrolls sideways. Each
-card is an iPad mockup running a tall capture of the project's website, which
-scrolls up and down inside the screen, over an animated gradient backdrop in
-that project's accent colour.
+card is an iPad mockup showing the project's website over an animated gradient
+backdrop in that project's accent colour. A card's screen is one of two things:
 
-The captures live in `public/media/screens/`. Card 01 uses a real scroll
-capture of this site and card 02 (EveryPeer) is a live capture of
-everypeer.com; the other three are small original landing pages designed in
-`scripts/make-screens.mjs` as stand-ins. To use real project sites:
-
-- replace any image in `public/media/screens/` with your own tall capture
-  (roughly 900px wide, 1500-3600px tall works well), or
-- edit `scripts/make-screens.mjs` and re-run `node scripts/make-screens.mjs`
-  while the dev server is running.
+- **A recorded scroll-through** (`<video … data-screen-video>`) — a real
+  recording of the live site being scrolled, so its own animations and
+  scroll-driven sections play back exactly as they do on the site. Card 02
+  (EveryPeer) works this way. Videos only play while the card is on screen and
+  don't download until then. Produce one with
+  `node scripts/record-screen.mjs <name> <url>` (needs `ffmpeg`); it writes
+  `public/media/screens/<name>.mp4` plus a poster frame.
+- **A tall still capture** (`<img … data-screen>`) that the site pans up and
+  down. Card 01 uses a real capture of this site; the other three are small
+  original landing pages designed in `scripts/make-screens.mjs` as stand-ins
+  (`node scripts/make-screens.mjs` while the dev server is running).
 
 The scroll animation measures the image at load, so any height works. A video
 can be used instead by swapping a card's `<img>` for a muted, looping,

@@ -3,9 +3,10 @@
  * in the work gallery.
  *
  *   - mb-identity.jpg  — a real scroll capture of this site
- *   - everypeer.jpg    — a real scroll capture of everypeer.com (live client site)
  *   - the other three  — small original landing pages designed here, one per
  *                        case study, rendered and captured headless
+ *
+ * Real client sites are recorded as video instead — see record-screen.mjs.
  *
  * Usage: node scripts/make-screens.mjs   (dev server must be running)
  * Output: public/media/screens/*.jpg
@@ -162,40 +163,6 @@ for (const [name, html] of Object.entries(SITES)) {
   console.log("made", name);
   await page.close();
 }
-
-/* Live client site: everypeer.com. Walk the page first so lazy media and
-   scroll reveals fire, then capture the top 3600px (before its pinned stage). */
-const live = await browser.newPage();
-await live.emulateMediaFeatures([
-  { name: "prefers-reduced-motion", value: "reduce" },
-]);
-await live.setViewport({ width: 900, height: 1200, deviceScaleFactor: 1 });
-await live.goto("https://everypeer.com/", {
-  waitUntil: "networkidle2",
-  timeout: 90000,
-});
-const liveTotal = await live.evaluate(() => document.documentElement.scrollHeight);
-for (let y = 0; y < liveTotal; y += 600) {
-  await live.evaluate((v) => window.scrollTo(0, v), y);
-  await new Promise((r) => setTimeout(r, 180));
-}
-await live.evaluate(() => window.scrollTo(0, 0));
-await new Promise((r) => setTimeout(r, 2500));
-await live.addStyleTag({
-  content: `*,*::before,*::after{animation-play-state:paused!important;transition:none!important}
-  [style*="opacity: 0"],[style*="opacity:0"]{opacity:1!important;transform:none!important}
-  [class*="cookie"],[id*="cookie"],[class*="consent"],[id*="consent"]{display:none!important}`,
-});
-await new Promise((r) => setTimeout(r, 600));
-await live.screenshot({
-  path: `${OUT}/everypeer.jpg`,
-  type: "jpeg",
-  quality: 82,
-  clip: { x: 0, y: 0, width: 900, height: Math.min(liveTotal, 3600) },
-  captureBeyondViewport: true,
-});
-console.log("made everypeer");
-await live.close();
 
 /* This site itself, captured with reduced motion so everything is visible */
 const self = await browser.newPage();
