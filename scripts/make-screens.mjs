@@ -3,7 +3,8 @@
  * in the work gallery.
  *
  *   - mb-identity.jpg  — a real scroll capture of this site
- *   - the other four   — small original landing pages designed here, one per
+ *   - everypeer.jpg    — a real scroll capture of everypeer.com (live client site)
+ *   - the other three  — small original landing pages designed here, one per
  *                        case study, rendered and captured headless
  *
  * Usage: node scripts/make-screens.mjs   (dev server must be running)
@@ -35,44 +36,6 @@ ${css}
 </style></head><body>${body}</body></html>`;
 
 const SITES = {
-  halden: page_(
-    `
-    <nav><strong style="font-size:18px">HALDEN</strong><span class="mono" style="opacity:.6">Platform · Pricing · Docs</span></nav>
-    <section style="padding-top:96px">
-      <p class="mono" style="color:#7c9cff">Institutional treasury</p>
-      <h1 style="font-size:88px;margin:24px 0">Trading,<br>made <span class="serif" style="color:#7c9cff">legible.</span></h1>
-      <p style="max-width:460px;opacity:.65;line-height:1.6">One density system for every position, every desk, every audit. Reconciliation measured in minutes, not evenings.</p>
-      <div style="margin-top:40px"><span style="background:#7c9cff;color:#0c1022;padding:16px 28px;border-radius:99px;font-weight:600">Request a desk demo</span></div>
-    </section>
-    <section>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
-        ${["−68% <i>time to reconcile</i>", "11→1 <i>table patterns</i>", "4.2s <i>cold-start to quote</i>"]
-          .map(
-            (s) => `<div style="border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:28px">
-            <h3 style="font-size:34px">${s.split(" <i>")[0]}</h3>
-            <p class="mono" style="opacity:.55;margin-top:10px">${s.split("<i>")[1].replace("</i>", "")}</p></div>`,
-          )
-          .join("")}
-      </div>
-    </section>
-    <section>
-      <h2 style="font-size:44px;margin-bottom:28px">Positions</h2>
-      ${[92, 61, 78, 45, 84]
-        .map(
-          (w, i) => `<div style="display:flex;align-items:center;gap:18px;border-top:1px solid rgba(255,255,255,.12);padding:20px 0">
-          <span class="mono" style="opacity:.4">0${i + 1}</span>
-          <div style="flex:1;height:8px;border-radius:4px;background:rgba(255,255,255,.08)"><div style="width:${w}%;height:100%;border-radius:4px;background:${i === 2 ? "#7c9cff" : "rgba(255,255,255,.35)"}"></div></div>
-          <strong>${w}.4M</strong></div>`,
-        )
-        .join("")}
-    </section>
-    <section style="background:#7c9cff;color:#0c1022;border-radius:32px;margin:0 24px 48px;text-align:center;padding:96px 48px">
-      <h2 style="font-size:64px">Every audit,<br>already answered.</h2>
-      <p class="mono" style="margin-top:20px">halden.capital</p>
-    </section>`,
-    `body{background:#0c1022;color:#eef1ff}`,
-  ),
-
   verso: page_(
     `
     <nav><strong style="font-size:18px">Verso*</strong><span class="mono" style="opacity:.6">Product · Newsrooms · Pricing</span></nav>
@@ -182,7 +145,7 @@ const browser = await puppeteer.launch({
   ],
 });
 
-/* The four case-study sites */
+/* The three fictional case-study sites */
 for (const [name, html] of Object.entries(SITES)) {
   const file = path.resolve(`/tmp/site-${name}.html`);
   fs.writeFileSync(file, html);
@@ -199,6 +162,40 @@ for (const [name, html] of Object.entries(SITES)) {
   console.log("made", name);
   await page.close();
 }
+
+/* Live client site: everypeer.com. Walk the page first so lazy media and
+   scroll reveals fire, then capture the top 3600px (before its pinned stage). */
+const live = await browser.newPage();
+await live.emulateMediaFeatures([
+  { name: "prefers-reduced-motion", value: "reduce" },
+]);
+await live.setViewport({ width: 900, height: 1200, deviceScaleFactor: 1 });
+await live.goto("https://everypeer.com/", {
+  waitUntil: "networkidle2",
+  timeout: 90000,
+});
+const liveTotal = await live.evaluate(() => document.documentElement.scrollHeight);
+for (let y = 0; y < liveTotal; y += 600) {
+  await live.evaluate((v) => window.scrollTo(0, v), y);
+  await new Promise((r) => setTimeout(r, 180));
+}
+await live.evaluate(() => window.scrollTo(0, 0));
+await new Promise((r) => setTimeout(r, 2500));
+await live.addStyleTag({
+  content: `*,*::before,*::after{animation-play-state:paused!important;transition:none!important}
+  [style*="opacity: 0"],[style*="opacity:0"]{opacity:1!important;transform:none!important}
+  [class*="cookie"],[id*="cookie"],[class*="consent"],[id*="consent"]{display:none!important}`,
+});
+await new Promise((r) => setTimeout(r, 600));
+await live.screenshot({
+  path: `${OUT}/everypeer.jpg`,
+  type: "jpeg",
+  quality: 82,
+  clip: { x: 0, y: 0, width: 900, height: Math.min(liveTotal, 3600) },
+  captureBeyondViewport: true,
+});
+console.log("made everypeer");
+await live.close();
 
 /* This site itself, captured with reduced motion so everything is visible */
 const self = await browser.newPage();

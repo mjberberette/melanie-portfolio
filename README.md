@@ -126,8 +126,9 @@ scrolls up and down inside the screen, over an animated gradient backdrop in
 that project's accent colour.
 
 The captures live in `public/media/screens/`. Card 01 uses a real scroll
-capture of this site; the other four are small original landing pages designed
-in `scripts/make-screens.mjs` as stand-ins. To use real project sites:
+capture of this site and card 02 (EveryPeer) is a live capture of
+everypeer.com; the other three are small original landing pages designed in
+`scripts/make-screens.mjs` as stand-ins. To use real project sites:
 
 - replace any image in `public/media/screens/` with your own tall capture
   (roughly 900px wide, 1500-3600px tall works well), or
