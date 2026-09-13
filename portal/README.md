@@ -1,0 +1,121 @@
+# Client Portal — portal.melanieberberette.design
+
+A private portal where clients sign agreements and follow the status of their
+project. It shares the portfolio's design language (ink, bone, vermilion, Grift)
+and lives in this repository under `portal/`, but deploys as its own Vercel
+project on the `portal.` subdomain.
+
+## What it does
+
+**For clients**
+
+- Passwordless sign-in by magic link (invitation only — nobody can self-register).
+- Overview: what needs their attention, active projects, latest updates, agreement counts.
+- Projects: five-phase progress track (Discovery → Strategy → Design → Build → Launch),
+  status, "what happens next", milestones, and a timeline of updates, deliverables,
+  and decisions with links (Figma, Notion, staging…).
+- Agreements: review the PDF in the browser, sign by drawing or typing, and download
+  a countersigned copy. Signing appends a certificate page (name, email, time, IP,
+  device, SHA-256 fingerprint of the exact document) and stamps a signature block on
+  the final page. Signed agreements can't be altered afterwards.
+
+**For you (admin)**
+
+- Invite clients (sends the invitation email through Supabase Auth).
+- Create projects; change phase, status, target launch, and next step; add and tick
+  off milestones; post updates.
+- Upload a PDF and send it for signature; withdraw agreements that are still pending.
+- Every client-facing page has a "Manage" link when you're signed in as admin.
+
+## Stack
+
+Next.js (App Router, server actions), TypeScript, Tailwind CSS 4, shadcn/ui (Base UI),
+`pdf-lib` for signature stamping, Supabase (Auth + Postgres + Storage) in production.
+
+Without Supabase credentials the app runs in **demo mode**: an in-memory store with a
+sample client, two projects, and two agreements (one already signed). No email is
+sent — sign in from the login page with `jordan@everypeer.com` (client) or
+`hello@melanieberberette.com` (admin). Demo data resets when the server restarts.
+
+## Run locally
+
+```bash
+cd portal
+npm install
+npm run dev        # http://localhost:43418  (demo mode)
+```
+
+Copy `.env.example` to `.env.local` and fill in the Supabase values to run against a
+real database locally.
+
+## Go live
+
+### 1. Supabase
+
+1. Create a project at [supabase.com](https://supabase.com) (free tier is fine).
+2. SQL Editor → paste and run `supabase/migrations/0001_portal.sql`. It creates the
+   tables, row-level security, the profile trigger, and the private `contracts`
+   storage bucket.
+3. Authentication → Providers → Email: keep **Email** on, turn **Confirm email** on,
+   and (recommended) turn **Allow new users to sign up** *off* — the app never creates
+   users from the login page; you invite them from the admin area.
+4. Authentication → URL Configuration:
+   - Site URL: `https://portal.melanieberberette.design`
+   - Redirect URLs: `https://portal.melanieberberette.design/auth/callback`
+     (add `http://localhost:43418/auth/callback` for local testing).
+5. Authentication → Email Templates: edit **Invite user** and **Magic Link** so the
+   copy reads as coming from you. Keep the `{{ .ConfirmationURL }}` link.
+6. For reliable delivery, add a custom SMTP provider (Resend, Postmark…) under
+   Project Settings → Auth → SMTP. Supabase's built-in sender is rate-limited and
+   meant for testing.
+7. Project Settings → API: copy the Project URL, the `anon` key, and the
+   `service_role` key.
+
+### 2. Vercel
+
+1. New Project → import the `melanie-portfolio` repository again (a second Vercel
+   project pointing at the same repo).
+2. **Root Directory**: `portal`. Framework preset: Next.js.
+3. Environment variables:
+
+   | Name | Value |
+   | --- | --- |
+   | `NEXT_PUBLIC_SUPABASE_URL` | Project URL |
+   | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | anon key |
+   | `SUPABASE_SERVICE_ROLE_KEY` | service_role key (server-only) |
+   | `NEXT_PUBLIC_PORTAL_URL` | `https://portal.melanieberberette.design` |
+   | `PORTAL_ADMIN_EMAILS` | `hello@melanieberberette.com` (comma-separate more) |
+
+4. Deploy, then Settings → Domains → add `portal.melanieberberette.design`.
+5. At your DNS provider add a `CNAME` record: name `portal`, value
+   `cname.vercel-dns.com`. Vercel issues the certificate automatically.
+
+### 3. Your admin account
+
+Invite yourself: with `PORTAL_ADMIN_EMAILS` set, sign in once with that address (use
+Supabase → Authentication → Users → *Invite user* for the very first account, since
+the admin area needs an admin to exist). The app promotes that email to admin on
+first sign-in. From then on invite clients from **Studio admin → Invite client**.
+
+## Project layout
+
+```
+portal/
+  src/app/(auth)/login        sign-in page + actions (magic link / demo)
+  src/app/auth/callback       turns email links into a session
+  src/app/(portal)/           signed-in shell: overview, projects, contracts, admin
+  src/app/api/contracts/…/pdf streams original/signed PDFs to their owner
+  src/proxy.ts                refreshes the Supabase session cookie per request
+  src/lib/auth.ts             getSession / requireSession / requireAdmin
+  src/lib/store/              PortalStore interface, demo store, Supabase store
+  src/lib/pdf.ts              signature stamping + certificate page (pdf-lib)
+  supabase/migrations/        schema, RLS policies, storage bucket
+```
+
+## Notes on e-signatures
+
+The signing flow records intent (explicit consent checkbox), identity (invited email
++ magic-link session), the exact document (SHA-256 fingerprint), and an audit trail
+(timestamp, IP, user agent) — the ingredients the U.S. ESIGN Act and UETA look for in
+a simple agreement. For high-value contracts or clients outside the U.S., pair it
+with a dedicated provider or have counsel review your templates.

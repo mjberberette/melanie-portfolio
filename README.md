@@ -194,3 +194,11 @@ Pages or any static host.
 Before going live, set the canonical URL and Open Graph URL in `index.html` to
 the real domain, and add an Open Graph image (`public/og.png` plus
 `<meta property="og:image">`) for link previews.
+
+## Client portal
+
+`portal/` is a separate Next.js app for `portal.melanieberberette.design`, where
+clients sign agreements and follow project status. It has its own dependencies,
+README, and Vercel project (set the project's Root Directory to `portal`). See
+[`portal/README.md`](portal/README.md) for setup, Supabase configuration, and
+the subdomain steps. The portfolio build is unaffected by it.
