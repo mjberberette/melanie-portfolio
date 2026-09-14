@@ -63,11 +63,16 @@ real database locally.
    - Site URL: `https://portal.melanieberberette.design`
    - Redirect URLs: `https://portal.melanieberberette.design/auth/callback`
      (add `http://localhost:43418/auth/callback` for local testing).
-5. Authentication → Email Templates: edit **Invite user** and **Magic Link** so the
-   copy reads as coming from you. Keep the `{{ .ConfirmationURL }}` link.
-6. For reliable delivery, add a custom SMTP provider (Resend, Postmark…) under
-   Project Settings → Auth → SMTP. Supabase's built-in sender is rate-limited and
-   meant for testing.
+5. Authentication → Emails → **SMTP Settings**: add a custom SMTP provider. The
+   built-in Supabase sender is rate-limited (a few emails per hour) and meant only for
+   testing, and the dashboard won't let you edit email templates until custom SMTP is
+   configured. With [Resend](https://resend.com): verify `melanieberberette.design` as
+   a sending domain, create an API key, then enter host `smtp.resend.com`, port `465`,
+   username `resend`, password = the API key, and a sender such as
+   `Melanie Berberette <portal@melanieberberette.design>`.
+6. Authentication → Emails → **Templates**: open **Invite user** and **Magic link or
+   OTP** and edit the copy so it reads as coming from you. Keep the
+   `{{ .ConfirmationURL }}` link in both.
 7. Project Settings → API: copy the Project URL, the `anon` key, and the
    `service_role` key.
 
