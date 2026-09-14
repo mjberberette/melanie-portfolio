@@ -71,8 +71,30 @@ real database locally.
    username `resend`, password = the API key, and a sender such as
    `Melanie Berberette <portal@melanieberberette.design>`.
 6. Authentication → Emails → **Templates**: open **Invite user** and **Magic link or
-   OTP** and edit the copy so it reads as coming from you. Keep the
-   `{{ .ConfirmationURL }}` link in both.
+   OTP**, write the copy in your voice, and point the link at the portal's callback
+   route rather than the default `{{ .ConfirmationURL }}`. This makes links work when
+   opened on a different device than the one that requested them, and lands
+   dashboard-sent invitations directly in the portal.
+
+   Invite user:
+
+   ```html
+   <h2>You're invited to the portal</h2>
+   <p>I've set up a private space where you can review and sign our agreements and
+   follow the project as it moves. No password — this link signs you in.</p>
+   <p><a href="{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=invite">Open the portal</a></p>
+   ```
+
+   Magic link or OTP:
+
+   ```html
+   <h2>Your sign-in link</h2>
+   <p>Click below to sign in to the portal. The link works once and expires in an hour.</p>
+   <p><a href="{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=magiclink">Sign in</a></p>
+   ```
+
+   (The default `{{ .ConfirmationURL }}` links still work — the login page finishes
+   those sign-ins in the browser — but the `token_hash` form is more robust.)
 7. Project Settings → API: copy the Project URL, the `anon` key, and the
    `service_role` key.
 
@@ -101,6 +123,22 @@ Invite yourself: with `PORTAL_ADMIN_EMAILS` set, sign in once with that address 
 Supabase → Authentication → Users → *Invite user* for the very first account, since
 the admin area needs an admin to exist). The app promotes that email to admin on
 first sign-in. From then on invite clients from **Studio admin → Invite client**.
+
+## Troubleshooting
+
+- **`404 DEPLOYMENT_NOT_FOUND` on the subdomain** — DNS is pointing at Vercel but the
+  domain isn't attached to a project with a live production deployment. Open the portal
+  project → Settings → Domains and make sure `portal.melanieberberette.design` is listed
+  there (not on the portfolio project), then check Deployments for a green build. Root
+  Directory must be `portal`.
+- **Email link bounces back to the login page** — the redirect URL isn't allowed. In
+  Supabase → Authentication → URL Configuration, add
+  `https://portal.melanieberberette.design/auth/callback` to Redirect URLs and set the
+  Site URL to `https://portal.melanieberberette.design`.
+- **"That sign-in link is invalid or has expired"** — links are single-use and expire
+  after an hour. Request a new one from the login page.
+- **Signed in but no Studio admin link** — the email isn't in `PORTAL_ADMIN_EMAILS`
+  (exact match, lower-case), or the variable was added after the last deploy; redeploy.
 
 ## Project layout
 

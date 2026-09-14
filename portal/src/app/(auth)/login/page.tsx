@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { isDemoMode } from "@/lib/store";
+import { HashSession } from "./hash-session";
 import { LoginForm } from "./login-form";
 
 export const metadata: Metadata = { title: "Sign in" };
@@ -58,6 +59,13 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
           <p className="mt-3 text-sm leading-relaxed text-bone-dim">
             Access is by invitation. Use the email address your invitation was sent to.
           </p>
+          {!demoAccounts && (
+            <HashSession
+              url={process.env.NEXT_PUBLIC_SUPABASE_URL!}
+              anonKey={process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!}
+              next={next}
+            />
+          )}
           {linkError && (
             <p role="alert" className="mt-6 rounded-lg border border-vermilion/40 bg-vermilion/10 px-4 py-3 text-sm text-bone">
               {linkError}
