@@ -51,14 +51,18 @@ export async function requestMagicLink(_prev: LoginState, formData: FormData): P
     },
   });
   if (error) {
-    const notInvited = /signups not allowed|not found|otp_disabled/i.test(error.message);
-    return {
-      status: "error",
-      email,
-      message: notInvited
-        ? "That email hasn't been invited to the portal yet. Check the address, or get in touch and I'll send an invitation."
-        : "Something went wrong sending your link. Please try again in a moment.",
-    };
+    // Surfaces in Vercel → Logs; the client only sees a friendly summary.
+    console.error("[login] signInWithOtp failed", { email, status: error.status, code: error.code, message: error.message });
+    const msg = error.message;
+    let message = "Something went wrong sending your link. Please try again in a moment.";
+    if (/signups not allowed|not found|otp_disabled/i.test(msg)) {
+      message = "That email hasn't been invited to the portal yet. Check the address, or get in touch and I'll send an invitation.";
+    } else if (error.status === 429 || /rate limit/i.test(msg)) {
+      message = "Too many sign-in emails were requested recently. Wait a few minutes and try again.";
+    } else if (/error sending|smtp|mail/i.test(msg)) {
+      message = "The sign-in email couldn't be sent. This is a mail delivery problem on our side, not something you did — please get in touch.";
+    }
+    return { status: "error", email, message: `${message} (${error.code ?? error.status ?? "unknown"}: ${msg})` };
   }
   return { status: "sent", email };
 }
