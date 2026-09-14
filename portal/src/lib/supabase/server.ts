@@ -1,11 +1,12 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { supabaseAnonKey, supabaseUrl } from "@/lib/supabase/env";
 
 /** Cookie-backed Supabase client for the signed-in user (anon key + session).
  *  Used only for auth: data access goes through the store on the server. */
 export async function createSupabaseServerClient() {
   const cookieStore = await cookies();
-  return createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
+  return createServerClient(supabaseUrl()!, supabaseAnonKey()!, {
     cookies: {
       getAll: () => cookieStore.getAll(),
       setAll: (toSet) => {

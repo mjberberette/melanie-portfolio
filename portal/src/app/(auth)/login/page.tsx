@@ -4,6 +4,7 @@ import { getSession } from "@/lib/auth";
 import { isDemoMode } from "@/lib/store";
 import { HashSession } from "./hash-session";
 import { LoginForm } from "./login-form";
+import { supabaseAnonKey, supabaseUrl } from "@/lib/supabase/env";
 
 export const metadata: Metadata = { title: "Sign in" };
 
@@ -61,8 +62,8 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
           </p>
           {!demoAccounts && (
             <HashSession
-              url={process.env.NEXT_PUBLIC_SUPABASE_URL!}
-              anonKey={process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!}
+              url={supabaseUrl()!}
+              anonKey={supabaseAnonKey()!}
               next={next}
             />
           )}
