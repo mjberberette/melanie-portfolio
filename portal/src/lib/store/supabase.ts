@@ -102,6 +102,9 @@ export class SupabaseStore implements PortalStore {
   async promoteToAdmin(id: string) {
     await this.db.from("profiles").update({ role: "admin" }).eq("id", id);
   }
+  async setProfileName(id: string, fullName: string) {
+    await this.db.from("profiles").update({ full_name: fullName.trim() }).eq("id", id);
+  }
 
   async listProjects(clientId?: string) {
     let q = this.db.from("projects").select("*").order("created_at", { ascending: false });

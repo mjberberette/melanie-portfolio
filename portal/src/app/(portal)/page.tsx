@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/page-header";
 import { ProjectCard } from "@/components/project-card";
 import { UpdateItem } from "@/components/update-item";
 import { requireSession } from "@/lib/auth";
+import { firstNameOf } from "@/lib/format";
 import { getStore } from "@/lib/store";
 
 function greeting() {
@@ -36,7 +37,7 @@ export default async function OverviewPage() {
     .sort((a, b) => b.update.createdAt.localeCompare(a.update.createdAt))
     .slice(0, 4);
 
-  const firstName = profile.fullName.split(" ")[0] || "there";
+  const firstName = firstNameOf(profile.fullName) ?? "there";
   const attentionCount = awaiting.length + needsInput.length;
 
   return (

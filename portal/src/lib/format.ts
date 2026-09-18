@@ -32,6 +32,11 @@ export function initials(name: string): string {
     .join("");
 }
 
+/** First whitespace-separated token of a name, or null when there isn't one. */
+export function firstNameOf(name: string | null | undefined): string | null {
+  return name?.trim().split(/\s+/)[0] || null;
+}
+
 export function todayISO(): string {
   return new Date().toISOString().slice(0, 10);
 }

@@ -292,6 +292,11 @@ export class DemoStore implements PortalStore {
     const p = s.profiles.find((x) => x.id === id);
     if (p) p.role = "admin";
   }
+  async setProfileName(id: string, fullName: string) {
+    const s = await state();
+    const p = s.profiles.find((x) => x.id === id);
+    if (p) p.fullName = fullName.trim();
+  }
 
   async listProjects(clientId?: string) {
     const s = await state();

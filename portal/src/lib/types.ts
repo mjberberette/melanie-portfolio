@@ -156,6 +156,7 @@ export interface PortalStore {
   listProfiles(): Promise<Profile[]>;
   createClient(input: NewClientInput): Promise<Profile>;
   promoteToAdmin(id: string): Promise<void>;
+  setProfileName(id: string, fullName: string): Promise<void>;
 
   listProjects(clientId?: string): Promise<Project[]>;
   getProject(id: string): Promise<ProjectDetail | null>;

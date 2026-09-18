@@ -34,6 +34,14 @@ function adminEmails(): Set<string> {
   );
 }
 
+function nameFromMetadata(meta: Record<string, unknown> | undefined): string | null {
+  for (const key of ["full_name", "name", "display_name"]) {
+    const value = meta?.[key];
+    if (typeof value === "string" && value.trim()) return value.trim();
+  }
+  return null;
+}
+
 /** The signed-in profile, or null. Cheap enough to call from every page. */
 export async function getSession(): Promise<Profile | null> {
   const store = getStore();
@@ -52,6 +60,17 @@ export async function getSession(): Promise<Profile | null> {
 
   let profile = await store.getProfile(user.id);
   if (!profile) return null;
+
+  // Accounts invited from the Supabase dashboard (typically the owner's) land
+  // with an empty full_name; pick the name up from the auth user's metadata
+  // and store it so the greeting and user card can use it.
+  if (!profile.fullName.trim()) {
+    const fromAuth = nameFromMetadata(user.user_metadata);
+    if (fromAuth) {
+      await store.setProfileName(profile.id, fromAuth);
+      profile = { ...profile, fullName: fromAuth };
+    }
+  }
 
   // Owner bootstrap: emails listed in PORTAL_ADMIN_EMAILS become admins on
   // first sign-in, so there's no manual SQL step to reach the admin area.
