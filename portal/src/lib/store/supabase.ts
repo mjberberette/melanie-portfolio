@@ -85,8 +85,9 @@ export class SupabaseStore implements PortalStore {
   async createClient(input: NewClientInput) {
     const email = input.email.trim().toLowerCase();
     // Invite through Auth; the on_auth_user_created trigger creates the profile
-    // row and the invite email doubles as the client's first sign-in link.
-    const redirectTo = `${process.env.NEXT_PUBLIC_PORTAL_URL ?? ""}/auth/callback`;
+    // row and the invite email doubles as the client's first sign-in link,
+    // which lands on the set-password step.
+    const redirectTo = `${process.env.NEXT_PUBLIC_PORTAL_URL ?? ""}/auth/callback?next=${encodeURIComponent("/set-password")}`;
     const { data, error } = await this.db.auth.admin.inviteUserByEmail(email, {
       data: { full_name: input.fullName.trim(), company: input.company?.trim() || null },
       redirectTo,

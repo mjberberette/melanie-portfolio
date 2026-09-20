@@ -1,14 +1,16 @@
 import { NextResponse, type NextRequest } from "next/server";
 import type { EmailOtpType } from "@supabase/supabase-js";
+import { destinationFor, safeNext } from "@/lib/auth-links";
 import { isDemoMode } from "@/lib/store";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-/** Lands magic-link and invitation emails, turns the code into a session,
- *  and sends the client on to where they were headed. */
+/** Lands magic-link, invitation, and password-recovery emails, turns the
+ *  code into a session, and sends the client on: invitations continue to
+ *  /set-password, recovery links to /reset-password, everything else to
+ *  wherever they were headed. */
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = request.nextUrl;
-  const rawNext = searchParams.get("next") ?? "/";
-  const next = rawNext.startsWith("/") ? rawNext : "/";
+  const next = safeNext(searchParams.get("next"));
 
   if (isDemoMode()) return NextResponse.redirect(`${origin}/login`);
 
@@ -24,7 +26,13 @@ export async function GET(request: NextRequest) {
       : { error: new Error("Missing sign-in code") };
 
   if (error) {
-    return NextResponse.redirect(`${origin}/login?error=${encodeURIComponent("That sign-in link is invalid or has expired. Request a new one.")}`);
+    // Links built from Supabase's default templates carry the session in the
+    // URL fragment, which never reaches the server; browsers keep it across
+    // this redirect and the login page finishes the sign-in. `next` rides
+    // along so that flow still lands where the link intended.
+    const params = new URLSearchParams({ error: "That sign-in link is invalid or has expired. Request a new one." });
+    if (next !== "/") params.set("next", next);
+    return NextResponse.redirect(`${origin}/login?${params}`);
   }
-  return NextResponse.redirect(`${origin}${next}`);
+  return NextResponse.redirect(`${origin}${destinationFor(type, next)}`);
 }

@@ -9,7 +9,9 @@ project on the `portal.` subdomain.
 
 **For clients**
 
-- Passwordless sign-in by magic link (invitation only — nobody can self-register).
+- Sign in with email + password, or by one-time magic link (invitation only — nobody
+  can self-register). Accepting an invitation lands on a "create your password" step;
+  a forgot-password flow emails a link to choose a new one.
 - Overview: what needs their attention, active projects, latest updates, agreement counts.
 - Projects: five-phase progress track (Discovery → Strategy → Design → Build → Launch),
   status, "what happens next", milestones, and a timeline of updates, deliverables,
@@ -62,7 +64,13 @@ real database locally.
 4. Authentication → URL Configuration:
    - Site URL: `https://portal.melanieberberette.design`
    - Redirect URLs: `https://portal.melanieberberette.design/auth/callback`
-     (add `http://localhost:43418/auth/callback` for local testing).
+     (add `http://localhost:43418/**` for local testing). Sign-in, invitation, and
+     password-reset links append `?next=…` to this URL. Any redirect back to the Site
+     URL's hostname is accepted automatically, so production needs nothing extra; for
+     other hosts the `**` wildcard is what lets the query string through.
+   - Authentication → Providers → Email → **Minimum password length**: the app
+     requires 10 characters mixing letters with numbers or symbols; set the project
+     minimum to 10 as well (or higher — the dashboard's message is shown to the client).
 5. Authentication → Emails → **SMTP Settings**: add a custom SMTP provider. The
    built-in Supabase sender is rate-limited (a few emails per hour) and meant only for
    testing, and the dashboard won't let you edit email templates until custom SMTP is
@@ -70,18 +78,21 @@ real database locally.
    a sending domain, create an API key, then enter host `smtp.resend.com`, port `465`,
    username `resend`, password = the API key, and a sender such as
    `Melanie Berberette <portal@melanieberberette.design>`.
-6. Authentication → Emails → **Templates**: open **Invite user** and **Magic link or
-   OTP**, write the copy in your voice, and point the link at the portal's callback
-   route rather than the default `{{ .ConfirmationURL }}`. This makes links work when
-   opened on a different device than the one that requested them, and lands
-   dashboard-sent invitations directly in the portal.
+6. Authentication → Emails → **Templates**: open **Invite user**, **Magic link or
+   OTP**, and **Reset password**, write the copy in your voice, and point the link at
+   the portal's callback route rather than the default `{{ .ConfirmationURL }}`. This
+   makes links work when opened on a different device than the one that requested
+   them, and lands dashboard-sent invitations directly in the portal. The `type`
+   parameter is what routes invitations to the create-password step and reset emails
+   to the new-password step.
 
    Invite user:
 
    ```html
    <h2>You're invited to the portal</h2>
    <p>I've set up a private space where you can review and sign our agreements and
-   follow the project as it moves. No password — this link signs you in.</p>
+   follow the project as it moves. This link signs you in and lets you create a
+   password for next time.</p>
    <p><a href="{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=invite">Open the portal</a></p>
    ```
 
@@ -93,8 +104,18 @@ real database locally.
    <p><a href="{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=magiclink">Sign in</a></p>
    ```
 
+   Reset password:
+
+   ```html
+   <h2>Reset your portal password</h2>
+   <p>Click below to choose a new password. The link works once and expires in an hour.
+   If you didn't ask for this, you can ignore it.</p>
+   <p><a href="{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=recovery">Choose a new password</a></p>
+   ```
+
    (The default `{{ .ConfirmationURL }}` links still work — the login page finishes
-   those sign-ins in the browser — but the `token_hash` form is more robust.)
+   those sign-ins in the browser and reads the link type from the URL fragment — but
+   the `token_hash` form is more robust.)
 7. Project Settings → API: copy the Project URL, the `anon` key, and the
    `service_role` key.
 
@@ -137,6 +158,14 @@ first sign-in. From then on invite clients from **Studio admin → Invite client
   Site URL to `https://portal.melanieberberette.design`.
 - **"That sign-in link is invalid or has expired"** — links are single-use and expire
   after an hour. Request a new one from the login page.
+- **"That email and password don't match"** — the client may never have set a
+  password (accounts invited before passwords existed). They can sign in with an
+  emailed link and then visit `/set-password`, or use **Forgot password?** on the
+  login page.
+- **Password can't be saved after a reset link** — if "Secure password change" is on
+  in Authentication → Providers → Email, Supabase wants a recent sign-in; recovery and
+  invitation sessions count as recent, but a client who has been signed in for a long
+  time should use the forgot-password flow instead of `/set-password`.
 - **Signed in but no Studio admin link** — the email isn't in `PORTAL_ADMIN_EMAILS`
   (exact match, lower-case), or the variable was added after the last deploy; redeploy.
 
@@ -144,8 +173,10 @@ first sign-in. From then on invite clients from **Studio admin → Invite client
 
 ```
 portal/
-  src/app/(auth)/login        sign-in page + actions (magic link / demo)
-  src/app/auth/callback       turns email links into a session
+  src/app/(auth)/login        sign-in page + auth actions (password, magic link, demo)
+  src/app/(auth)/set-password create a password after accepting an invitation
+  src/app/(auth)/forgot-password, reset-password   password recovery
+  src/app/auth/callback       turns email links into a session and routes by link type
   src/app/(portal)/           signed-in shell: overview, projects, contracts, admin
   src/app/api/contracts/…/pdf streams original/signed PDFs to their owner
   src/proxy.ts                refreshes the Supabase session cookie per request
@@ -158,7 +189,7 @@ portal/
 ## Notes on e-signatures
 
 The signing flow records intent (explicit consent checkbox), identity (invited email
-+ magic-link session), the exact document (SHA-256 fingerprint), and an audit trail
++ authenticated session), the exact document (SHA-256 fingerprint), and an audit trail
 (timestamp, IP, user agent) — the ingredients the U.S. ESIGN Act and UETA look for in
 a simple agreement. For high-value contracts or clients outside the U.S., pair it
 with a dedicated provider or have counsel review your templates.
