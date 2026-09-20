@@ -6,9 +6,16 @@ const nextConfig: NextConfig = {
   devIndicators: false,
   experimental: {
     serverActions: {
-      // Agreement PDFs are uploaded through a server action.
-      bodySizeLimit: "25mb",
+      // Profile pictures (≤ 2 MB) are uploaded through a server action.
+      // Agreement PDFs are not: Vercel rejects any request body over 4.5 MB
+      // before the function runs, so they go straight to storage from the
+      // browser (see admin/actions.ts createContractUpload).
+      bodySizeLimit: "4mb",
     },
+    // With proxy.ts present, a self-hosted server buffers request bodies and
+    // silently truncates them at 10 MB. Demo mode PUTs agreement PDFs (≤ 20 MB)
+    // to /api/contracts/upload, so allow the full size there.
+    proxyClientMaxBodySize: "25mb",
   },
   async headers() {
     return [

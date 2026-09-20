@@ -32,6 +32,7 @@ interface DemoState {
   updates: ProjectUpdate[];
   contracts: Contract[];
   files: Map<string, Uint8Array>; // `${contractId}:original` | `${contractId}:signed`
+  uploads: Map<string, Uint8Array>; // PDFs uploaded for agreements not yet created
   websites: WebsiteDetails[];
   hostingPasswords: Map<string, string>; // profile id → password (memory only; Vault in production)
   avatars: Map<string, AvatarFile>; // profile id → image
@@ -276,6 +277,7 @@ async function seed(): Promise<DemoState> {
     updates,
     contracts: [msa, sow],
     files,
+    uploads: new Map(),
     websites: [clientWebsite],
     hostingPasswords: new Map([[client.id, "demo-only-not-a-real-password"]]),
     avatars: new Map(),
@@ -415,10 +417,26 @@ export class DemoStore implements PortalStore {
     const s = await state();
     return s.files.get(`${id}:${variant}`) ?? null;
   }
+  async createContractUploadUrl() {
+    return null;
+  }
+  async putContractUpload(id: string, pdf: Uint8Array) {
+    const s = await state();
+    s.uploads.set(id, pdf);
+  }
+  async readContractUpload(id: string) {
+    const s = await state();
+    return s.uploads.get(id) ?? null;
+  }
+  async discardContractUpload(id: string) {
+    const s = await state();
+    s.uploads.delete(id);
+  }
   async createContract(input: NewContractInput) {
     const s = await state();
+    if (s.contracts.some((x) => x.id === input.id)) throw new Error("This agreement was already sent.");
     const c: Contract = {
-      id: randomUUID(),
+      id: input.id,
       clientId: input.clientId,
       projectId: input.projectId,
       title: input.title.trim(),
@@ -435,6 +453,7 @@ export class DemoStore implements PortalStore {
     };
     s.contracts.push(c);
     s.files.set(`${c.id}:original`, input.pdf);
+    s.uploads.delete(c.id);
     return clone(c);
   }
   async signContract(input: SignatureInput, signer: Profile) {

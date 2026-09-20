@@ -1,9 +1,11 @@
 "use server";
 
+import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/auth";
+import { CONTRACT_PDF_MAX_BYTES, CONTRACT_PDF_MAX_LABEL, isUuid, looksLikePdf } from "@/lib/contracts";
 import { getStore } from "@/lib/store";
 import { PHASES, PROJECT_STATUSES, UPDATE_KINDS } from "@/lib/types";
 
@@ -151,8 +153,29 @@ export async function postUpdate(_prev: FormState, formData: FormData): Promise<
 
 /* Agreements ---------------------------------------------------------- */
 
-const MAX_PDF = 20 * 1024 * 1024;
+export type UploadTicket =
+  | { status: "ok"; id: string; url: string; headers: Record<string, string> }
+  | { status: "error"; message: string };
 
+/** Step 1 of sending an agreement: reserve an id and tell the browser where
+ *  to PUT the PDF. The file goes straight to storage rather than through a
+ *  server action because Vercel rejects request bodies over 4.5 MB before
+ *  the function even runs. */
+export async function createContractUpload(): Promise<UploadTicket> {
+  await requireAdmin();
+  const id = randomUUID();
+  try {
+    const target = await getStore().createContractUploadUrl(id);
+    return target
+      ? { status: "ok", id, ...target }
+      : { status: "ok", id, url: `/api/contracts/upload/${id}`, headers: { "Content-Type": "application/pdf" } };
+  } catch (e) {
+    return { status: "error", message: e instanceof Error ? e.message : "Could not prepare the upload." };
+  }
+}
+
+/** Step 2: once the PDF is in place, validate the stored bytes and record the
+ *  agreement. Runs the same checks the old single-step upload did. */
 export async function sendContract(_prev: FormState, formData: FormData): Promise<FormState> {
   await requireAdmin();
   const parsed = z
@@ -161,23 +184,27 @@ export async function sendContract(_prev: FormState, formData: FormData): Promis
       projectId: optional(64),
       title: z.string().trim().min(2, "Give the agreement a title."),
       description: optional(600),
+      uploadId: z.string().refine(isUuid, "The PDF didn't finish uploading. Please try again."),
     })
     .safeParse(Object.fromEntries(formData));
   if (!parsed.success) return firstIssue(parsed.error);
+  const { uploadId, ...fields } = parsed.data;
 
-  const file = formData.get("pdf");
-  if (!(file instanceof File) || file.size === 0) return { status: "error", message: "Attach the agreement as a PDF." };
-  if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
-    return { status: "error", message: "Only PDF files are supported." };
-  }
-  if (file.size > MAX_PDF) return { status: "error", message: "PDFs need to be under 20 MB." };
-
-  const pdf = new Uint8Array(await file.arrayBuffer());
-  if (String.fromCharCode(...pdf.slice(0, 4)) !== "%PDF") return { status: "error", message: "That file doesn't look like a PDF." };
-
+  const store = getStore();
   let id: string;
   try {
-    id = (await getStore().createContract({ ...parsed.data, pdf })).id;
+    const pdf = await store.readContractUpload(uploadId);
+    if (!pdf) return { status: "error", message: "The PDF didn't finish uploading. Please try again." };
+    const problem =
+      pdf.byteLength === 0 ? "The uploaded file is empty."
+      : pdf.byteLength > CONTRACT_PDF_MAX_BYTES ? `PDFs need to be under ${CONTRACT_PDF_MAX_LABEL}.`
+      : !looksLikePdf(pdf) ? "That file doesn't look like a PDF."
+      : null;
+    if (problem) {
+      await store.discardContractUpload(uploadId);
+      return { status: "error", message: problem };
+    }
+    id = (await store.createContract({ id: uploadId, ...fields, pdf })).id;
   } catch (e) {
     return failed(e);
   }

@@ -182,11 +182,22 @@ export type ProjectPatch = Partial<
 >;
 
 export interface NewContractInput {
+  /** The upload id the PDF was stored under; becomes the agreement's id. */
+  id: string;
   clientId: string;
   projectId: string | null;
   title: string;
   description: string | null;
+  /** The uploaded bytes, already validated by the caller. */
   pdf: Uint8Array;
+}
+
+/** Where the browser should PUT an agreement PDF. Uploading straight to
+ *  storage keeps multi-megabyte files out of the server's request path,
+ *  which Vercel caps at 4.5 MB. */
+export interface ContractUploadTarget {
+  url: string;
+  headers: Record<string, string>;
 }
 
 /** Everything the app needs from a backend. Implemented twice: an in-memory
@@ -214,6 +225,16 @@ export interface PortalStore {
   listContracts(clientId?: string): Promise<Contract[]>;
   getContract(id: string): Promise<ContractDetail | null>;
   getContractPdf(id: string, variant: "original" | "signed"): Promise<Uint8Array | null>;
+  /** A short-lived, direct-to-storage upload target for the PDF of a
+   *  not-yet-created agreement, or null when the store has no external
+   *  storage (the demo store) and the PDF should be PUT to the portal's own
+   *  upload route, which calls putContractUpload. */
+  createContractUploadUrl(id: string): Promise<ContractUploadTarget | null>;
+  putContractUpload(id: string, pdf: Uint8Array): Promise<void>;
+  /** The bytes uploaded under `id`, or null if the upload never finished. */
+  readContractUpload(id: string): Promise<Uint8Array | null>;
+  discardContractUpload(id: string): Promise<void>;
+  /** Records the agreement for an upload that has already been validated. */
   createContract(input: NewContractInput): Promise<Contract>;
   signContract(input: SignatureInput, signer: Profile): Promise<Contract>;
   voidContract(id: string): Promise<void>;

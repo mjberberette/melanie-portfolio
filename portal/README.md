@@ -180,6 +180,11 @@ first sign-in. From then on invite clients from **Studio admin → Invite client
   in Authentication → Providers → Email, Supabase wants a recent sign-in; recovery and
   invitation sessions count as recent, but a client who has been signed in for a long
   time should use the forgot-password flow instead of `/set-password`.
+- **Sending an agreement fails** — PDFs upload straight from the browser to the
+  `contracts` bucket (limit 25 MB, `application/pdf`; the form allows 20 MB). Files
+  larger than that are rejected with a clear message before anything is sent; compress
+  the PDF and try again. Uploads never pass through the Vercel function, whose 4.5 MB
+  request-body cap is what used to break agreements over that size.
 - **Signed in but no Studio admin link** — the email isn't in `PORTAL_ADMIN_EMAILS`
   (exact match, lower-case), or the variable was added after the last deploy; redeploy.
 
@@ -193,6 +198,9 @@ portal/
   src/app/auth/callback       turns email links into a session and routes by link type
   src/app/(portal)/           signed-in shell: overview, projects, contracts, profile, admin
   src/app/api/contracts/…/pdf streams original/signed PDFs to their owner
+  src/app/api/contracts/upload/[id]  receives agreement PDFs in demo mode (production
+                              uploads go straight from the browser to Supabase Storage
+                              via a signed URL — Vercel caps request bodies at 4.5 MB)
   src/app/api/avatars/[id]    streams a profile picture to its owner or an admin
   src/proxy.ts                refreshes the Supabase session cookie per request
   src/lib/auth.ts             getSession / requireSession / requireAdmin

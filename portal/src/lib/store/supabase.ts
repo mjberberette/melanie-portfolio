@@ -236,20 +236,40 @@ export class SupabaseStore implements PortalStore {
     if (error || !data) return null;
     return new Uint8Array(await data.arrayBuffer());
   }
+  /** The browser PUTs the PDF straight to this signed URL (valid for two
+   *  hours, single object, bucket limits of 25 MB / application/pdf still
+   *  apply), so the file never passes through the Vercel function, whose
+   *  request body is capped at 4.5 MB. */
+  async createContractUploadUrl(id: string) {
+    const { data, error } = await this.db.storage.from(BUCKET).createSignedUploadUrl(`${id}/original.pdf`);
+    if (error || !data) fail("Could not prepare the upload", error);
+    return { url: data.signedUrl, headers: { "Content-Type": "application/pdf" } };
+  }
+  async putContractUpload(id: string, pdf: Uint8Array) {
+    const up = await this.db.storage.from(BUCKET).upload(`${id}/original.pdf`, pdf, { contentType: "application/pdf", upsert: true });
+    if (up.error) fail("Could not store the PDF", up.error);
+  }
+  async readContractUpload(id: string) {
+    return this.getContractPdf(id, "original");
+  }
+  async discardContractUpload(id: string) {
+    await this.db.storage.from(BUCKET).remove([`${id}/original.pdf`]);
+  }
   async createContract(input: NewContractInput) {
     const { data, error } = await this.db
       .from("contracts")
       .insert({
-        client_id: input.clientId, project_id: input.projectId, title: input.title.trim(),
+        id: input.id, client_id: input.clientId, project_id: input.projectId, title: input.title.trim(),
         description: input.description?.trim() || null, document_sha256: sha256Hex(input.pdf),
       })
       .select("*")
       .single<ContractRow>();
-    if (error || !data) fail("Could not create agreement", error);
-    const up = await this.db.storage.from(BUCKET).upload(`${data.id}/original.pdf`, input.pdf, { contentType: "application/pdf" });
-    if (up.error) {
-      await this.db.from("contracts").delete().eq("id", data.id);
-      fail("Could not store the PDF", up.error);
+    if (error || !data) {
+      // 23505 = an agreement with this id already exists, so the stored PDF
+      // belongs to it and must stay put.
+      if (error?.code === "23505") throw new Error("This agreement was already sent.");
+      await this.discardContractUpload(input.id);
+      fail("Could not create agreement", error);
     }
     return contract(data);
   }
