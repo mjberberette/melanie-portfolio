@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
+import { safeNext } from "@/lib/auth-links";
 import { isDemoMode } from "@/lib/store";
 import { HashSession } from "./hash-session";
 import { LoginForm } from "./login-form";
@@ -10,7 +11,7 @@ export const metadata: Metadata = { title: "Sign in" };
 
 export default async function LoginPage({ searchParams }: PageProps<"/login">) {
   const { next: rawNext, error } = await searchParams;
-  const next = typeof rawNext === "string" && rawNext.startsWith("/") ? rawNext : "/";
+  const next = safeNext(rawNext);
   const linkError = typeof error === "string" ? error : null;
 
   if (await getSession()) redirect(next);

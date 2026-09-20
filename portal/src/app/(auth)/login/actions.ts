@@ -4,7 +4,7 @@ import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { DEMO_COOKIE, signDemoToken } from "@/lib/auth";
-import { afterPassword, safeNext } from "@/lib/auth-links";
+import { afterPassword, loginUrl, safeNext, setPasswordUrl } from "@/lib/auth-links";
 import { passwordSchema } from "@/lib/password";
 import { getStore, isDemoMode } from "@/lib/store";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -150,7 +150,7 @@ export async function updatePassword(_prev: PasswordState, formData: FormData): 
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect(`/login?next=${encodeURIComponent("/set-password")}`);
+  if (!user) redirect(loginUrl(setPasswordUrl(next)));
 
   const { error } = await supabase.auth.updateUser({ password });
   if (error) {

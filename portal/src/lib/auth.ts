@@ -1,7 +1,8 @@
 import "server-only";
 import { createHmac, timingSafeEqual } from "node:crypto";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { loginUrl, REQUEST_PATH_HEADER } from "@/lib/auth-links";
 import { splitName } from "@/lib/format";
 import { getStore, isDemoMode } from "@/lib/store";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -82,14 +83,22 @@ export async function getSession(): Promise<Profile | null> {
   return profile;
 }
 
+/** The path + query of the current request, as recorded by proxy.ts. */
+async function requestedPath(): Promise<string | null> {
+  const h = await headers();
+  return h.get(REQUEST_PATH_HEADER);
+}
+
+/** Redirects signed-out visitors to the login page and brings them back to
+ *  `next` — by default the page they were trying to open — once signed in. */
 export async function requireSession(next?: string): Promise<Profile> {
   const profile = await getSession();
-  if (!profile) redirect(next ? `/login?next=${encodeURIComponent(next)}` : "/login");
+  if (!profile) redirect(loginUrl(next ?? (await requestedPath())));
   return profile;
 }
 
 export async function requireAdmin(): Promise<Profile> {
-  const profile = await requireSession("/admin");
+  const profile = await requireSession();
   if (profile.role !== "admin") redirect("/");
   return profile;
 }

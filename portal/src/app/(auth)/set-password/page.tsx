@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
-import { afterPassword } from "@/lib/auth-links";
+import { afterPassword, loginUrl, setPasswordUrl } from "@/lib/auth-links";
 import { isDemoMode } from "@/lib/store";
 import { PasswordForm } from "../password-form";
 
@@ -20,7 +20,7 @@ export default async function SetPasswordPage({ searchParams }: PageProps<"/set-
   if (isDemoMode()) redirect(next);
 
   const profile = await getSession();
-  if (!profile) redirect(`/login?next=${encodeURIComponent("/set-password")}`);
+  if (!profile) redirect(loginUrl(setPasswordUrl(next)));
 
   const firstName = profile.fullName.trim().split(/\s+/)[0];
 

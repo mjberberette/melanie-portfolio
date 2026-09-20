@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import type { EmailOtpType } from "@supabase/supabase-js";
-import { destinationFor, safeNext } from "@/lib/auth-links";
+import { destinationFor, loginUrl, safeNext } from "@/lib/auth-links";
 import { isDemoMode } from "@/lib/store";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
   const { searchParams, origin } = request.nextUrl;
   const next = safeNext(searchParams.get("next"));
 
-  if (isDemoMode()) return NextResponse.redirect(`${origin}/login`);
+  if (isDemoMode()) return NextResponse.redirect(`${origin}${loginUrl(next)}`);
 
   const supabase = await createSupabaseServerClient();
   const code = searchParams.get("code");
