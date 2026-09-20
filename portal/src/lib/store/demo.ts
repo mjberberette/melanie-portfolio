@@ -1,6 +1,8 @@
 import { randomUUID } from "node:crypto";
+import { joinName, splitName } from "@/lib/format";
 import { buildAgreementPdf, sha256Hex, stampSignature } from "@/lib/pdf";
 import type {
+  AvatarFile,
   Contract,
   ContractDetail,
   Milestone,
@@ -11,9 +13,12 @@ import type {
   Profile,
   Project,
   ProjectDetail,
+  ProfilePatch,
   ProjectPatch,
   ProjectUpdate,
   SignatureInput,
+  WebsiteDetails,
+  WebsiteDetailsInput,
 } from "@/lib/types";
 
 /** In-memory backend for local previews and development. Seeded with one
@@ -27,6 +32,9 @@ interface DemoState {
   updates: ProjectUpdate[];
   contracts: Contract[];
   files: Map<string, Uint8Array>; // `${contractId}:original` | `${contractId}:signed`
+  websites: WebsiteDetails[];
+  hostingPasswords: Map<string, string>; // profile id → password (memory only; Vault in production)
+  avatars: Map<string, AvatarFile>; // profile id → image
 }
 
 export const DEMO_ADMIN_ID = "00000000-0000-4000-8000-000000000001";
@@ -41,17 +49,36 @@ async function seed(): Promise<DemoState> {
     id: DEMO_ADMIN_ID,
     email: "hello@melanieberberette.com",
     fullName: "Melanie Berberette",
+    firstName: "Melanie",
+    lastName: "Berberette",
+    phone: null,
     company: null,
     role: "admin",
+    avatarUrl: null,
     createdAt: daysAgo(400),
   };
   const client: Profile = {
     id: DEMO_CLIENT_ID,
     email: "jordan@everypeer.com",
     fullName: "Jordan Ellis",
+    firstName: "Jordan",
+    lastName: "Ellis",
+    phone: "+1 (415) 555-0137",
     company: "EveryPeer",
     role: "client",
+    avatarUrl: null,
     createdAt: daysAgo(64),
+  };
+  const clientWebsite: WebsiteDetails = {
+    profileId: client.id,
+    currentUrl: "https://www.everypeer.com",
+    newDomain: "everypeer.io",
+    hostingProvider: "Cloudflare",
+    hostingLoginUrl: "https://dash.cloudflare.com/login",
+    hostingUsername: "ops@everypeer.com",
+    hasHostingPassword: true,
+    hostingNotes: "Registrar and DNS are both on Cloudflare. 2FA goes to Jordan's phone.",
+    updatedAt: daysAgo(12),
   };
 
   const site: Project = {
@@ -249,6 +276,9 @@ async function seed(): Promise<DemoState> {
     updates,
     contracts: [msa, sow],
     files,
+    websites: [clientWebsite],
+    hostingPasswords: new Map([[client.id, "demo-only-not-a-real-password"]]),
+    avatars: new Map(),
   };
 }
 
@@ -276,12 +306,17 @@ export class DemoStore implements PortalStore {
     if (s.profiles.some((p) => p.email.toLowerCase() === input.email.toLowerCase())) {
       throw new Error("A client with that email already exists.");
     }
+    const { firstName, lastName } = splitName(input.fullName);
     const p: Profile = {
       id: randomUUID(),
       email: input.email.trim().toLowerCase(),
       fullName: input.fullName.trim(),
+      firstName,
+      lastName,
+      phone: null,
       company: input.company?.trim() || null,
       role: "client",
+      avatarUrl: null,
       createdAt: new Date().toISOString(),
     };
     s.profiles.push(p);
@@ -295,7 +330,11 @@ export class DemoStore implements PortalStore {
   async setProfileName(id: string, fullName: string) {
     const s = await state();
     const p = s.profiles.find((x) => x.id === id);
-    if (p) p.fullName = fullName.trim();
+    if (!p) return;
+    const { firstName, lastName } = splitName(fullName);
+    p.fullName = fullName.trim();
+    p.firstName = firstName;
+    p.lastName = lastName;
   }
 
   async listProjects(clientId?: string) {
@@ -434,5 +473,70 @@ export class DemoStore implements PortalStore {
     const s = await state();
     const c = s.contracts.find((x) => x.id === id);
     if (c && c.status === "awaiting_signature") c.status = "void";
+  }
+
+  private async mustProfile(id: string) {
+    const s = await state();
+    const p = s.profiles.find((x) => x.id === id);
+    if (!p) throw new Error("Profile not found.");
+    return { s, p };
+  }
+  async updateProfile(id: string, patch: ProfilePatch) {
+    const { p } = await this.mustProfile(id);
+    if (patch.firstName !== undefined) p.firstName = patch.firstName.trim();
+    if (patch.lastName !== undefined) p.lastName = patch.lastName.trim();
+    if (patch.firstName !== undefined || patch.lastName !== undefined) p.fullName = joinName(p.firstName, p.lastName);
+    if (patch.phone !== undefined) p.phone = patch.phone?.trim() || null;
+    if (patch.company !== undefined) p.company = patch.company?.trim() || null;
+    return clone(p);
+  }
+  async setProfileEmail(id: string, email: string) {
+    const { s, p } = await this.mustProfile(id);
+    const e = email.trim().toLowerCase();
+    if (s.profiles.some((x) => x.id !== id && x.email.toLowerCase() === e)) {
+      throw new Error("Another account already uses that email address.");
+    }
+    p.email = e;
+    return clone(p);
+  }
+  async getWebsiteDetails(profileId: string) {
+    const s = await state();
+    return clone(s.websites.find((w) => w.profileId === profileId) ?? null);
+  }
+  async saveWebsiteDetails(profileId: string, input: WebsiteDetailsInput) {
+    const { s } = await this.mustProfile(profileId);
+    const { hostingPassword, ...fields } = input;
+    if (hostingPassword === null) s.hostingPasswords.delete(profileId);
+    else if (hostingPassword !== undefined) s.hostingPasswords.set(profileId, hostingPassword);
+    const next: WebsiteDetails = {
+      ...fields,
+      profileId,
+      hasHostingPassword: s.hostingPasswords.has(profileId),
+      updatedAt: new Date().toISOString(),
+    };
+    const i = s.websites.findIndex((w) => w.profileId === profileId);
+    if (i === -1) s.websites.push(next);
+    else s.websites[i] = next;
+    return clone(next);
+  }
+  async revealHostingPassword(profileId: string) {
+    const s = await state();
+    return s.hostingPasswords.get(profileId) ?? null;
+  }
+  async getAvatar(profileId: string) {
+    const s = await state();
+    return s.avatars.get(profileId) ?? null;
+  }
+  async setAvatar(profileId: string, file: AvatarFile) {
+    const { s, p } = await this.mustProfile(profileId);
+    s.avatars.set(profileId, file);
+    p.avatarUrl = `/api/avatars/${profileId}?v=${Date.now().toString(36)}`;
+    return clone(p);
+  }
+  async removeAvatar(profileId: string) {
+    const { s, p } = await this.mustProfile(profileId);
+    s.avatars.delete(profileId);
+    p.avatarUrl = null;
+    return clone(p);
   }
 }

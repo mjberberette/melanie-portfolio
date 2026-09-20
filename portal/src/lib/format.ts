@@ -40,3 +40,14 @@ export function firstNameOf(name: string | null | undefined): string | null {
 export function todayISO(): string {
   return new Date().toISOString().slice(0, 10);
 }
+
+/** Splits a display name into first and last parts (everything after the
+ *  first word is the last name, so "Mary Anne Lee" → "Mary" / "Anne Lee"). */
+export function splitName(fullName: string | null | undefined): { firstName: string; lastName: string } {
+  const parts = (fullName ?? "").trim().split(/\s+/).filter(Boolean);
+  return { firstName: parts[0] ?? "", lastName: parts.slice(1).join(" ") };
+}
+
+export function joinName(firstName: string, lastName: string): string {
+  return [firstName.trim(), lastName.trim()].filter(Boolean).join(" ");
+}

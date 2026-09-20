@@ -64,23 +64,33 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
                 <TableHead>Email</TableHead>
                 <TableHead className="text-right">Projects</TableHead>
                 <TableHead className="text-right">Since</TableHead>
+                <TableHead className="text-right"><span className="sr-only">Manage</span></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {clients.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={5} className="py-8 text-center text-bone-dim">
+                  <TableCell colSpan={6} className="py-8 text-center text-bone-dim">
                     No clients yet — invite your first one.
                   </TableCell>
                 </TableRow>
               )}
               {clients.map((c) => (
                 <TableRow key={c.id}>
-                  <TableCell className="font-medium">{c.fullName || "—"}</TableCell>
+                  <TableCell className="font-medium">
+                    <Link href={`/admin/clients/${c.id}`} className="underline-offset-4 hover:underline">
+                      {c.fullName || "—"}
+                    </Link>
+                  </TableCell>
                   <TableCell className="text-bone-dim">{c.company ?? "—"}</TableCell>
                   <TableCell className="text-bone-dim">{c.email}</TableCell>
                   <TableCell className="text-right">{projects.filter((p) => p.clientId === c.id).length}</TableCell>
                   <TableCell className="text-right text-bone-dim">{formatDate(c.createdAt)}</TableCell>
+                  <TableCell className="text-right">
+                    <Link href={`/admin/clients/${c.id}`} className="text-sm underline-offset-4 hover:underline">
+                      Manage
+                    </Link>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

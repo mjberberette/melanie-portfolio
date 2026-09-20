@@ -2,6 +2,7 @@ import "server-only";
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { splitName } from "@/lib/format";
 import { getStore, isDemoMode } from "@/lib/store";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Profile } from "@/lib/types";
@@ -68,7 +69,7 @@ export async function getSession(): Promise<Profile | null> {
     const fromAuth = nameFromMetadata(user.user_metadata);
     if (fromAuth) {
       await store.setProfileName(profile.id, fromAuth);
-      profile = { ...profile, fullName: fromAuth };
+      profile = { ...profile, fullName: fromAuth, ...splitName(fromAuth) };
     }
   }
 

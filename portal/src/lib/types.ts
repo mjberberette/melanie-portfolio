@@ -3,10 +3,51 @@ export type Role = "client" | "admin";
 export interface Profile {
   id: string;
   email: string;
+  /** Display name; always kept equal to `${firstName} ${lastName}` when either is set. */
   fullName: string;
+  firstName: string;
+  lastName: string;
+  phone: string | null;
   company: string | null;
   role: Role;
+  /** Same-origin URL that streams the avatar (see /api/avatars/[id]), or null. */
+  avatarUrl: string | null;
   createdAt: string;
+}
+
+/** Fields a client can change about themselves (admins can also change company). */
+export interface ProfilePatch {
+  firstName?: string;
+  lastName?: string;
+  phone?: string | null;
+  company?: string | null;
+}
+
+/** The client's web presence: where they are today, where they're going, and
+ *  how to get into their domain/hosting account. The login fields are
+ *  sensitive — never log them and only show them to the owner or an admin.
+ *  The password itself is never part of this object: it's encrypted at rest
+ *  and only fetched on demand through `revealHostingPassword`. */
+export interface WebsiteDetails {
+  profileId: string;
+  currentUrl: string | null;
+  newDomain: string | null;
+  hostingProvider: string | null;
+  hostingLoginUrl: string | null;
+  hostingUsername: string | null;
+  hasHostingPassword: boolean;
+  hostingNotes: string | null;
+  updatedAt: string | null;
+}
+
+export type WebsiteDetailsInput = Omit<WebsiteDetails, "profileId" | "updatedAt" | "hasHostingPassword"> & {
+  /** `undefined` keeps the stored password, `null` removes it, a string replaces it. */
+  hostingPassword?: string | null;
+};
+
+export interface AvatarFile {
+  bytes: Uint8Array;
+  contentType: string;
 }
 
 export const PHASES = ["discovery", "strategy", "design", "build", "launch"] as const;
@@ -176,4 +217,18 @@ export interface PortalStore {
   createContract(input: NewContractInput): Promise<Contract>;
   signContract(input: SignatureInput, signer: Profile): Promise<Contract>;
   voidContract(id: string): Promise<void>;
+
+  /* Profile self-service (also used by admins on a client's behalf) */
+  updateProfile(id: string, patch: ProfilePatch): Promise<Profile>;
+  /** Changes the address on the profile row only; auth-level email changes
+   *  are handled by the caller (Supabase confirms them by email first). */
+  setProfileEmail(id: string, email: string): Promise<Profile>;
+  getWebsiteDetails(profileId: string): Promise<WebsiteDetails | null>;
+  saveWebsiteDetails(profileId: string, input: WebsiteDetailsInput): Promise<WebsiteDetails>;
+  /** Decrypts and returns the hosting password. Server-side only; callers must
+   *  have already checked the requester is the owner or an admin. */
+  revealHostingPassword(profileId: string): Promise<string | null>;
+  getAvatar(profileId: string): Promise<AvatarFile | null>;
+  setAvatar(profileId: string, file: AvatarFile): Promise<Profile>;
+  removeAvatar(profileId: string): Promise<Profile>;
 }

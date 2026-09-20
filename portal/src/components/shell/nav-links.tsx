@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FileSignature, FolderKanban, LayoutDashboard, ShieldCheck } from "lucide-react";
+import { FileSignature, FolderKanban, LayoutDashboard, ShieldCheck, UserRound } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const ICONS = { dashboard: LayoutDashboard, projects: FolderKanban, contracts: FileSignature, admin: ShieldCheck } as const;
+const ICONS = { dashboard: LayoutDashboard, projects: FolderKanban, contracts: FileSignature, admin: ShieldCheck, profile: UserRound } as const;
 
 export interface NavItem {
   href: string;

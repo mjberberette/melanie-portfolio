@@ -16,6 +16,10 @@ project on the `portal.` subdomain.
 - Projects: five-phase progress track (Discovery → Strategy → Design → Build → Launch),
   status, "what happens next", milestones, and a timeline of updates, deliverables,
   and decisions with links (Figma, Notion, staging…).
+- Profile: name, phone, sign-in email (changes are confirmed by email), a profile
+  picture, and website details — current site, the new domain, and the domain/hosting
+  login the studio needs at launch (visible only to the client and admins; the
+  password is encrypted at rest and only decrypted when someone presses "show").
 - Agreements: review the PDF in the browser, sign by drawing or typing, and download
   a countersigned copy. Signing appends a certificate page (name, email, time, IP,
   device, SHA-256 fingerprint of the exact document) and stamps a signature block on
@@ -57,7 +61,17 @@ real database locally.
 1. Create a project at [supabase.com](https://supabase.com) (free tier is fine).
 2. SQL Editor → paste and run `supabase/migrations/0001_portal.sql`. It creates the
    tables, row-level security, the profile trigger, and the private `contracts`
-   storage bucket.
+   storage bucket. Then run `0002_profile_details.sql` for the profile page: it adds
+   first/last name, phone, and avatar columns to `profiles`, the `client_websites`
+   table (website + hosting login, readable only by the owner and admins), the
+   private `avatars` bucket with per-user policies, and a trigger that mirrors
+   confirmed email changes onto `profiles`. Finally run
+   `0003_hosting_password_vault.sql`: hosting passwords are stored as
+   [Supabase Vault](https://supabase.com/docs/guides/database/vault) secrets
+   (encrypted at rest with a key Supabase manages — nothing to generate or set in
+   env), read and written only through two security-definer functions the service
+   role can call. If the `create extension supabase_vault` line fails, enable
+   **Vault** under Database → Extensions and run the file again.
 3. Authentication → Providers → Email: keep **Email** on, turn **Confirm email** on,
    and (recommended) turn **Allow new users to sign up** *off* — the app never creates
    users from the login page; you invite them from the admin area.
@@ -177,8 +191,9 @@ portal/
   src/app/(auth)/set-password create a password after accepting an invitation
   src/app/(auth)/forgot-password, reset-password   password recovery
   src/app/auth/callback       turns email links into a session and routes by link type
-  src/app/(portal)/           signed-in shell: overview, projects, contracts, admin
+  src/app/(portal)/           signed-in shell: overview, projects, contracts, profile, admin
   src/app/api/contracts/…/pdf streams original/signed PDFs to their owner
+  src/app/api/avatars/[id]    streams a profile picture to its owner or an admin
   src/proxy.ts                refreshes the Supabase session cookie per request
   src/lib/auth.ts             getSession / requireSession / requireAdmin
   src/lib/store/              PortalStore interface, demo store, Supabase store

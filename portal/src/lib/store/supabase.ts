@@ -1,6 +1,8 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { joinName, splitName } from "@/lib/format";
 import { sha256Hex, stampSignature } from "@/lib/pdf";
 import type {
+  AvatarFile,
   Contract,
   ContractDetail,
   Milestone,
@@ -11,13 +13,24 @@ import type {
   Profile,
   Project,
   ProjectDetail,
+  ProfilePatch,
   ProjectPatch,
   ProjectUpdate,
   SignatureInput,
+  WebsiteDetails,
+  WebsiteDetailsInput,
 } from "@/lib/types";
 
 /* Row shapes as stored (snake_case) */
-type ProfileRow = { id: string; email: string; full_name: string; company: string | null; role: Profile["role"]; created_at: string };
+type ProfileRow = {
+  id: string; email: string; full_name: string; first_name: string; last_name: string; phone: string | null;
+  company: string | null; role: Profile["role"]; avatar_path: string | null; created_at: string;
+};
+type WebsiteRow = {
+  profile_id: string; current_url: string | null; new_domain: string | null; hosting_provider: string | null;
+  hosting_login_url: string | null; hosting_username: string | null; hosting_password_secret_id: string | null;
+  hosting_notes: string | null; updated_at: string;
+};
 type ProjectRow = {
   id: string; client_id: string; name: string; summary: string; status: Project["status"]; phase: Project["phase"];
   start_date: string; target_launch: string | null; next_step: string | null; created_at: string;
@@ -33,8 +46,20 @@ type ContractRow = {
   signer_ip: string | null; signer_user_agent: string | null; created_at: string;
 };
 
-const profile = (r: ProfileRow): Profile => ({
-  id: r.id, email: r.email, fullName: r.full_name, company: r.company, role: r.role, createdAt: r.created_at,
+const profile = (r: ProfileRow): Profile => {
+  // Rows created before 0002 ran, or by a dashboard invite, only carry full_name.
+  const names = r.first_name || r.last_name ? { firstName: r.first_name, lastName: r.last_name } : splitName(r.full_name);
+  return {
+    id: r.id, email: r.email, fullName: r.full_name, ...names, phone: r.phone, company: r.company, role: r.role,
+    // The `v` query param changes with every upload so browsers never show a stale picture.
+    avatarUrl: r.avatar_path ? `/api/avatars/${r.id}?v=${encodeURIComponent(r.avatar_path.split("/").pop() ?? "")}` : null,
+    createdAt: r.created_at,
+  };
+};
+const website = (r: WebsiteRow): WebsiteDetails => ({
+  profileId: r.profile_id, currentUrl: r.current_url, newDomain: r.new_domain, hostingProvider: r.hosting_provider,
+  hostingLoginUrl: r.hosting_login_url, hostingUsername: r.hosting_username, hasHostingPassword: Boolean(r.hosting_password_secret_id),
+  hostingNotes: r.hosting_notes, updatedAt: r.updated_at,
 });
 const project = (r: ProjectRow): Project => ({
   id: r.id, clientId: r.client_id, name: r.name, summary: r.summary, status: r.status, phase: r.phase,
@@ -54,6 +79,8 @@ const contract = (r: ContractRow): Contract => ({
 });
 
 const BUCKET = "contracts";
+const AVATARS = "avatars";
+const AVATAR_EXT: Record<string, string> = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp", "image/gif": "gif" };
 
 function fail(msg: string, error: { message: string } | null): never {
   throw new Error(`${msg}: ${error?.message ?? "unknown error"}`);
@@ -94,9 +121,10 @@ export class SupabaseStore implements PortalStore {
     });
     if (error || !data.user) fail("Could not invite client", error);
     // The trigger runs synchronously with the insert, so the profile exists now.
+    const { firstName, lastName } = splitName(input.fullName);
     await this.db
       .from("profiles")
-      .update({ full_name: input.fullName.trim(), company: input.company?.trim() || null })
+      .update({ full_name: input.fullName.trim(), first_name: firstName, last_name: lastName, company: input.company?.trim() || null })
       .eq("id", data.user.id);
     return (await this.getProfile(data.user.id))!;
   }
@@ -104,7 +132,11 @@ export class SupabaseStore implements PortalStore {
     await this.db.from("profiles").update({ role: "admin" }).eq("id", id);
   }
   async setProfileName(id: string, fullName: string) {
-    await this.db.from("profiles").update({ full_name: fullName.trim() }).eq("id", id);
+    const { firstName, lastName } = splitName(fullName);
+    await this.db
+      .from("profiles")
+      .update({ full_name: fullName.trim(), first_name: firstName, last_name: lastName })
+      .eq("id", id);
   }
 
   async listProjects(clientId?: string) {
@@ -252,5 +284,98 @@ export class SupabaseStore implements PortalStore {
   }
   async voidContract(id: string) {
     await this.db.from("contracts").update({ status: "void" }).eq("id", id).eq("status", "awaiting_signature");
+  }
+
+  private async mustProfile(id: string): Promise<Profile> {
+    const p = await this.getProfile(id);
+    if (!p) throw new Error("Profile not found.");
+    return p;
+  }
+  async updateProfile(id: string, patch: ProfilePatch) {
+    const current = await this.mustProfile(id);
+    const row: Partial<ProfileRow> = {};
+    if (patch.firstName !== undefined || patch.lastName !== undefined) {
+      row.first_name = (patch.firstName ?? current.firstName).trim();
+      row.last_name = (patch.lastName ?? current.lastName).trim();
+      row.full_name = joinName(row.first_name, row.last_name);
+    }
+    if (patch.phone !== undefined) row.phone = patch.phone?.trim() || null;
+    if (patch.company !== undefined) row.company = patch.company?.trim() || null;
+    const { data, error } = await this.db.from("profiles").update(row).eq("id", id).select("*").single<ProfileRow>();
+    if (error || !data) fail("Could not save profile", error);
+    return profile(data);
+  }
+  async setProfileEmail(id: string, email: string) {
+    const e = email.trim().toLowerCase();
+    // Service-role path (admins editing a client): change the sign-in address
+    // in Auth without a confirmation round-trip, then mirror it on the profile.
+    const auth = await this.db.auth.admin.updateUserById(id, { email: e, email_confirm: true });
+    if (auth.error) fail("Could not update the sign-in email", auth.error);
+    const { data, error } = await this.db
+      .from("profiles")
+      .update({ email: e })
+      .eq("id", id)
+      .select("*")
+      .single<ProfileRow>();
+    if (error || !data) fail("Could not update email", error);
+    return profile(data);
+  }
+  async getWebsiteDetails(profileId: string) {
+    const { data, error } = await this.db.from("client_websites").select("*").eq("profile_id", profileId).maybeSingle<WebsiteRow>();
+    if (error) fail("Could not load website details", error);
+    return data ? website(data) : null;
+  }
+  async saveWebsiteDetails(profileId: string, input: WebsiteDetailsInput) {
+    const { error } = await this.db.from("client_websites").upsert({
+      profile_id: profileId, current_url: input.currentUrl, new_domain: input.newDomain, hosting_provider: input.hostingProvider,
+      hosting_login_url: input.hostingLoginUrl, hosting_username: input.hostingUsername,
+      hosting_notes: input.hostingNotes, updated_at: new Date().toISOString(),
+    });
+    if (error) fail("Could not save website details", error);
+    // The password never touches the table directly: a security-definer
+    // function stores it as a Vault secret (see 0003). Deliberately no logging.
+    if (input.hostingPassword !== undefined) {
+      const rpc = await this.db.rpc("set_hosting_password", { p_profile_id: profileId, p_password: input.hostingPassword ?? "" });
+      if (rpc.error) fail("Could not store the hosting password", rpc.error);
+    }
+    const saved = await this.getWebsiteDetails(profileId);
+    if (!saved) throw new Error("Could not save website details.");
+    return saved;
+  }
+  async revealHostingPassword(profileId: string) {
+    const { data, error } = await this.db.rpc("get_hosting_password", { p_profile_id: profileId });
+    if (error) fail("Could not read the hosting password", error);
+    return typeof data === "string" && data !== "" ? data : null;
+  }
+  private async avatarPath(profileId: string): Promise<string | null> {
+    const { data } = await this.db.from("profiles").select("avatar_path").eq("id", profileId).maybeSingle<{ avatar_path: string | null }>();
+    return data?.avatar_path ?? null;
+  }
+  async getAvatar(profileId: string) {
+    const path = await this.avatarPath(profileId);
+    if (!path) return null;
+    const { data, error } = await this.db.storage.from(AVATARS).download(path);
+    if (error || !data) return null;
+    return { bytes: new Uint8Array(await data.arrayBuffer()), contentType: data.type || "application/octet-stream" };
+  }
+  async setAvatar(profileId: string, file: AvatarFile) {
+    const previous = await this.avatarPath(profileId);
+    const path = `${profileId}/${Date.now().toString(36)}.${AVATAR_EXT[file.contentType] ?? "img"}`;
+    const up = await this.db.storage.from(AVATARS).upload(path, file.bytes, { contentType: file.contentType, cacheControl: "31536000" });
+    if (up.error) fail("Could not upload the picture", up.error);
+    const { data, error } = await this.db.from("profiles").update({ avatar_path: path }).eq("id", profileId).select("*").single<ProfileRow>();
+    if (error || !data) {
+      await this.db.storage.from(AVATARS).remove([path]);
+      fail("Could not save the picture", error);
+    }
+    if (previous && previous !== path) await this.db.storage.from(AVATARS).remove([previous]);
+    return profile(data);
+  }
+  async removeAvatar(profileId: string) {
+    const previous = await this.avatarPath(profileId);
+    const { data, error } = await this.db.from("profiles").update({ avatar_path: null }).eq("id", profileId).select("*").single<ProfileRow>();
+    if (error || !data) fail("Could not remove the picture", error);
+    if (previous) await this.db.storage.from(AVATARS).remove([previous]);
+    return profile(data);
   }
 }

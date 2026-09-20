@@ -17,6 +17,7 @@ export default async function PortalLayout({ children }: LayoutProps<"/">) {
     { href: "/", label: "Overview", icon: "dashboard" },
     { href: "/projects", label: "Projects", icon: "projects" },
     { href: "/contracts", label: "Agreements", icon: "contracts", badge: isAdmin ? undefined : awaiting || undefined },
+    { href: "/profile", label: "Your profile", icon: "profile" },
   ];
   if (isAdmin) items.push({ href: "/admin", label: "Studio admin", icon: "admin" });
 
