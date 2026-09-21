@@ -1,9 +1,9 @@
-import Link from "next/link";
 import { requireSession } from "@/lib/auth";
 import { getStore, isDemoMode } from "@/lib/store";
 import { NavLinks, type NavItem } from "@/components/shell/nav-links";
 import { MobileNav } from "@/components/shell/mobile-nav";
 import { UserCard } from "@/components/shell/user-card";
+import { Logo } from "@/components/logo";
 
 export default async function PortalLayout({ children }: LayoutProps<"/">) {
   const profile = await requireSession();
@@ -24,10 +24,7 @@ export default async function PortalLayout({ children }: LayoutProps<"/">) {
   return (
     <div className="flex min-h-screen">
       <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-border lg:flex">
-        <Link href="/" className="flex items-center gap-3 px-6 py-6">
-          <span className="mark size-7 text-bone" aria-hidden />
-          <span className="eyebrow text-bone">Client portal</span>
-        </Link>
+        <Logo href="/" className="px-6 py-6" />
         <nav className="flex-1 px-3" aria-label="Main">
           <NavLinks items={items} />
         </nav>
@@ -43,10 +40,7 @@ export default async function PortalLayout({ children }: LayoutProps<"/">) {
 
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-ink/85 px-4 py-3 backdrop-blur lg:hidden">
-          <Link href="/" className="flex items-center gap-2.5">
-            <span className="mark size-6 text-bone" aria-hidden />
-            <span className="eyebrow text-bone">Client portal</span>
-          </Link>
+          <Logo href="/" size="sm" />
           <MobileNav items={items} footer={<UserCard profile={profile} />} />
         </header>
         <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-8 sm:py-12">{children}</main>

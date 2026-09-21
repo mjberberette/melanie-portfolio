@@ -1,4 +1,5 @@
 import { AuthGlow } from "@/components/auth-glow";
+import { Logo } from "@/components/logo";
 
 /** Two-column shell shared by the sign-in, set-password, and reset-password
  *  pages: the pitch on the left, the form on the right, and an animated
@@ -8,9 +9,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
     <main className="relative isolate grid min-h-screen overflow-hidden lg:grid-cols-[1.1fr_1fr]">
       <AuthGlow />
       <section className="grain relative hidden flex-col justify-between overflow-hidden p-10 after:absolute after:inset-y-0 after:right-0 after:w-px after:bg-gradient-to-b after:from-border after:via-border after:to-transparent lg:flex">
-        <div className="flex items-center gap-3">
-          <span className="mark size-8 text-bone" aria-hidden />
-          <span className="eyebrow text-bone">Client portal</span>
+        <div>
+          <Logo href="/login" size="lg" />
         </div>
         <div className="max-w-xl">
           <h1 className="display text-6xl xl:text-7xl">
@@ -34,9 +34,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
       <section className="flex items-center justify-center p-6 sm:p-10">
         <div className="w-full max-w-md">
-          <div className="mb-10 flex items-center gap-3 lg:hidden">
-            <span className="mark size-7 text-bone" aria-hidden />
-            <span className="eyebrow text-bone">Client portal</span>
+          <div className="mb-10 lg:hidden">
+            <Logo href="/login" />
           </div>
           {children}
         </div>

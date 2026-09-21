@@ -139,13 +139,6 @@
   color: var(--bone-dim);
 }
 
-@utility mark {
-  display: inline-block;
-  background: currentColor;
-  mask: url("/logo/mb-mark.svg") center / contain no-repeat;
-  -webkit-mask: url("/logo/mb-mark.svg") center / contain no-repeat;
-}
-
 @utility grain {
   background-image:
     radial-gradient(60% 50% at 20% 0%, rgb(255 74 28 / 0.09), transparent 60%),
@@ -154,6 +147,75 @@
 
 @utility hairline-top {
   border-top: 1px solid var(--border);
+}
+
+/* Brand mark (components/logo.tsx). Mirrors the portfolio nav logo's Lottie
+   rig in CSS: each of the five pieces is a <path> wiped in top-to-bottom over
+   its own bounding box (clip-path percentages on SVG elements resolve against
+   the fill box), while the whole mark settles from 104.5% to 100%. The rig's
+   (0.1, 0) → (0.3, 1) ease is kept. Delays and durations arrive per piece as
+   custom properties. Plays once per mount; where a browser lacks clip-path
+   animation, or under prefers-reduced-motion, the finished mark shows. The
+   8° hover tilt is the portfolio's; the vermilion shift is the portal's. */
+.logo-mark {
+  display: block;
+  flex: none;
+  aspect-ratio: 454 / 562;
+  transition:
+    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+    color 0.3s ease;
+}
+
+.logo-mark svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.logo:hover .logo-mark,
+.logo:focus-visible .logo-mark {
+  transform: rotate(8deg);
+  color: var(--vermilion);
+}
+
+.logo-mark--animate svg {
+  animation: logo-settle 2.9s cubic-bezier(0.1, 0, 0.3, 1) both;
+}
+
+.logo-mark--animate path {
+  animation: logo-wipe var(--logo-duration, 0.4s) cubic-bezier(0.1, 0, 0.3, 1) var(--logo-delay, 0s) both;
+}
+
+@keyframes logo-wipe {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes logo-settle {
+  from {
+    transform: scale(1.045);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-mark,
+  .logo-mark svg,
+  .logo-mark path {
+    animation: none;
+    transition: none;
+  }
+  .logo:hover .logo-mark,
+  .logo:focus-visible .logo-mark {
+    transform: none;
+  }
 }
 
 /* Auth-page backdrop (components/auth-glow.tsx).
