@@ -18,7 +18,7 @@ export function ForgotPasswordForm({ email: initialEmail }: { email: string }) {
 
   if (state.status === "sent") {
     return (
-      <div className="rounded-2xl border border-border bg-card p-6" role="status">
+      <div className="surface p-6" role="status">
         <MailCheck className="size-6 text-vermilion" aria-hidden />
         <h2 className="display mt-4 text-2xl">Check your inbox</h2>
         <p className="mt-2 text-sm leading-relaxed text-bone-dim">

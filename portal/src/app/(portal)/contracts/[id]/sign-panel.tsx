@@ -30,7 +30,7 @@ export function SignPanel({ contractId, defaultName }: { contractId: string; def
   const ready = consent && name.trim().length >= 2 && (mode === "type" || Boolean(png));
 
   return (
-    <form action={action} className="space-y-6 rounded-2xl border border-vermilion/30 bg-card p-5 sm:p-6">
+    <form action={action} className="surface space-y-6 p-5 sm:p-6" data-tone="accent">
       <input type="hidden" name="contractId" value={contractId} />
       <input type="hidden" name="mode" value={mode} />
       <input type="hidden" name="signatureImage" value={png ?? ""} />
@@ -69,7 +69,7 @@ export function SignPanel({ contractId, defaultName }: { contractId: string; def
           <SignaturePad onChange={setPng} disabled={pending} />
         </TabsContent>
         <TabsContent value="type" className="mt-3">
-          <div className="grid h-40 place-items-center rounded-xl border border-input bg-ink-raised px-6">
+          <div className="grid h-40 place-items-center rounded-inner border border-input bg-ink px-6">
             <span className="font-serif text-4xl italic text-bone" aria-live="polite">
               {name.trim() || "Your name"}
             </span>
@@ -78,7 +78,7 @@ export function SignPanel({ contractId, defaultName }: { contractId: string; def
         </TabsContent>
       </Tabs>
 
-      <div className="flex items-start gap-3 rounded-xl border border-border bg-ink p-4">
+      <div className="flex items-start gap-3 surface-inner p-4">
         <input type="hidden" name="consent" value={consent ? "on" : ""} />
         <Checkbox id="consent" checked={consent} onCheckedChange={(v) => setConsent(v === true)} className="mt-0.5" />
         <Label htmlFor="consent" className="text-sm leading-relaxed font-normal text-bone-dim">

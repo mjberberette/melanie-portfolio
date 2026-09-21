@@ -48,6 +48,9 @@
   --color-ink: var(--ink);
   --color-ink-raised: var(--ink-raised);
   --color-ink-veil: var(--ink-veil);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-divider: var(--surface-divider);
   --color-success: var(--success);
   --color-warning: var(--warning);
   --radius-sm: calc(var(--radius) * 0.6);
@@ -59,12 +62,27 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/* Surface radii — the only two values cards, tables, and panels use.
+   `rounded-card` for the outer container, `rounded-inner` for tiles, rows,
+   and notices that sit inside one. Kept modest so corners never crowd the
+   text they frame. */
+@theme {
+  --radius-card: 0.625rem;
+  --radius-inner: 0.375rem;
+}
+
 /* The portal shares the portfolio's palette: ink surfaces, bone type, one
-   vermilion accent. Single dark theme — clients see the same brand they hired. */
+   vermilion accent. Single dark theme — clients see the same brand they hired.
+
+   Surfaces carry a cool slate tint (hue ≈ 228°) rather than flat black: the
+   complement of the vermilion accent, so orange badges and buttons read
+   warmer against it and the warm bone type gets a little temperature
+   contrast. Every card, table, and panel is built from the --surface-* set
+   below via the `surface` utilities, so a retint is a one-place change. */
 :root {
   --ink: #08080a;
-  --ink-raised: #101013;
-  --ink-veil: #17171c;
+  --ink-raised: #10121b;
+  --ink-veil: #171a26;
   --bone: #f1ede5;
   --bone-dim: #a3a099;
   --bone-faint: #6a6862;
@@ -73,9 +91,43 @@
   --success: #6fd39a;
   --warning: #f2c14e;
 
+  /* Card / table / panel surfaces */
+  --surface: #10121b; /* fill */
+  --surface-raised: #171a26; /* table header rows, hover rows, inner tiles */
+  --surface-border: rgb(170 182 222 / 0.14); /* 1px edge (≈ #22263a over the fill) */
+  --surface-highlight: rgb(196 206 244 / 0.3); /* top-edge catchlight the border fades from */
+  --surface-divider: rgb(170 182 222 / 0.08); /* row dividers inside a surface */
+  --surface-shadow:
+    0 1px 2px rgb(0 0 0 / 0.5),
+    0 20px 48px -24px rgb(0 0 0 / 0.9),
+    0 0 0 1px rgb(0 0 0 / 0.35),
+    0 0 64px -24px rgb(140 156 230 / 0.16);
+  --surface-shadow-hover:
+    0 1px 2px rgb(0 0 0 / 0.5),
+    0 24px 56px -24px rgb(0 0 0 / 0.95),
+    0 0 0 1px rgb(0 0 0 / 0.35),
+    0 0 72px -20px rgb(140 156 230 / 0.28);
+
+  /* Primary CTA: diagonal gradient, lighter warm orange top-left settling
+     into a deeper red-orange bottom-right, white label. Both stops are
+     chosen so white text clears WCAG AA (4.62:1 on --cta-from, 6.60:1 on
+     --cta-to); the brand vermilion itself only reaches 3.4:1 with white. */
+  --cta-from: #d44016;
+  --cta-to: #b02a0e;
+  --cta-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.22),
+    inset 0 0 0 1px rgb(255 255 255 / 0.08),
+    0 1px 2px rgb(0 0 0 / 0.35),
+    0 8px 20px -10px rgb(212 64 22 / 0.5);
+  --cta-shadow-hover:
+    inset 0 1px 0 rgb(255 255 255 / 0.3),
+    inset 0 0 0 1px rgb(255 255 255 / 0.12),
+    0 2px 4px rgb(0 0 0 / 0.35),
+    0 12px 32px -10px rgb(255 74 28 / 0.6);
+
   --background: var(--ink);
   --foreground: var(--bone);
-  --card: var(--ink-raised);
+  --card: var(--surface);
   --card-foreground: var(--bone);
   --popover: var(--ink-veil);
   --popover-foreground: var(--bone);
@@ -85,25 +137,25 @@
   --secondary-foreground: var(--bone);
   --muted: var(--ink-veil);
   --muted-foreground: var(--bone-dim);
-  --accent: #1f1f25;
+  --accent: #1e2231;
   --accent-foreground: var(--bone);
   --destructive: #ff5c5c;
-  --border: rgb(241 237 229 / 0.12);
-  --input: rgb(241 237 229 / 0.16);
+  --border: var(--surface-border);
+  --input: rgb(170 182 222 / 0.2);
   --ring: var(--vermilion);
   --chart-1: var(--vermilion);
   --chart-2: var(--vermilion-soft);
   --chart-3: var(--bone-dim);
   --chart-4: var(--bone-faint);
   --chart-5: var(--ink-veil);
-  --radius: 0.75rem;
+  --radius: 0.5rem;
   --sidebar: var(--ink);
   --sidebar-foreground: var(--bone);
   --sidebar-primary: var(--vermilion);
   --sidebar-primary-foreground: #14080a;
   --sidebar-accent: var(--ink-veil);
   --sidebar-accent-foreground: var(--bone);
-  --sidebar-border: rgb(241 237 229 / 0.12);
+  --sidebar-border: var(--surface-border);
   --sidebar-ring: var(--vermilion);
 }
 
@@ -147,6 +199,79 @@
 
 @utility hairline-top {
   border-top: 1px solid var(--border);
+}
+
+/* Surfaces — the one treatment for cards, tables, and panels.
+   The fill is painted on the padding box and the border on the border box,
+   so the 1px edge can be a gradient: a catchlight along the top that settles
+   into the plain border colour. The fill itself lightens a touch at the top.
+   Tones are opt-in via data-tone so a card can carry the accent or a status
+   colour without re-declaring the treatment. */
+@utility surface {
+  border-radius: var(--radius-card);
+  border: 1px solid transparent;
+  background:
+    linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--surface-fill, var(--surface)), white 2.5%),
+        var(--surface-fill, var(--surface)) 36%
+      )
+      padding-box,
+    linear-gradient(
+        180deg,
+        var(--surface-edge-top, var(--surface-highlight)),
+        var(--surface-edge, var(--surface-border)) 30%,
+        var(--surface-edge, var(--surface-border))
+      )
+      border-box;
+  box-shadow: var(--surface-shadow);
+
+  &[data-tone="accent"] {
+    --surface-fill: color-mix(in oklab, var(--surface), var(--vermilion) 7%);
+    --surface-edge: rgb(255 74 28 / 0.34);
+    --surface-edge-top: rgb(255 122 82 / 0.6);
+  }
+  &[data-tone="success"] {
+    --surface-fill: color-mix(in oklab, var(--surface), var(--success) 4%);
+    --surface-edge: rgb(111 211 154 / 0.28);
+    --surface-edge-top: rgb(111 211 154 / 0.5);
+  }
+  &[data-tone="warning"] {
+    --surface-fill: color-mix(in oklab, var(--surface), var(--warning) 5%);
+    --surface-edge: rgb(242 193 78 / 0.3);
+    --surface-edge-top: rgb(242 193 78 / 0.5);
+  }
+}
+
+/* A surface that is also a link or button: brightens its edge and lifts a
+   little further on hover. */
+@utility surface-interactive {
+  transition:
+    box-shadow 200ms ease,
+    background-color 200ms ease;
+  &:hover {
+    --surface-fill: color-mix(in oklab, var(--surface), white 1.5%);
+    --surface-edge: rgb(170 182 222 / 0.24);
+    --surface-edge-top: rgb(196 206 244 / 0.45);
+    box-shadow: var(--surface-shadow-hover);
+  }
+}
+
+/* A lighter tile that sits inside a surface (icon wells, milestone rows,
+   grouped fields) — the "inner card" of the reference. */
+@utility surface-inner {
+  border-radius: var(--radius-inner);
+  border: 1px solid var(--surface-divider);
+  background: var(--surface-raised);
+}
+
+/* Empty states and placeholders: same footprint as a surface, drawn as a
+   dashed outline over a half-strength fill so it reads as "nothing here yet"
+   rather than as content. */
+@utility surface-empty {
+  border-radius: var(--radius-card);
+  border: 1px dashed rgb(170 182 222 / 0.2);
+  background: color-mix(in srgb, var(--surface) 55%, transparent);
 }
 
 /* Brand mark (components/logo.tsx). Mirrors the portfolio nav logo's Lottie

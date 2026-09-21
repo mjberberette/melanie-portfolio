@@ -9,7 +9,7 @@ import { inviteClient, type FormState } from "../../actions";
 export function InviteClientForm() {
   const [state, action] = useActionState<FormState, FormData>(inviteClient, { status: "idle" });
   return (
-    <form action={action} className="space-y-5 rounded-2xl border border-border bg-card p-6">
+    <form action={action} className="surface space-y-5 p-6">
       <Field label="Full name" htmlFor="fullName">
         <Input id="fullName" name="fullName" required autoComplete="off" className="bg-ink-raised" />
       </Field>

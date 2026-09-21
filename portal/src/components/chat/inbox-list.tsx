@@ -40,14 +40,14 @@ export function InboxList({ initial, activeClientId, className }: { initial: Con
 
   if (rows.length === 0) {
     return (
-      <div className={cn("rounded-2xl border border-dashed border-border p-8 text-center", className)}>
+      <div className={cn("surface-empty p-8 text-center", className)}>
         <p className="text-sm text-bone-dim">No clients yet — invite your first one and their thread appears here.</p>
       </div>
     );
   }
 
   return (
-    <ul className={cn("divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card", className)} aria-label="Conversations">
+    <ul className={cn("surface divide-y divide-surface-divider overflow-hidden", className)} aria-label="Conversations">
       {rows.map((row) => {
         const active = row.clientId === activeClientId;
         const last = row.lastMessage;
@@ -58,8 +58,8 @@ export function InboxList({ initial, activeClientId, className }: { initial: Con
               href={`/admin/messages/${row.clientId}`}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "flex items-center gap-3 px-4 py-3.5 transition-colors outline-none hover:bg-ink-veil focus-visible:bg-ink-veil",
-                active && "bg-ink-veil",
+                "flex items-center gap-3 px-4 py-3.5 transition-colors outline-none hover:bg-surface-raised/60 focus-visible:bg-surface-raised/60",
+                active && "bg-surface-raised",
               )}
             >
               <Avatar className="size-10 shrink-0 border border-border">

@@ -28,7 +28,7 @@ export default async function ProjectsPage() {
       />
 
       {projects.length === 0 && (
-        <div className="rounded-2xl border border-dashed border-border p-10 text-center">
+        <div className="surface-empty p-10 text-center">
           <p className="display text-2xl">Nothing here yet</p>
           <p className="mt-2 text-sm text-bone-dim">Projects appear once an agreement is in place and work is scheduled.</p>
         </div>

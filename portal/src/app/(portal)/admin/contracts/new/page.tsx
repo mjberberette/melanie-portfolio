@@ -28,7 +28,7 @@ export default async function NewContractPage({ searchParams }: PageProps<"/admi
         </p>
       </div>
       {clients.length === 0 ? (
-        <p className="rounded-2xl border border-dashed border-border p-8 text-center text-sm text-bone-dim">
+        <p className="surface-empty p-8 text-center text-sm text-bone-dim">
           Invite a client first — agreements are sent to a client account.
         </p>
       ) : (

@@ -72,7 +72,7 @@ export function SendContractForm({ clients, projects, defaultClientId }: Props) 
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5 rounded-2xl border border-border bg-card p-6">
+    <form onSubmit={handleSubmit} className="surface space-y-5 p-6">
       <Field label="Client" htmlFor="clientId">
         <NativeSelect id="clientId" name="clientId" required value={clientId} onChange={(e) => setClientId(e.target.value)}>
           <option value="" disabled>
@@ -108,7 +108,7 @@ export function SendContractForm({ clients, projects, defaultClientId }: Props) 
       >
         <label
           htmlFor="pdf"
-          className="flex cursor-pointer items-center gap-3 rounded-xl border border-dashed border-input bg-ink-raised px-4 py-4 text-sm text-bone-dim transition-colors hover:border-bone/40 hover:text-bone"
+          className="flex cursor-pointer items-center gap-3 rounded-inner border border-dashed border-input bg-surface-raised/60 px-4 py-4 text-sm text-bone-dim transition-colors hover:border-bone/40 hover:text-bone"
         >
           <FileUp className="size-5 shrink-0" aria-hidden />
           <span className="min-w-0 flex-1 truncate">{file ? file.name : "Choose a PDF…"}</span>

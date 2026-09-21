@@ -10,7 +10,7 @@ export function ProjectCard({ project, clientName, href }: { project: Project; c
   return (
     <Link
       href={to}
-      className="group relative flex flex-col gap-5 rounded-2xl border border-border bg-card p-5 transition-colors hover:border-bone/25 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none sm:p-6"
+      className="group surface surface-interactive relative flex flex-col gap-5 p-5 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none sm:p-6"
     >
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">

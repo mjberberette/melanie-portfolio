@@ -31,7 +31,7 @@ export default async function ContractsPage() {
       />
 
       {contracts.length === 0 && (
-        <div className="rounded-2xl border border-dashed border-border p-10 text-center">
+        <div className="surface-empty p-10 text-center">
           <p className="display text-2xl">No agreements yet</p>
           <p className="mt-2 text-sm text-bone-dim">When a proposal or statement of work is ready to sign, it will appear here.</p>
         </div>

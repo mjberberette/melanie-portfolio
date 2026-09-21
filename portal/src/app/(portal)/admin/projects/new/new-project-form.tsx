@@ -13,7 +13,7 @@ import { createProject, type FormState } from "../../actions";
 export function NewProjectForm({ clients }: { clients: { id: string; label: string }[] }) {
   const [state, action] = useActionState<FormState, FormData>(createProject, { status: "idle" });
   return (
-    <form action={action} className="space-y-5 rounded-2xl border border-border bg-card p-6">
+    <form action={action} className="surface space-y-5 p-6">
       <Field label="Client" htmlFor="clientId">
         <NativeSelect id="clientId" name="clientId" required defaultValue="">
           <option value="" disabled>

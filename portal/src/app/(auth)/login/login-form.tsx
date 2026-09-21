@@ -34,7 +34,7 @@ export function LoginForm({ next, demoAccounts }: { next: string; demoAccounts: 
 
   if (linkState.status === "sent") {
     return (
-      <div className="rounded-2xl border border-border bg-card p-6" role="status">
+      <div className="surface p-6" role="status">
         <MailCheck className="size-6 text-vermilion" aria-hidden />
         <h2 className="display mt-4 text-2xl">Check your inbox</h2>
         <p className="mt-2 text-sm leading-relaxed text-bone-dim">
@@ -139,7 +139,7 @@ export function LoginForm({ next, demoAccounts }: { next: string; demoAccounts: 
       )}
 
       {demoAccounts && (
-        <div className="rounded-xl border border-dashed border-border p-4">
+        <div className="surface-empty p-4">
           <p className="eyebrow">Sample accounts</p>
           <ul className="mt-3 divide-y divide-border">
             {demoAccounts.map((a) => (

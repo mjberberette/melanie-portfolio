@@ -77,7 +77,7 @@ export default async function ManageProjectPage({ params }: PageProps<"/admin/pr
           <ul className="space-y-1.5">
             {project.milestones.length === 0 && <li className="text-sm text-bone-dim">No milestones yet.</li>}
             {project.milestones.map((m) => (
-              <li key={m.id} className="flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2">
+              <li key={m.id} className="surface-inner flex items-center gap-2 px-3 py-2">
                 <form action={toggleMilestone} className="flex items-center">
                   <input type="hidden" name="id" value={m.id} />
                   <input type="hidden" name="complete" value={m.completedAt ? "0" : "1"} />

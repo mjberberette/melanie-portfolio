@@ -43,7 +43,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
       />
 
       {invited === "1" && (
-        <p role="status" className="rounded-xl border border-success/30 bg-success/10 px-4 py-3 text-sm">
+        <p role="status" className="rounded-lg border border-success/30 bg-success/10 px-4 py-3 text-sm">
           Client invited.{" "}
           {isDemoMode()
             ? "In demo mode no email is sent — they can sign in with their address from the login page."
@@ -55,7 +55,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
         <h2 id="clients" className="eyebrow text-bone">
           Clients · {clients.length}
         </h2>
-        <div className="overflow-hidden rounded-2xl border border-border">
+        <div className="surface overflow-hidden">
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
@@ -70,7 +70,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
             <TableBody>
               {clients.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={6} className="py-8 text-center text-bone-dim">
+                  <TableCell colSpan={6} className="py-10 text-center text-bone-dim">
                     No clients yet — invite your first one.
                   </TableCell>
                 </TableRow>
@@ -102,7 +102,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
         <h2 id="projects" className="eyebrow text-bone">
           Projects · {projects.length}
         </h2>
-        <div className="overflow-hidden rounded-2xl border border-border">
+        <div className="surface overflow-hidden">
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
@@ -117,7 +117,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
             <TableBody>
               {projects.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={6} className="py-8 text-center text-bone-dim">
+                  <TableCell colSpan={6} className="py-10 text-center text-bone-dim">
                     No projects yet.
                   </TableCell>
                 </TableRow>
@@ -147,7 +147,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
         <h2 id="agreements" className="eyebrow text-bone">
           Agreements · {contracts.length}
         </h2>
-        <div className="overflow-hidden rounded-2xl border border-border">
+        <div className="surface overflow-hidden">
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
@@ -162,7 +162,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
             <TableBody>
               {contracts.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={6} className="py-8 text-center text-bone-dim">
+                  <TableCell colSpan={6} className="py-10 text-center text-bone-dim">
                     Nothing sent yet.
                   </TableCell>
                 </TableRow>

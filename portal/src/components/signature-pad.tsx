@@ -121,7 +121,7 @@ export function SignaturePad({ onChange, disabled }: { onChange: (png: string | 
           ref={canvasRef}
           role="img"
           aria-label="Signature drawing area. Draw your signature with your finger, pen, or mouse."
-          className="h-40 w-full touch-none rounded-xl border border-input bg-ink-raised"
+          className="h-40 w-full touch-none rounded-inner border border-input bg-ink"
           onPointerDown={start}
           onPointerMove={move}
           onPointerUp={end}

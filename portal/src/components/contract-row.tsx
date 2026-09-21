@@ -8,9 +8,9 @@ import type { Contract } from "@/lib/types";
 export function ContractRow({ contract, clientName, projectName }: { contract: Contract; clientName?: string; projectName?: string | null }) {
   const awaiting = contract.status === "awaiting_signature";
   return (
-    <li className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-5 sm:flex-row sm:items-center sm:justify-between">
+    <li className="surface flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex min-w-0 items-start gap-4">
-        <span className="mt-0.5 grid size-10 shrink-0 place-items-center rounded-lg border border-border bg-ink text-bone-dim">
+        <span className="surface-inner mt-0.5 grid size-10 shrink-0 place-items-center text-bone-dim">
           <FileText className="size-4" aria-hidden />
         </span>
         <div className="min-w-0">

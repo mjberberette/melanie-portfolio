@@ -76,7 +76,7 @@ export default async function OverviewPage() {
               />
             ))}
             {needsInput.map((p) => (
-              <li key={p.id} className="flex flex-col gap-4 rounded-2xl border border-vermilion/30 bg-vermilion/5 p-5 sm:flex-row sm:items-center sm:justify-between">
+              <li key={p.id} data-tone="accent" className="surface flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
                 <div className="min-w-0">
                   <p className="eyebrow text-vermilion-soft">{p.name}</p>
                   <p className="mt-2 text-sm leading-relaxed">{p.nextStep ?? "Your input is needed to continue."}</p>
@@ -106,7 +106,7 @@ export default async function OverviewPage() {
             ))}
           </div>
         ) : (
-          <div className="rounded-2xl border border-dashed border-border p-8 text-center">
+          <div className="surface-empty p-8 text-center">
             <p className="text-sm text-bone-dim">No active projects. {projects.length ? "Completed work is under All projects." : ""}</p>
           </div>
         )}
@@ -124,7 +124,7 @@ export default async function OverviewPage() {
               ))}
             </ol>
           ) : (
-            <p className="rounded-2xl border border-dashed border-border p-8 text-center text-sm text-bone-dim">
+            <p className="surface-empty p-8 text-center text-sm text-bone-dim">
               Updates from each phase will appear here as work progresses.
             </p>
           )}
@@ -134,7 +134,7 @@ export default async function OverviewPage() {
           <h2 id="agreements" className="eyebrow text-bone">
             Agreements
           </h2>
-          <div className="rounded-2xl border border-border bg-card p-5">
+          <div className="surface p-5 sm:p-6">
             <dl className="grid grid-cols-2 gap-4">
               <div>
                 <dt className="eyebrow">Signed</dt>

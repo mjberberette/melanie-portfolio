@@ -28,7 +28,7 @@ const IDLE: FormState = { status: "idle" };
 export function ProfileDetailsForm({ profile, admin = false }: { profile: Profile; admin?: boolean }) {
   const [state, action] = useActionState<FormState, FormData>(saveProfileDetails, IDLE);
   return (
-    <form action={action} className="space-y-5 rounded-2xl border border-border bg-card p-5 sm:p-6">
+    <form action={action} className="surface space-y-5 p-5 sm:p-6">
       <input type="hidden" name="profileId" value={profile.id} />
       <div className="grid gap-5 sm:grid-cols-2">
         <Field label="First name" htmlFor="firstName">
@@ -80,13 +80,13 @@ export function EmailForm({
       ? "You'll get a confirmation link at both your current and your new address. The change takes effect once you've confirmed — you keep signing in with the current one until then."
       : "Changes the client's sign-in address immediately, without a confirmation email.";
   return (
-    <form action={action} className="space-y-5 rounded-2xl border border-border bg-card p-5 sm:p-6">
+    <form action={action} className="surface space-y-5 p-5 sm:p-6">
       <input type="hidden" name="profileId" value={profile.id} />
       <Field label="Email" htmlFor="email" hint={hint}>
         <Input key={profile.email} id="email" name="email" type="email" defaultValue={profile.email} required autoComplete="email" className="bg-ink-raised" />
       </Field>
       {pendingEmail && (
-        <p role="status" className="rounded-xl border border-warning/30 bg-warning/10 px-4 py-3 text-sm">
+        <p role="status" className="rounded-inner border border-warning/30 bg-warning/10 px-4 py-3 text-sm">
           A change to <span className="font-medium">{pendingEmail}</span> is waiting for confirmation. Open the links in the emails we sent to finish it.
         </p>
       )}
@@ -181,7 +181,7 @@ export function WebsiteForm({ profileId, details }: { profileId: string; details
   // fields remount with the fresh defaults after each save.
   const version = details?.updatedAt ?? "new";
   return (
-    <form action={action} autoComplete="off" className="space-y-8 rounded-2xl border border-border bg-card p-5 sm:p-6">
+    <form action={action} autoComplete="off" className="surface space-y-8 p-5 sm:p-6">
       <input type="hidden" name="profileId" value={profileId} />
 
       <Fragment key={version}>
@@ -194,7 +194,7 @@ export function WebsiteForm({ profileId, details }: { profileId: string; details
           </Field>
         </div>
 
-        <fieldset className="space-y-5 rounded-xl border border-dashed border-border p-4 sm:p-5">
+        <fieldset className="surface-inner space-y-5 p-4 sm:p-5">
           <legend className="eyebrow px-2 text-bone">Domain &amp; hosting login</legend>
           <p className="text-xs leading-relaxed text-bone-faint">
             Where your domain and hosting are managed, so DNS and launch can happen without a scramble. Only you and the studio can see this.
@@ -272,7 +272,7 @@ export function AvatarUploader({ profile }: { profile: Profile }) {
   const message: FormState = clientError ? { status: "error", message: clientError } : last === "upload" ? state : removeState;
 
   return (
-    <div className="space-y-4 rounded-2xl border border-border bg-card p-5 sm:p-6">
+    <div className="surface space-y-4 p-5 sm:p-6">
       <form ref={formRef} action={action} onSubmit={() => setLast("upload")} className="flex flex-col items-center gap-4 text-center">
         <input type="hidden" name="profileId" value={profile.id} />
         <label htmlFor={inputId} className="group relative cursor-pointer rounded-full outline-none focus-within:ring-3 focus-within:ring-ring/50">

@@ -53,7 +53,7 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[id]"
         <p className="max-w-2xl text-base leading-relaxed text-bone-dim">{project.summary}</p>
       </header>
 
-      <section className="rounded-2xl border border-border bg-card p-5 sm:p-6" aria-labelledby="phase">
+      <section className="surface p-5 sm:p-6" aria-labelledby="phase">
         <div className="mb-5 flex items-baseline justify-between gap-4">
           <h2 id="phase" className="eyebrow text-bone">
             {project.status === "complete" ? "Launched" : `Now in ${PHASE_LABELS[project.phase]}`}
@@ -67,10 +67,8 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[id]"
 
       {project.nextStep && project.status !== "complete" && (
         <section
-          className={cn(
-            "rounded-2xl border p-5 sm:p-6",
-            project.status === "awaiting_client" ? "border-vermilion/40 bg-vermilion/5" : "border-border bg-card",
-          )}
+          className="surface p-5 sm:p-6"
+          data-tone={project.status === "awaiting_client" ? "accent" : undefined}
           aria-labelledby="next"
         >
           <h2 id="next" className={cn("eyebrow", project.status === "awaiting_client" ? "text-vermilion-soft" : "text-bone")}>
@@ -86,7 +84,7 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[id]"
             <h2 id="facts" className="eyebrow text-bone">
               At a glance
             </h2>
-            <dl className="mt-4 divide-y divide-border rounded-2xl border border-border bg-card px-5">
+            <dl className="surface mt-4 divide-y divide-surface-divider px-5">
               {[
                 ["Started", formatDate(project.startDate)],
                 [
@@ -117,7 +115,7 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[id]"
                     <li
                       key={m.id}
                       className={cn(
-                        "flex items-start gap-3 rounded-xl px-3 py-2.5",
+                        "flex items-start gap-3 rounded-inner px-3 py-2.5",
                         isNext && "border border-vermilion/30 bg-vermilion/5",
                       )}
                     >
@@ -167,7 +165,7 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[id]"
               ))}
             </ol>
           ) : (
-            <p className="mt-4 rounded-2xl border border-dashed border-border p-8 text-center text-sm text-bone-dim">
+            <p className="surface-empty mt-4 p-8 text-center text-sm text-bone-dim">
               No updates posted yet. You&apos;ll see deliverables, decisions, and progress notes here.
             </p>
           )}

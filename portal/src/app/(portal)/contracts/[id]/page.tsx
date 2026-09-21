@@ -60,7 +60,7 @@ export default async function ContractPage({ params }: PageProps<"/contracts/[id
       </header>
 
       <div className="grid gap-8 lg:grid-cols-[1.5fr_1fr] lg:items-start">
-        <section aria-label="Agreement document" className="overflow-hidden rounded-2xl border border-border bg-[#1a1a1f]">
+        <section aria-label="Agreement document" className="surface overflow-hidden">
           <iframe
             src={`${contract.status === "signed" ? signedUrl : pdfUrl}#toolbar=0&view=FitH`}
             title={`${contract.title} document`}
@@ -72,20 +72,20 @@ export default async function ContractPage({ params }: PageProps<"/contracts/[id
           {canSign && <SignPanel contractId={contract.id} defaultName={profile.fullName} />}
 
           {contract.status === "awaiting_signature" && !isOwner && (
-            <div className="rounded-2xl border border-border bg-card p-5 text-sm text-bone-dim">
+            <div className="surface p-5 text-sm text-bone-dim">
               Sent {formatDate(contract.sentAt)} to {contract.client.fullName} ({contract.client.email}). Waiting for their signature.
             </div>
           )}
 
           {contract.status === "signed" && (
-            <section className="rounded-2xl border border-success/30 bg-card p-5 sm:p-6" aria-labelledby="cert">
+            <section className="surface p-5 sm:p-6" data-tone="success" aria-labelledby="cert">
               <div className="flex items-center gap-2">
                 <ShieldCheck className="size-4 text-success" aria-hidden />
                 <h2 id="cert" className="eyebrow text-bone">
                   Signature certificate
                 </h2>
               </div>
-              <dl className="mt-4 divide-y divide-border text-sm">
+              <dl className="mt-4 divide-y divide-surface-divider text-sm">
                 {[
                   ["Signed by", contract.signerName],
                   ["Email", contract.signerEmail],
@@ -111,12 +111,12 @@ export default async function ContractPage({ params }: PageProps<"/contracts/[id
           )}
 
           {contract.status === "void" && (
-            <div className="rounded-2xl border border-border bg-card p-5 text-sm text-bone-dim">
+            <div className="surface p-5 text-sm text-bone-dim">
               This agreement was withdrawn before it was signed and is kept for reference only.
             </div>
           )}
 
-          <div className="rounded-2xl border border-border p-5 text-xs leading-relaxed text-bone-faint">
+          <div className="surface-empty p-5 text-xs leading-relaxed text-bone-faint">
             <p className="eyebrow mb-2">Details</p>
             <p>Sent {formatDateTime(contract.sentAt)}.</p>
             <p className="mt-1">Prefer to read on paper? Open the PDF and print it; you can still sign here afterwards.</p>

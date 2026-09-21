@@ -21,7 +21,7 @@ export default async function AdminInboxPage() {
         className="[&_h1]:text-3xl sm:[&_h1]:text-4xl"
       />
       <InboxShell rows={rows}>
-        <div className="flex h-[calc(100dvh-16rem)] min-h-[22rem] flex-col items-center justify-center rounded-2xl border border-dashed border-border p-10 text-center">
+        <div className="flex h-[calc(100dvh-16rem)] min-h-[22rem] flex-col items-center justify-center surface-empty p-10 text-center">
           <MessageSquareDashed className="size-6 text-bone-faint" aria-hidden />
           <p className="display mt-4 text-2xl">Pick a conversation</p>
           <p className="mt-2 max-w-xs text-sm text-bone-dim">Choose a client on the left to read their thread and reply.</p>

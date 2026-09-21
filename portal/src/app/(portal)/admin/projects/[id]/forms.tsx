@@ -21,7 +21,7 @@ const KIND_LABELS = { update: "Progress update", deliverable: "Deliverable", dec
 export function EditProjectForm({ project }: { project: Project }) {
   const [state, action] = useActionState<FormState, FormData>(updateProject, { status: "idle" });
   return (
-    <form action={action} className="space-y-5 rounded-2xl border border-border bg-card p-5 sm:p-6">
+    <form action={action} className="surface space-y-5 p-5 sm:p-6">
       <input type="hidden" name="id" value={project.id} />
       <Field label="Project name" htmlFor="name">
         <Input id="name" name="name" defaultValue={project.name} required className="bg-ink-raised" />
@@ -76,7 +76,7 @@ export function MilestoneForm({ projectId }: { projectId: string }) {
     if (state.status === "ok") ref.current?.reset();
   }, [state]);
   return (
-    <form ref={ref} action={action} className="space-y-3 rounded-2xl border border-dashed border-border p-4">
+    <form ref={ref} action={action} className="surface-empty space-y-3 p-4">
       <input type="hidden" name="projectId" value={projectId} />
       <div className="grid gap-3 sm:grid-cols-[1fr_9rem]">
         <Input name="title" placeholder="New milestone" required aria-label="Milestone title" className="bg-ink-raised" />
@@ -99,7 +99,7 @@ export function UpdateForm({ projectId }: { projectId: string }) {
     if (state.status === "ok") ref.current?.reset();
   }, [state]);
   return (
-    <form ref={ref} action={action} className="space-y-4 rounded-2xl border border-border bg-card p-5 sm:p-6">
+    <form ref={ref} action={action} className="surface space-y-4 p-5 sm:p-6">
       <input type="hidden" name="projectId" value={projectId} />
       <div className="grid gap-4 sm:grid-cols-[11rem_1fr]">
         <Field label="Type" htmlFor="kind">

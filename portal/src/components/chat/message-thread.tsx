@@ -221,7 +221,7 @@ export function MessageThread({
   const remaining = MESSAGE_MAX_LENGTH - draft.length;
 
   return (
-    <div className={cn("flex min-h-0 flex-col overflow-hidden rounded-2xl border border-border bg-card", className)}>
+    <div className={cn("surface flex min-h-0 flex-col overflow-hidden", className)}>
       <div ref={listRef} onScroll={onScroll} className="relative flex-1 overflow-y-auto px-4 py-5 sm:px-6" aria-live="polite" aria-label="Messages">
         <div ref={contentRef} className="min-h-full space-y-6">
           {messages.length === 0 && (
@@ -256,10 +256,10 @@ export function MessageThread({
                         <div
                           key={m.id}
                           className={cn(
-                            "rounded-2xl px-3.5 py-2 text-[0.9375rem] leading-relaxed wrap-break-word",
-                            g.mine ? "rounded-br-md bg-vermilion text-primary-foreground" : "rounded-bl-md border border-border bg-ink-veil text-bone",
+                            "rounded-xl px-3.5 py-2 text-[0.9375rem] leading-relaxed wrap-break-word",
+                            g.mine ? "rounded-br-md bg-[linear-gradient(135deg,var(--cta-from),var(--cta-to))] text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.16)]" : "rounded-bl-md border border-surface-divider bg-surface-raised text-bone",
                             m.pending && "opacity-60",
-                            m.failed && "border border-destructive/60 bg-destructive/10 text-bone",
+                            m.failed && "border border-destructive/60 bg-destructive/10 bg-none text-bone shadow-none",
                           )}
                         >
                           <MessageBody body={m.body} className="whitespace-pre-wrap" />
@@ -318,9 +318,9 @@ export function MessageThread({
           e.preventDefault();
           if (draft.trim()) void send(draft);
         }}
-        className="border-t border-border bg-ink-raised p-3 sm:p-4"
+        className="border-t border-surface-divider bg-surface-raised/40 p-3 sm:p-4"
       >
-        <div className="flex items-end gap-2 rounded-xl border border-input bg-ink px-3 py-2 focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50">
+        <div className="flex items-end gap-2 rounded-lg border border-input bg-ink px-3 py-2 focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50">
           <textarea
             ref={textareaRef}
             value={draft}
