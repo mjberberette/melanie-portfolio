@@ -5,6 +5,9 @@ import type {
   AvatarFile,
   Contract,
   ContractDetail,
+  Conversation,
+  ConversationSummary,
+  Message,
   Milestone,
   NewClientInput,
   NewContractInput,
@@ -16,6 +19,7 @@ import type {
   ProfilePatch,
   ProjectPatch,
   ProjectUpdate,
+  Role,
   SignatureInput,
   WebsiteDetails,
   WebsiteDetailsInput,
@@ -44,6 +48,10 @@ type ContractRow = {
   id: string; client_id: string; project_id: string | null; title: string; description: string | null; status: Contract["status"];
   document_sha256: string; sent_at: string; signed_at: string | null; signer_name: string | null; signer_email: string | null;
   signer_ip: string | null; signer_user_agent: string | null; created_at: string;
+};
+type ConversationRow = { id: string; client_id: string; created_at: string; last_message_at: string | null };
+type MessageRow = {
+  id: string; conversation_id: string; sender_id: string; sender_role: Role; body: string; created_at: string; read_at: string | null;
 };
 
 const profile = (r: ProfileRow): Profile => {
@@ -76,6 +84,13 @@ const contract = (r: ContractRow): Contract => ({
   id: r.id, clientId: r.client_id, projectId: r.project_id, title: r.title, description: r.description, status: r.status,
   documentSha256: r.document_sha256, sentAt: r.sent_at, signedAt: r.signed_at, signerName: r.signer_name,
   signerEmail: r.signer_email, signerIp: r.signer_ip, signerUserAgent: r.signer_user_agent, createdAt: r.created_at,
+});
+const conversation = (r: ConversationRow): Conversation => ({
+  id: r.id, clientId: r.client_id, createdAt: r.created_at, lastMessageAt: r.last_message_at,
+});
+const message = (r: MessageRow): Message => ({
+  id: r.id, conversationId: r.conversation_id, senderId: r.sender_id, senderRole: r.sender_role, body: r.body,
+  createdAt: r.created_at, readAt: r.read_at,
 });
 
 const BUCKET = "contracts";
@@ -397,5 +412,97 @@ export class SupabaseStore implements PortalStore {
     if (error || !data) fail("Could not remove the picture", error);
     if (previous) await this.db.storage.from(AVATARS).remove([previous]);
     return profile(data);
+  }
+
+  async getOrCreateConversation(clientId: string) {
+    const existing = await this.db.from("conversations").select("*").eq("client_id", clientId).maybeSingle<ConversationRow>();
+    if (existing.data) return conversation(existing.data);
+    // Two first visits at once (say, the client and Melanie opening the
+    // thread together) can both find nothing: the unique client_id makes
+    // the loser's insert fail, so re-read instead of throwing.
+    const inserted = await this.db.from("conversations").insert({ client_id: clientId }).select("*").single<ConversationRow>();
+    if (inserted.data) return conversation(inserted.data);
+    const retry = await this.db.from("conversations").select("*").eq("client_id", clientId).maybeSingle<ConversationRow>();
+    if (!retry.data) fail("Could not open the conversation", inserted.error);
+    return conversation(retry.data);
+  }
+  async getConversation(id: string) {
+    const { data } = await this.db.from("conversations").select("*").eq("id", id).maybeSingle<ConversationRow>();
+    return data ? conversation(data) : null;
+  }
+  async listConversations(): Promise<ConversationSummary[]> {
+    const { data, error } = await this.db
+      .from("conversations")
+      .select("*")
+      .order("last_message_at", { ascending: false, nullsFirst: false })
+      .order("created_at", { ascending: false });
+    if (error) fail("Could not load the inbox", error);
+    const rows = (data ?? []) as ConversationRow[];
+    if (rows.length === 0) return [];
+    const ids = rows.map((r) => r.id);
+    const [{ data: profiles }, { data: unread }, latest] = await Promise.all([
+      this.db.from("profiles").select("*").in("id", rows.map((r) => r.client_id)),
+      this.db.from("messages").select("conversation_id").in("conversation_id", ids).eq("sender_role", "client").is("read_at", null),
+      // One small query per thread beats pulling every message; the studio
+      // has a handful of clients, not thousands.
+      Promise.all(
+        ids.map((id) =>
+          this.db.from("messages").select("*").eq("conversation_id", id).order("created_at", { ascending: false }).limit(1).maybeSingle<MessageRow>(),
+        ),
+      ),
+    ]);
+    const byId = new Map(((profiles ?? []) as ProfileRow[]).map((p) => [p.id, profile(p)]));
+    const unreadCounts = new Map<string, number>();
+    for (const u of (unread ?? []) as { conversation_id: string }[]) {
+      unreadCounts.set(u.conversation_id, (unreadCounts.get(u.conversation_id) ?? 0) + 1);
+    }
+    return rows.flatMap((r, i) => {
+      const client = byId.get(r.client_id);
+      if (!client) return [];
+      const last = latest[i]?.data;
+      return [{ ...conversation(r), client, lastMessage: last ? message(last) : null, unreadCount: unreadCounts.get(r.id) ?? 0 }];
+    });
+  }
+  async listMessages(conversationId: string, after?: string) {
+    let q = this.db.from("messages").select("*").eq("conversation_id", conversationId).order("created_at");
+    if (after) q = q.gt("created_at", after);
+    const { data, error } = await q;
+    if (error) fail("Could not load messages", error);
+    return ((data ?? []) as MessageRow[]).map(message);
+  }
+  async sendMessage(conversationId: string, sender: Profile, body: string) {
+    const { data, error } = await this.db
+      .from("messages")
+      .insert({ conversation_id: conversationId, sender_id: sender.id, sender_role: sender.role, body })
+      .select("*")
+      .single<MessageRow>();
+    if (error || !data) fail("Could not send the message", error);
+    return message(data);
+  }
+  async markConversationRead(conversationId: string, viewerRole: Role) {
+    const { data, error } = await this.db
+      .from("messages")
+      .update({ read_at: new Date().toISOString() })
+      .eq("conversation_id", conversationId)
+      .neq("sender_role", viewerRole)
+      .is("read_at", null)
+      .select("id");
+    if (error) fail("Could not mark messages read", error);
+    return data?.length ?? 0;
+  }
+  async countUnreadMessages(viewer: Profile) {
+    if (viewer.role === "admin") {
+      const { count } = await this.db.from("messages").select("id", { count: "exact", head: true }).eq("sender_role", "client").is("read_at", null);
+      return count ?? 0;
+    }
+    const { data: c } = await this.db.from("conversations").select("id").eq("client_id", viewer.id).maybeSingle<{ id: string }>();
+    if (!c) return 0;
+    const { count } = await this.db
+      .from("messages")
+      .select("id", { count: "exact", head: true })
+      .eq("conversation_id", c.id)
+      .eq("sender_role", "admin")
+      .is("read_at", null);
+    return count ?? 0;
   }
 }

@@ -5,6 +5,9 @@ import type {
   AvatarFile,
   Contract,
   ContractDetail,
+  Conversation,
+  ConversationSummary,
+  Message,
   Milestone,
   NewClientInput,
   NewContractInput,
@@ -16,6 +19,7 @@ import type {
   ProfilePatch,
   ProjectPatch,
   ProjectUpdate,
+  Role,
   SignatureInput,
   WebsiteDetails,
   WebsiteDetailsInput,
@@ -36,6 +40,8 @@ interface DemoState {
   websites: WebsiteDetails[];
   hostingPasswords: Map<string, string>; // profile id → password (memory only; Vault in production)
   avatars: Map<string, AvatarFile>; // profile id → image
+  conversations: Conversation[];
+  messages: Message[];
 }
 
 export const DEMO_ADMIN_ID = "00000000-0000-4000-8000-000000000001";
@@ -252,6 +258,37 @@ async function seed(): Promise<DemoState> {
     createdAt: daysAgo(2),
   };
 
+  /* Messages */
+  const conversation: Conversation = {
+    id: "30000000-0000-4000-8000-000000000001",
+    clientId: client.id,
+    createdAt: daysAgo(30),
+    lastMessageAt: null,
+  };
+  const hoursAgo = (h: number) => new Date(Date.now() - h * 3_600_000).toISOString();
+  const msg = (from: Profile, body: string, at: string, readAt: string | null): Message => ({
+    id: randomUUID(),
+    conversationId: conversation.id,
+    senderId: from.id,
+    senderRole: from.role,
+    body,
+    createdAt: at,
+    readAt,
+  });
+  const messages: Message[] = [
+    msg(client, "Hi Melanie — round 2 is looking great. The live paths counter in the hero is exactly what the team was hoping for.", daysAgo(3), daysAgo(3)),
+    msg(admin, "So glad it landed! I'll keep refining the loop section this week. Anything the team flagged that I should look at first?", daysAgo(3), daysAgo(3)),
+    msg(
+      client,
+      "Two things from the review:\n1. The footer still feels heavy on mobile.\n2. Legal wants the privacy link more visible.\n\nHere's the thread with their notes: https://www.notion.so/everypeer/site-review",
+      hoursAgo(20),
+      hoursAgo(19),
+    ),
+    msg(admin, "Both noted. I'll simplify the footer to a single column under 640px and move the privacy link up next to the copyright line. New build on staging by Thursday.", hoursAgo(19), null),
+    msg(client, "Perfect, thank you. Should we sign the Phase 2 SOW before or after the Thursday review?", hoursAgo(2), null),
+  ];
+  conversation.lastMessageAt = messages[messages.length - 1]!.createdAt;
+
   const files = new Map<string, Uint8Array>();
   files.set(`${msa.id}:original`, msaPdf);
   files.set(
@@ -281,6 +318,8 @@ async function seed(): Promise<DemoState> {
     websites: [clientWebsite],
     hostingPasswords: new Map([[client.id, "demo-only-not-a-real-password"]]),
     avatars: new Map(),
+    conversations: [conversation],
+    messages,
   };
 }
 
@@ -557,5 +596,74 @@ export class DemoStore implements PortalStore {
     s.avatars.delete(profileId);
     p.avatarUrl = null;
     return clone(p);
+  }
+
+  async getOrCreateConversation(clientId: string) {
+    const { s } = await this.mustProfile(clientId);
+    let c = s.conversations.find((x) => x.clientId === clientId);
+    if (!c) {
+      c = { id: randomUUID(), clientId, createdAt: new Date().toISOString(), lastMessageAt: null };
+      s.conversations.push(c);
+    }
+    return clone(c);
+  }
+  async getConversation(id: string) {
+    const s = await state();
+    return clone(s.conversations.find((c) => c.id === id) ?? null);
+  }
+  async listConversations(): Promise<ConversationSummary[]> {
+    const s = await state();
+    const rows = s.conversations.flatMap((c) => {
+      const client = s.profiles.find((p) => p.id === c.clientId);
+      if (!client) return [];
+      const thread = s.messages.filter((m) => m.conversationId === c.id);
+      const lastMessage = thread.reduce<Message | null>((a, m) => (!a || m.createdAt > a.createdAt ? m : a), null);
+      const unreadCount = thread.filter((m) => m.senderRole === "client" && !m.readAt).length;
+      return [{ ...c, client, lastMessage, unreadCount }];
+    });
+    return clone(rows.sort((a, b) => (b.lastMessageAt ?? b.createdAt).localeCompare(a.lastMessageAt ?? a.createdAt)));
+  }
+  async listMessages(conversationId: string, after?: string) {
+    const s = await state();
+    return clone(
+      s.messages
+        .filter((m) => m.conversationId === conversationId && (!after || m.createdAt > after))
+        .sort((a, b) => a.createdAt.localeCompare(b.createdAt)),
+    );
+  }
+  async sendMessage(conversationId: string, sender: Profile, body: string) {
+    const s = await state();
+    const c = s.conversations.find((x) => x.id === conversationId);
+    if (!c) throw new Error("Conversation not found.");
+    const m: Message = {
+      id: randomUUID(),
+      conversationId,
+      senderId: sender.id,
+      senderRole: sender.role,
+      body,
+      createdAt: new Date().toISOString(),
+      readAt: null,
+    };
+    s.messages.push(m);
+    c.lastMessageAt = m.createdAt;
+    return clone(m);
+  }
+  async markConversationRead(conversationId: string, viewerRole: Role) {
+    const s = await state();
+    const now = new Date().toISOString();
+    let n = 0;
+    for (const m of s.messages) {
+      if (m.conversationId === conversationId && m.senderRole !== viewerRole && !m.readAt) {
+        m.readAt = now;
+        n++;
+      }
+    }
+    return n;
+  }
+  async countUnreadMessages(viewer: Profile) {
+    const s = await state();
+    if (viewer.role === "admin") return s.messages.filter((m) => m.senderRole === "client" && !m.readAt).length;
+    const c = s.conversations.find((x) => x.clientId === viewer.id);
+    return c ? s.messages.filter((m) => m.conversationId === c.id && m.senderRole === "admin" && !m.readAt).length : 0;
   }
 }

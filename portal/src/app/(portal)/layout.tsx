@@ -10,13 +10,17 @@ export default async function PortalLayout({ children }: LayoutProps<"/">) {
   const store = getStore();
   const isAdmin = profile.role === "admin";
 
-  const contracts = await store.listContracts(isAdmin ? undefined : profile.id);
+  const [contracts, unreadMessages] = await Promise.all([
+    store.listContracts(isAdmin ? undefined : profile.id),
+    store.countUnreadMessages(profile),
+  ]);
   const awaiting = contracts.filter((c) => c.status === "awaiting_signature").length;
 
   const items: NavItem[] = [
     { href: "/", label: "Overview", icon: "dashboard" },
     { href: "/projects", label: "Projects", icon: "projects" },
     { href: "/contracts", label: "Agreements", icon: "contracts", badge: isAdmin ? undefined : awaiting || undefined },
+    { href: isAdmin ? "/admin/messages" : "/messages", label: "Messages", icon: "messages", badge: unreadMessages || undefined },
     { href: "/profile", label: "Your profile", icon: "profile" },
   ];
   if (isAdmin) items.push({ href: "/admin", label: "Studio admin", icon: "admin" });

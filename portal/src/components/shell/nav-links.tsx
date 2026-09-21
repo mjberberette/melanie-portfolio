@@ -2,10 +2,19 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FileSignature, FolderKanban, LayoutDashboard, ShieldCheck, UserRound } from "lucide-react";
+import { FileSignature, FolderKanban, LayoutDashboard, MessageSquare, ShieldCheck, UserRound } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const ICONS = { dashboard: LayoutDashboard, projects: FolderKanban, contracts: FileSignature, admin: ShieldCheck, profile: UserRound } as const;
+const ICONS = {
+  dashboard: LayoutDashboard,
+  projects: FolderKanban,
+  contracts: FileSignature,
+  messages: MessageSquare,
+  admin: ShieldCheck,
+  profile: UserRound,
+} as const;
+
+const matches = (href: string, pathname: string) => (href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`));
 
 export interface NavItem {
   href: string;
@@ -16,11 +25,14 @@ export interface NavItem {
 
 export function NavLinks({ items, onNavigate }: { items: NavItem[]; onNavigate?: () => void }) {
   const pathname = usePathname();
+  // Only the most specific match lights up, so /admin/messages highlights
+  // "Messages" rather than both it and "Studio admin".
+  const current = items.filter((i) => matches(i.href, pathname)).sort((a, b) => b.href.length - a.href.length)[0];
   return (
     <ul className="space-y-1">
       {items.map((item) => {
         const Icon = ICONS[item.icon];
-        const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+        const active = item === current;
         return (
           <li key={item.href}>
             <Link

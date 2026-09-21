@@ -200,6 +200,38 @@ export interface ContractUploadTarget {
   headers: Record<string, string>;
 }
 
+/* Messaging ------------------------------------------------------------ */
+
+export const MESSAGE_MAX_LENGTH = 4000;
+
+/** One thread per client, shared with every admin. */
+export interface Conversation {
+  id: string;
+  clientId: string;
+  createdAt: string;
+  lastMessageAt: string | null;
+}
+
+export interface Message {
+  id: string;
+  conversationId: string;
+  senderId: string;
+  senderRole: Role;
+  /** Plain text; line breaks preserved, rendered without markup. */
+  body: string;
+  createdAt: string;
+  /** When the other side first viewed it, or null while unread. */
+  readAt: string | null;
+}
+
+/** An inbox row: the conversation, who it's with, and what's new for admins. */
+export interface ConversationSummary extends Conversation {
+  client: Profile;
+  lastMessage: Message | null;
+  /** Messages from the client that no admin has read yet. */
+  unreadCount: number;
+}
+
 /** Everything the app needs from a backend. Implemented twice: an in-memory
  *  demo store for local previews and a Supabase store for production. */
 export interface PortalStore {
@@ -252,4 +284,19 @@ export interface PortalStore {
   getAvatar(profileId: string): Promise<AvatarFile | null>;
   setAvatar(profileId: string, file: AvatarFile): Promise<Profile>;
   removeAvatar(profileId: string): Promise<Profile>;
+
+  /* Messaging */
+  /** The client's thread, created on first use. */
+  getOrCreateConversation(clientId: string): Promise<Conversation>;
+  getConversation(id: string): Promise<Conversation | null>;
+  /** Every client's thread, newest activity first (admin inbox). */
+  listConversations(): Promise<ConversationSummary[]>;
+  /** Oldest first. With `after` (an ISO timestamp) only newer messages. */
+  listMessages(conversationId: string, after?: string): Promise<Message[]>;
+  sendMessage(conversationId: string, sender: Profile, body: string): Promise<Message>;
+  /** Stamps read_at on the other side's unread messages; returns how many. */
+  markConversationRead(conversationId: string, viewerRole: Role): Promise<number>;
+  /** Unread messages waiting for this person: their own thread for a
+   *  client, every client's thread for an admin. */
+  countUnreadMessages(viewer: Profile): Promise<number>;
 }

@@ -12,6 +12,35 @@ export function formatDateTime(iso: string | null | undefined) {
   return new Date(iso).toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" });
 }
 
+export function formatTime(iso: string) {
+  return new Date(iso).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+}
+
+/** Local calendar day, as a key for grouping messages. */
+export function dayKey(iso: string): string {
+  const d = new Date(iso);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+/** "Today", "Yesterday", "Tue, Sep 15", or with the year when it differs. */
+export function formatDayLabel(iso: string, now = new Date()): string {
+  const d = new Date(iso);
+  const key = dayKey(iso);
+  if (key === dayKey(now.toISOString())) return "Today";
+  if (key === dayKey(new Date(now.getTime() - DAY).toISOString())) return "Yesterday";
+  const sameYear = d.getFullYear() === now.getFullYear();
+  return d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", ...(sameYear ? {} : { year: "numeric" }) });
+}
+
+/** Compact "when" for inbox rows: time today, weekday this week, else a date. */
+export function formatRecent(iso: string, now = new Date()): string {
+  const d = new Date(iso);
+  const age = now.getTime() - d.getTime();
+  if (dayKey(iso) === dayKey(now.toISOString())) return formatTime(iso);
+  if (age < 6 * DAY) return d.toLocaleDateString("en-US", { weekday: "short" });
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric", ...(d.getFullYear() === now.getFullYear() ? {} : { year: "numeric" }) });
+}
+
 export function relativeDays(iso: string | null | undefined): string {
   if (!iso) return "";
   const target = /^\d{4}-\d{2}-\d{2}$/.test(iso) ? new Date(`${iso}T12:00:00`) : new Date(iso);

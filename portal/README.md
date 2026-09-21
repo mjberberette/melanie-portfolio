@@ -24,10 +24,15 @@ project on the `portal.` subdomain.
   a countersigned copy. Signing appends a certificate page (name, email, time, IP,
   device, SHA-256 fingerprint of the exact document) and stamps a signature block on
   the final page. Signed agreements can't be altered afterwards.
+- Messages: one thread with the studio. Plain-text chat with day separators, read
+  receipts, and an unread badge in the navigation; new replies appear live (Supabase
+  Realtime, with polling as a fallback) and arrive by email too.
 
 **For you (admin)**
 
 - Invite clients (sends the invitation email through Supabase Auth).
+- Messages inbox at `/admin/messages`: every client's thread with the latest message
+  and unread count; reply in the same chat UI. A client's message emails you.
 - Create projects; change phase, status, target launch, and next step; add and tick
   off milestones; post updates.
 - Upload a PDF and send it for signature; withdraw agreements that are still pending.
@@ -71,7 +76,13 @@ real database locally.
    (encrypted at rest with a key Supabase manages — nothing to generate or set in
    env), read and written only through two security-definer functions the service
    role can call. If the `create extension supabase_vault` line fails, enable
-   **Vault** under Database → Extensions and run the file again.
+   **Vault** under Database → Extensions and run the file again. Then run
+   `0004_messages.sql` for Messages: the `conversations` and `messages` tables,
+   their RLS policies (a client's browser only ever receives events for their own
+   thread), and it adds `messages` to the `supabase_realtime` publication. If that
+   last step doesn't take, turn it on by hand: Database → Publications →
+   `supabase_realtime` → toggle **messages**. Without it the chat still works, it
+   just refreshes every few seconds instead of instantly.
 3. Authentication → Providers → Email: keep **Email** on, turn **Confirm email** on,
    and (recommended) turn **Allow new users to sign up** *off* — the app never creates
    users from the login page; you invite them from the admin area.
@@ -147,6 +158,16 @@ real database locally.
    | `SUPABASE_SERVICE_ROLE_KEY` | service_role key (server-only) |
    | `NEXT_PUBLIC_PORTAL_URL` | `https://portal.melanieberberette.design` |
    | `PORTAL_ADMIN_EMAILS` | `hello@melanieberberette.com` (comma-separate more) |
+   | `RESEND_API_KEY` | *(optional)* Resend API key for message notification emails |
+   | `PORTAL_EMAIL_FROM` | *(optional)* verified sender, e.g. `Melanie Berberette <portal@melanieberberette.design>` |
+   | `PORTAL_NOTIFY_EMAILS` | *(optional)* who hears about client messages; defaults to `PORTAL_ADMIN_EMAILS` |
+
+   Message notifications are the one email the app sends itself (everything else
+   comes from Supabase Auth). They go through [Resend](https://resend.com)'s API —
+   the same account and verified domain as the SMTP setup above; create an API key
+   there. With `RESEND_API_KEY` empty the chat works exactly the same and simply
+   sends no email. One email per burst: once you've been told about an unread
+   message, further messages in that thread stay quiet until you've read them.
 
 4. Deploy, then Settings → Domains → add `portal.melanieberberette.design`.
 5. At your DNS provider add a `CNAME` record: name `portal`, value
@@ -197,6 +218,10 @@ portal/
   src/app/(auth)/forgot-password, reset-password   password recovery
   src/app/auth/callback       turns email links into a session and routes by link type
   src/app/(portal)/           signed-in shell: overview, projects, contracts, profile, admin
+  src/app/(portal)/messages   client chat thread + server actions (send, fetch, mark read)
+  src/app/(portal)/admin/messages  admin inbox and per-client thread
+  src/components/chat/        thread UI, inbox list, realtime/polling hook, safe text rendering
+  src/lib/email.ts, notify.ts Resend-backed notification emails (optional, env-gated)
   src/app/api/contracts/…/pdf streams original/signed PDFs to their owner
   src/app/api/contracts/upload/[id]  receives agreement PDFs in demo mode (production
                               uploads go straight from the browser to Supabase Storage
