@@ -1,9 +1,13 @@
+import { AuthGlow } from "@/components/auth-glow";
+
 /** Two-column shell shared by the sign-in, set-password, and reset-password
- *  pages: the pitch on the left, the form on the right. */
+ *  pages: the pitch on the left, the form on the right, and an animated
+ *  chevron-and-glow backdrop rising along the bottom of both. */
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <main className="grid min-h-screen lg:grid-cols-[1.1fr_1fr]">
-      <section className="grain relative hidden flex-col justify-between overflow-hidden border-r border-border p-10 lg:flex">
+    <main className="relative isolate grid min-h-screen overflow-hidden lg:grid-cols-[1.1fr_1fr]">
+      <AuthGlow />
+      <section className="grain relative hidden flex-col justify-between overflow-hidden p-10 after:absolute after:inset-y-0 after:right-0 after:w-px after:bg-gradient-to-b after:from-border after:via-border after:to-transparent lg:flex">
         <div className="flex items-center gap-3">
           <span className="mark size-8 text-bone" aria-hidden />
           <span className="eyebrow text-bone">Client portal</span>
@@ -16,7 +20,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             Review and sign agreements, follow each phase as it moves, and see exactly what I need from you next.
           </p>
         </div>
-        <p className="text-xs text-bone-faint">
+        <p className="text-xs text-bone-dim">
           Melanie Berberette · Web &amp; UX Design ·{" "}
           <a href="https://melanieberberette.design" className="underline-offset-4 hover:text-bone hover:underline">
             melanieberberette.design

@@ -155,3 +155,144 @@
 @utility hairline-top {
   border-top: 1px solid var(--border);
 }
+
+/* Auth-page backdrop (components/auth-glow.tsx).
+   Geometry, colours, masks and timing were measured from the reference CTA
+   (ably.com "Start building with Ably today") and redrawn as our own tile:
+   - chevron 119.8 × 46.9 units (150 × 58.6 px at the 1.25× display scale),
+     arms at 38°, 17-unit vertical thickness, arm ends cut parallel to the
+     opposite arm; translucent maroon fill + a 1.11-unit orange hairline;
+   - the reference packs rows on a 139.4-unit pitch with 71.1 / 47.4-unit row
+     steps; ours is opened up to ~1.6× that: 223-unit pitch (278.75 px),
+     95-unit row step (118.75 px), half-pitch brick stagger, one row centred
+     on the page midline,
+     horizontal gradient direction alternating per row;
+   - a bottom-centre radial mask (55% → 75%) intersected with the image's own
+     bottom-centre falloff (rx 1000 px, ry 373 px);
+   - glow: 1265 × 400 px box, #ff5416 → transparent at 50%, 60% opacity;
+   - entrance: pattern fades + rises 100 px in 1 s, glow fades in over 1.5 s,
+     both on cubic-bezier(0.4, 0, 0.2, 1). The reference re-runs this whenever
+     it scrolls into view; a login page never scrolls, so a very slow breathe
+     keeps it alive instead. Everything is transform/opacity only. */
+.auth-glow {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.auth-glow__top {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 11rem;
+  background:
+    linear-gradient(90deg, transparent 4%, rgb(255 84 22 / 0.85) 50%, transparent 96%) top / 100% 1px no-repeat,
+    radial-gradient(55% 100% at 50% 0%, rgb(255 84 22 / 0.16), transparent 70%);
+  animation: auth-glow-breathe-top 9s ease-in-out infinite;
+}
+
+.auth-glow__field {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 27rem;
+}
+
+.auth-glow__pattern {
+  position: absolute;
+  inset: 0;
+  /* One 223 × 312 unit column of the field (rows at y 268.3 / 173.3 / 78.3 /
+     −16.7); repeats on the x axis. Staggered rows are drawn twice, one pitch
+     apart, so they wrap seamlessly. */
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='223' height='312' viewBox='0 0 223 312'%3E%3Cdefs%3E%3Cpath id='c' d='M-59.9 46.87 0 0l59.9 46.87-11.48 8.03L0 17l-48.42 37.9Z'/%3E%3ClinearGradient id='fl' x2='1' y2='0'%3E%3Cstop stop-color='%23b82202' stop-opacity='.3'/%3E%3Cstop offset='1' stop-color='%232a0b00' stop-opacity='0'/%3E%3C/linearGradient%3E%3ClinearGradient id='fr' x1='1' x2='0' y2='0'%3E%3Cstop stop-color='%23b82202' stop-opacity='.3'/%3E%3Cstop offset='1' stop-color='%232a0b00' stop-opacity='0'/%3E%3C/linearGradient%3E%3ClinearGradient id='sl' x2='1' y2='0'%3E%3Cstop stop-color='%23ff5416' stop-opacity='.55'/%3E%3Cstop offset='1' stop-color='%232a0b00' stop-opacity='.25'/%3E%3C/linearGradient%3E%3ClinearGradient id='sr' x1='1' x2='0' y2='0'%3E%3Cstop stop-color='%23ff5416' stop-opacity='.55'/%3E%3Cstop offset='1' stop-color='%232a0b00' stop-opacity='.25'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cg stroke-width='1.11'%3E%3Cg fill='url(%23fl)' stroke='url(%23sl)'%3E%3Cuse href='%23c' x='111.5' y='268.3'/%3E%3Cuse href='%23c' x='111.5' y='78.3'/%3E%3C/g%3E%3Cg fill='url(%23fr)' stroke='url(%23sr)'%3E%3Cuse href='%23c' x='0' y='173.3'/%3E%3Cuse href='%23c' x='223' y='173.3'/%3E%3Cuse href='%23c' x='0' y='-16.7'/%3E%3Cuse href='%23c' x='223' y='-16.7'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")
+    50% 100% / 278.75px 390px repeat-x;
+  mask-image:
+    radial-gradient(at 50% 100%, #000 55%, transparent 75%),
+    radial-gradient(1000px 373px at 50% 100%, #000, rgb(0 0 0 / 0.75) 74.5%, transparent 100%);
+  mask-composite: intersect;
+  -webkit-mask-composite: source-in;
+  animation:
+    auth-glow-enter-pattern 1s cubic-bezier(0.4, 0, 0.2, 1) both,
+    auth-glow-breathe-pattern 14s ease-in-out 1s infinite;
+  will-change: transform, opacity;
+}
+
+.auth-glow__glow {
+  position: absolute;
+  bottom: 0;
+  left: calc(50% - 39.53125rem);
+  width: 79.0625rem;
+  height: 25rem;
+  background: radial-gradient(at 50% 100%, #ff5416, transparent 50%);
+  animation:
+    auth-glow-enter-glow 1.5s cubic-bezier(0.4, 0, 0.2, 1) both,
+    auth-glow-breathe-glow 10s ease-in-out 1.5s infinite;
+}
+
+@media (max-width: 640px) {
+  .auth-glow__field {
+    height: 20rem;
+  }
+}
+
+@keyframes auth-glow-enter-pattern {
+  from {
+    opacity: 0;
+    transform: translateY(6.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes auth-glow-enter-glow {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.6;
+  }
+}
+
+@keyframes auth-glow-breathe-pattern {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.78;
+  }
+}
+
+@keyframes auth-glow-breathe-glow {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@keyframes auth-glow-breathe-top {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-glow,
+  .auth-glow * {
+    animation: none;
+    will-change: auto;
+  }
+  .auth-glow__glow {
+    opacity: 0.6;
+  }
+}
