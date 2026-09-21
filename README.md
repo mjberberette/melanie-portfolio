@@ -1,6 +1,6 @@
 # Melanie Berberette — Portfolio
 
-Portfolio site for an independent Web & UX designer. Dark editorial layout, and
+Professional Portfolio designed and developed for myself. Dark editorial layout, and
 a hero built around the MB monogram in real 3D — chrome-lit from a hand-painted
 studio environment, sandwiched between the two lines of the name, following the
 pointer, draggable, and choreographed by the scroll while the section is
